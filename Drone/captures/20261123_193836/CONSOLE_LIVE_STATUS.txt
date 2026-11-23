@@ -1,5 +1,5 @@
 [SIMULATED] ----------------------------------------------------------
-[SIMULATED] WEBOTS LIVE TECHNICAL CONSOLE | t=3432.0s | STATIONARY | LANDED
+[SIMULATED] WEBOTS LIVE TECHNICAL CONSOLE | t=3892.0s | STATIONARY | LANDED
 [SIMULATED] AUTONOMOUS CONTROL | RUNNING | supervisor kinematics
 [SIMULATED] POSITION XYZ [m] (supervisor) | -48.92 / -47.00 / 0.60
 [SIMULATED] GPS XYZ [m] (Webots device)   | -48.92 / -47.00 / 0.60
