@@ -1,0 +1,2 @@
+sequence,sim_time_seconds,mission,stop_id,stop_name,camera,x_m,y_m,z_m,image_width,image_height,file,automatic
+1,6.22,FULL_FARM_SURVEY,SW_WHEAT_A,Southwest Wheat A,survey_camera,-44.113,-47.0,0.6,3840,2160,FULL_FARM_SURVEY_SW_WHEAT_A_001_0006224.png,1

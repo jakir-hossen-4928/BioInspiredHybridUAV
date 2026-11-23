@@ -1,0 +1,28 @@
+EXAMPLE ONLY - synthetic test inputs, NOT a real Webots runtime capture
+
+[SIMULATED] ----------------------------------------------------------
+[SIMULATED] WEBOTS LIVE TECHNICAL CONSOLE | t=2.5s | WHEEL | ROLLING
+[SIMULATED] AUTONOMOUS CONTROL | RUNNING | supervisor kinematics
+[SIMULATED] POSITION XYZ [m] (supervisor) | 1.00 / 2.00 / 0.60
+[SIMULATED] GPS XYZ [m] (Webots device)   | 1.00 / 2.00 / 0.60
+[SIMULATED] IMU ROLL/PITCH/YAW [deg]       | 0.0 / 11.5 / 17.2
+[SIMULATED] GYROSCOPE XYZ [rad/s]         | 0.010 / 0.020 / 0.030
+[SIMULATED] ACCEL XYZ [m/s2]             | 0.00 / 0.00 / 9.81
+[SIMULATED] ALTIMETER [m]                | 0.60
+[SIMULATED] LIDAR nearest [m] / returns  | N/A / 222
+[SIMULATED] ULTRASONIC front/down [raw]  | N/A / N/A
+[SIMULATED] CAMERAS (Webots devices)       | N/A
+[SIMULATED] ASTAR / HYBRID PATH PLANNING  | 8-heading mode-augmented grid A* demo, not research Hybrid A*
+[SIMULATED] PLANNED NODES flight/ground  | 2 / 3
+[SIMULATED] OBSTACLE AVOIDANCE           | NOT ENABLED | new object: NONE
+[SIMULATED] TERRAIN LANDING ASSESSMENT   | SAFE | slope 1.2 deg | roughness 0.012 m
+[SIMULATED] FOOT FORCE XYZ [N]           | N/A (no force-3d device data)
+[SIMULATED] FOOT SUPPORT MODEL [N]        | 38.00 (model only, not measured)
+[SIMULATED] WHEEL ROTATION [deg]          | FL=5.7 ; FR=11.5 ; RL=11.5 ; RR=5.7
+[SIMULATED] WHEEL DRIVEN ROUTE [m]        | 12.50 (kinematic animation)
+[SIMULATED] ROS 2 INPUT TCP LINK          | CONNECTED | sent 12 | dropped 2
+[SIMULATED] FAST-LIVO2 INPUTS (simulated) | LiDAR=MISSING IMU=PRESENT RGB=MISSING
+[SIMULATED] FAST-LIVO2 ESTIMATOR/SLAM    | NOT VERIFIED (external ROS 2 process)
+[SIMULATED] FAST-LIVO2 POSE / SLAM MAP   | N/A (no estimator output in Webots)
+[SIMULATED] NOTE | Webots sensor readings only; no physical dynamics validation
+[SIMULATED] ----------------------------------------------------------

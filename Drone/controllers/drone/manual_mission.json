@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "name": "Student Custom Farm Patrol",
+  "stops": [
+    {"id": "CUSTOM_01", "name": "Southwest Wheat", "point": [-39.0, -36.0], "hover_s": 4.0, "take_photo": true},
+    {"id": "CUSTOM_02", "name": "Central Corn", "point": [-19.0, -10.5], "hover_s": 5.0, "take_photo": true},
+    {"id": "CUSTOM_03", "name": "Northwest Corn", "point": [-39.5, 35.0], "hover_s": 4.0, "take_photo": true},
+    {"id": "CUSTOM_04", "name": "Northeast Vegetables", "point": [30.0, 34.0], "hover_s": 4.0, "take_photo": true},
+    {"id": "CUSTOM_05", "name": "Southeast Wheat", "point": [28.0, -36.0], "hover_s": 5.0, "take_photo": true}
+  ],
+  "flight_settings": {
+    "flight_speed_mps": 3.8,
+    "target_altitude_m": 13.0,
+    "obstacle_clearance_m": 1.2
+  }
+}

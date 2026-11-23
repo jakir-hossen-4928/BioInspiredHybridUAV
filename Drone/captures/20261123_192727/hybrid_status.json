@@ -1,0 +1,51 @@
+{
+  "sim_time_s": 18.02,
+  "mode": "FLIGHT",
+  "state": "HOVER",
+  "position_xyz_m": [
+    -39.039,
+    -36.083,
+    13.0
+  ],
+  "walk_goal_xy": null,
+  "walking_speed_mps": 0.65,
+  "sensor_obstacle": null,
+  "leg_hip_angles_rad": {
+    "fl": 0.0,
+    "fr": -0.0,
+    "rl": -0.0,
+    "rr": 0.0
+  },
+  "feet": {
+    "raw_force_xyz_n": {
+      "fl": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "fr": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rl": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rr": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "estimated_support_n": {
+      "fl": 0.0,
+      "fr": 0.0,
+      "rl": 0.0,
+      "rr": 0.0
+    },
+    "note": "Raw Webots force-3d requires meaningful contact physics. Support is an analytical weight estimate, not a sensor reading."
+  },
+  "warning": ""
+}

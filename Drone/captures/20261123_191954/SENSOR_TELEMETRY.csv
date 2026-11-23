@@ -1,0 +1,2 @@
+sim_time_s,state,x,y,z,imu_yaw_rad,lidar_min_m,sonar_front_raw,sonar_down_raw,altitude_m,barometric_model_hpa,foot_fl,foot_fr,foot_rl,foot_rr,landing_status,slope_deg,roughness_m,depth_samples
+0.02,TO_ROLL,-49.0,-47.0,0.585,0.0,inf,8.0,0.354,0.585,1013.1797250507312,0.0,0.0,0.0,0.0,NO_DATA,,,0

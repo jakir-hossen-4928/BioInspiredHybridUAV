@@ -1,0 +1,378 @@
+{
+  "bounds_m": 53.0,
+  "start": [
+    -49.0,
+    -47.0
+  ],
+  "goals": [
+    [
+      -39.0,
+      -36.0
+    ],
+    [
+      -29.0,
+      34.0
+    ],
+    [
+      40.0,
+      33.0
+    ]
+  ],
+  "obstacles": [
+    {
+      "name": "Red Main Barn",
+      "kind": "barn",
+      "x": -10.5,
+      "y": 3.0,
+      "sx": 8.0,
+      "sy": 7.0,
+      "height": 6.2
+    },
+    {
+      "name": "Farm House",
+      "kind": "farmhouse",
+      "x": -17.0,
+      "y": 15.0,
+      "sx": 6.2,
+      "sy": 5.2,
+      "height": 5.7
+    },
+    {
+      "name": "Glass Greenhouse",
+      "kind": "greenhouse",
+      "x": 10.0,
+      "y": 14.0,
+      "sx": 9.0,
+      "sy": 5.8,
+      "height": 4.2
+    },
+    {
+      "name": "Grain Silo",
+      "kind": "silo",
+      "x": 14.5,
+      "y": -2.0,
+      "sx": 3.7,
+      "sy": 3.7,
+      "height": 8.7
+    },
+    {
+      "name": "Water Tower",
+      "kind": "water",
+      "x": 4.0,
+      "y": 0.5,
+      "sx": 3.3,
+      "sy": 3.3,
+      "height": 7.0
+    },
+    {
+      "name": "Equipment Shelter",
+      "kind": "shed",
+      "x": -4.0,
+      "y": -12.0,
+      "sx": 6.5,
+      "sy": 4.7,
+      "height": 4.4
+    },
+    {
+      "name": "Hay Store",
+      "kind": "hay",
+      "x": 2.0,
+      "y": 7.5,
+      "sx": 4.5,
+      "sy": 3.8,
+      "height": 3.0
+    },
+    {
+      "name": "Orange Orchard",
+      "kind": "orchard",
+      "x": 20.0,
+      "y": 6.0,
+      "sx": 8.0,
+      "sy": 8.0,
+      "height": 4.5
+    },
+    {
+      "name": "Farm Tractor",
+      "kind": "tractor",
+      "x": -4.0,
+      "y": -21.0,
+      "sx": 3.3,
+      "sy": 2.2,
+      "height": 2.3
+    },
+    {
+      "name": "Eastern Orange Orchard",
+      "kind": "orchard",
+      "x": 39.0,
+      "y": 5.5,
+      "sx": 11.0,
+      "sy": 12.0,
+      "height": 4.7
+    }
+  ],
+  "fields": [
+    {
+      "name": "Cornfield",
+      "kind": "corn",
+      "x": -15.0,
+      "y": -10.0,
+      "sx": 13.0,
+      "sy": 12.0,
+      "rows": 14
+    },
+    {
+      "name": "Wheatfield",
+      "kind": "wheat",
+      "x": 8.3,
+      "y": -15.0,
+      "sx": 14.5,
+      "sy": 11.5,
+      "rows": 18
+    },
+    {
+      "name": "Vegetable Beds",
+      "kind": "lettuce",
+      "x": -0.7,
+      "y": 16.0,
+      "sx": 12.0,
+      "sy": 10.0,
+      "rows": 13
+    },
+    {
+      "name": "Southwest Wheat Acres",
+      "kind": "wheat",
+      "x": -32.5,
+      "y": -35.5,
+      "sx": 19.0,
+      "sy": 16.0,
+      "rows": 17
+    },
+    {
+      "name": "Northwest Corn Acres",
+      "kind": "corn",
+      "x": -34.0,
+      "y": 35.0,
+      "sx": 20.0,
+      "sy": 17.0,
+      "rows": 17
+    },
+    {
+      "name": "West Vegetable Plot",
+      "kind": "lettuce",
+      "x": -41.0,
+      "y": 2.0,
+      "sx": 12.0,
+      "sy": 14.0,
+      "rows": 13
+    },
+    {
+      "name": "Northeast Vegetables",
+      "kind": "lettuce",
+      "x": 36.0,
+      "y": 34.0,
+      "sx": 19.0,
+      "sy": 17.0,
+      "rows": 16
+    },
+    {
+      "name": "Southeast Golden Wheat",
+      "kind": "wheat",
+      "x": 33.5,
+      "y": -35.5,
+      "sx": 19.0,
+      "sy": 16.5,
+      "rows": 17
+    }
+  ],
+  "photo_stops": [
+    {
+      "id": "SW_WHEAT_A",
+      "name": "Southwest Wheat A",
+      "point": [
+        -39.0,
+        -36.0
+      ]
+    },
+    {
+      "id": "SW_WHEAT_B",
+      "name": "Southwest Wheat B",
+      "point": [
+        -28.0,
+        -36.0
+      ]
+    },
+    {
+      "id": "CORN_A",
+      "name": "Central Corn A",
+      "point": [
+        -19.0,
+        -10.5
+      ]
+    },
+    {
+      "id": "CORN_B",
+      "name": "Central Corn B",
+      "point": [
+        -11.0,
+        -10.5
+      ]
+    },
+    {
+      "id": "WEST_VEG",
+      "name": "West Vegetable Plot",
+      "point": [
+        -42.0,
+        2.0
+      ]
+    },
+    {
+      "id": "NW_CORN_A",
+      "name": "Northwest Corn A",
+      "point": [
+        -39.5,
+        35.0
+      ]
+    },
+    {
+      "id": "NW_CORN_B",
+      "name": "Northwest Corn B",
+      "point": [
+        -28.5,
+        35.0
+      ]
+    },
+    {
+      "id": "VEG_CORE",
+      "name": "Core Vegetable Beds",
+      "point": [
+        -1.0,
+        16.0
+      ]
+    },
+    {
+      "id": "GREENHOUSE",
+      "name": "Greenhouse Exterior",
+      "point": [
+        17.0,
+        23.0
+      ]
+    },
+    {
+      "id": "NE_VEG_A",
+      "name": "Northeast Vegetables A",
+      "point": [
+        30.0,
+        34.0
+      ]
+    },
+    {
+      "id": "NE_VEG_B",
+      "name": "Northeast Vegetables B",
+      "point": [
+        41.0,
+        34.0
+      ]
+    },
+    {
+      "id": "ORCHARD",
+      "name": "Eastern Orchard Border",
+      "point": [
+        29.0,
+        15.0
+      ]
+    },
+    {
+      "id": "IRRIGATION",
+      "name": "Water and Irrigation",
+      "point": [
+        22.0,
+        -6.0
+      ]
+    },
+    {
+      "id": "WHEAT_CORE",
+      "name": "Central Wheat Plot",
+      "point": [
+        8.0,
+        -15.0
+      ]
+    },
+    {
+      "id": "SE_WHEAT_A",
+      "name": "Southeast Wheat A",
+      "point": [
+        28.0,
+        -36.0
+      ]
+    },
+    {
+      "id": "SE_WHEAT_B",
+      "name": "Southeast Wheat B",
+      "point": [
+        39.0,
+        -36.0
+      ]
+    },
+    {
+      "id": "EQUIPMENT",
+      "name": "Farm Equipment Yard",
+      "point": [
+        -7.0,
+        -36.0
+      ]
+    }
+  ],
+  "missions": {
+    "FULL_FARM_SURVEY": [
+      "SW_WHEAT_A",
+      "SW_WHEAT_B",
+      "CORN_A",
+      "CORN_B",
+      "WEST_VEG",
+      "NW_CORN_A",
+      "NW_CORN_B",
+      "VEG_CORE",
+      "GREENHOUSE",
+      "NE_VEG_A",
+      "NE_VEG_B",
+      "ORCHARD",
+      "IRRIGATION",
+      "WHEAT_CORE",
+      "SE_WHEAT_A",
+      "SE_WHEAT_B",
+      "EQUIPMENT"
+    ],
+    "CROP_SCAN": [
+      "SW_WHEAT_A",
+      "SW_WHEAT_B",
+      "CORN_A",
+      "CORN_B",
+      "WEST_VEG",
+      "NW_CORN_A",
+      "NW_CORN_B",
+      "VEG_CORE",
+      "NE_VEG_A",
+      "NE_VEG_B",
+      "WHEAT_CORE",
+      "SE_WHEAT_A",
+      "SE_WHEAT_B"
+    ],
+    "PERIMETER_PATROL": [
+      "SW_WHEAT_A",
+      "WEST_VEG",
+      "NW_CORN_A",
+      "NW_CORN_B",
+      "NE_VEG_B",
+      "ORCHARD",
+      "SE_WHEAT_B"
+    ],
+    "FARM_EQUIPMENT": [
+      "EQUIPMENT",
+      "CORN_B",
+      "VEG_CORE",
+      "GREENHOUSE",
+      "ORCHARD",
+      "IRRIGATION"
+    ]
+  }
+}
