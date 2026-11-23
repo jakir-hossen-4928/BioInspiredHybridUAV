@@ -1,88 +1,339 @@
-# Bio-Inspired Hybrid UAV in Webots
+<div align="center">
 
-This Windows project implements the agricultural navigation simulation in Section 4.3 of the design report. It adds animated leg and wheel modes, terrain screening and an optional simulated sensor stream. The navigation demonstration uses a Webots Supervisor to move a kinematic robot around a known farm map.
+# 🚁 Bio-Inspired Hybrid UAV
 
-## Run on Windows
+### Legged · Wheeled · Flying agricultural survey drone — simulated in Webots
 
-1. Keep `worlds/`, `controllers/` and `textures/` together inside `Drone/`. If setting up from the original archives, extract all three into the same parent folder so they share one `Drone/` tree. The assembled working copy already includes fixes.
-2. Use Webots R2025a and Python 3. Run `python --version` in PowerShell. If Webots cannot start the controller, set its Python command in **Tools → Preferences → General** to the installed Python executable and reopen the world.
-3. Double-click [RUN_DEMO.bat](Drone/RUN_DEMO.bat) or use **File → Open World** in Webots and select [worlds/hybrid_wheels.wbt](Drone/worlds/hybrid_wheels.wbt). If a detached copy says **No Project**, open the world from inside `Drone/worlds/`.
-4. Click **Reset Simulation** and then **Real-time** if paused. The drone rolls to an inspection point, captures an image, takes off, surveys 17 stops, returns home and lands. Use **View → Console** for controller messages. **Fast** mode can shorten the wait. The local demo runs independently of ROS 2.
+![Webots R2025a](https://img.shields.io/badge/Webots-R2025a-1f6feb)
+![Python 3+](https://img.shields.io/badge/Python-3%2B-3776AB?logo=python&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-66%20passing-brightgreen)
+![ROS 2](https://img.shields.io/badge/ROS%202-Humble-22314E)
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
+![Worlds](https://img.shields.io/badge/Worlds-12-9cf)
+![Docs](https://img.shields.io/badge/Docs-15%20guides-orange)
 
-| World | Starts with |
+**A single UAV that rolls on wheels, walks on four legs, then takes off and surveys a farm — all inside one Webots world.**
+
+<img src="Drone/FARM_SURVEY_ROUTE_PREVIEW.png" width="720" alt="Farm survey route preview">
+
+<i>Planned farm survey route — 17 stops, 0.75 m planning grid.</i>
+
+<br><br>
+
+[🚀 Quick Start](#-quick-start) ·
+[🌍 Worlds](#-worlds) ·
+[🎮 Controls](#-controls) ·
+[📁 Project Structure](#-project-structure) ·
+[🧪 Testing](#-testing) ·
+[📚 Documentation](#-documentation) ·
+[⚠️ Scope & Limitations](#-scope-and-limitations)
+
+</div>
+
+---
+
+## ✨ Highlights
+
+| | |
 | --- | --- |
-| [hybrid_wheels.wbt](Drone/worlds/hybrid_wheels.wbt) | Wheel drive, inspection, flight survey |
-| [hybrid.wbt](Drone/worlds/hybrid.wbt) | Four-leg walking, inspection, flight survey |
-| [farm.wbt](Drone/worlds/farm.wbt) | Flight survey with the default viewpoint |
-| `overview.wbt`, `follow.wbt`, `closeup.wbt`, `top.wbt`, `photos.wbt` | Farm survey camera or viewpoint variants |
-| `livo2.wbt`, `livo2_fast.wbt`, `hybrid_ros2.wbt`, `hybrid_wheels_ros2.wbt` | Sensor integration variants |
+| 🦿 **Three locomotion modes** | Roll on wheels, walk on four legs, or fly — switch mid-mission with a single key. |
+| 🗺️ **Autonomous navigation** | Known-map 2D A* planning, waypoint editing, obstacle placement and live route replanning. |
+| 📸 **4K survey capture** | Dual survey cameras shoot **3840 × 2160** frames at every stop; a full mission writes ~35 images. |
+| 🌾 **17-stop farm mission** | Rolls to an inspection point, grabs a ground image, takes off, surveys 17 stops, returns and lands. |
+| 🛬 **Terrain-aware landing** | Depth-based ground assessment returns `SAFE` / `UNSAFE` / `NO_DATA` before allowing descent. |
+| 📡 **Live sensor bridge** | TCP stream of IMU, LiDAR, RGB and GPS to a browser dashboard at `127.0.0.1:15882`. |
+| 🔁 **ROS 2 ready** | Optional `drone_ros_bridge` package for Ubuntu / WSL2 Humble publishing. |
+| ✅ **66 offline tests** | Planning, routes, perception, telemetry and wheel/leg logic run without launching Webots. |
 
-### Controls
+---
 
-Click the 3D view while the simulation is running, then use these keys.
+## 🚀 Quick Start
+
+**Requirements:** Windows 11 · [Webots R2025a](https://cyberbotics.com/) · Python 3 (plus Tkinter for the route editor)
+
+```powershell
+# 1. Clone
+git clone https://github.com/jakir-hossen-4928/BioInspiredHybridUAV.git
+cd BioInspiredHybridUAV
+
+# 2. Verify the offline suite
+python -m unittest discover -s Drone/tests -v
+
+# 3. Run the demo
+.\Drone\RUN_DEMO.bat
+```
+
+> 💡 Or open [Drone/worlds/hybrid_wheels.wbt](Drone/worlds/hybrid_wheels.wbt) directly in Webots via **File → Open World**, then press **Reset** and **Real-time**.
+
+### Launcher cheat sheet
+
+| Script | Does what |
+| --- | --- |
+| [RUN_DEMO.bat](Drone/RUN_DEMO.bat) | Main wheel-drive → flight demonstration |
+| [RUN_OFFLINE_TESTS.bat](Drone/RUN_OFFLINE_TESTS.bat) | Runs the full offline test suite from `Drone/` |
+| [RUN_ROS2_DEMO.bat](Drone/RUN_ROS2_DEMO.bat) | Opens `hybrid_wheels_ros2.wbt` with the ROS 2 bridge |
+| [editor.bat](Drone/editor.bat) | Map-based waypoint editor (save, then press `U` in Webots) |
+| [sensors.bat](Drone/sensors.bat) | Live sensor dashboard in the browser |
+| [photos.bat](Drone/photos.bat) | High-resolution camera world (GPU heavy) |
+| [start.bat](Drone/start.bat) | Launch the base farm scene |
+| [rebuild.bat](Drone/rebuild.bat) | ⚠️ Regenerates world files from geometry scripts — backs up to `world_backups/` first |
+| [OPEN_SOURCE_CODE.bat](Drone/OPEN_SOURCE_CODE.bat) | Opens the project in VS Code |
+
+---
+
+## 🌍 Worlds
+
+All under [Drone/worlds/](Drone/worlds/).
+
+| World | Locomotion | What starts with |
+| --- | --- | --- |
+| [hybrid_wheels.wbt](Drone/worlds/hybrid_wheels.wbt) | 🛞 Wheels → ✈️ Flight | Wheel drive, inspection, flight survey — **the default demo** |
+| [hybrid.wbt](Drone/worlds/hybrid.wbt) | 🦿 Legs → ✈️ Flight | Four-leg walking, inspection, flight survey |
+| [farm.wbt](Drone/worlds/farm.wbt) | ✈️ Flight only | Survey with the default viewpoint |
+| `overview.wbt`, `follow.wbt`, `closeup.wbt`, `top.wbt`, `photos.wbt` | ✈️ Flight only | Farm survey camera and viewpoint variants |
+| [livo2.wbt](Drone/worlds/livo2.wbt), `livo2_fast.wbt` | ✈️ Flight only | FAST-LIVO2 sensor-stream variants |
+| [hybrid_ros2.wbt](Drone/worlds/hybrid_ros2.wbt), [hybrid_wheels_ros2.wbt](Drone/worlds/hybrid_wheels_ros2.wbt) | 🦿/🛞 → ✈️ | Same demos with the ROS 2 bridge enabled |
+
+---
+
+## 🎮 Controls
+
+Click the 3D view while the simulation runs, then press keys.
+
+### Flight & mission
 
 | Key | Action |
 | --- | --- |
 | `W` / `I` | Walk / take off and resume flight in the hybrid worlds |
-| `T` | Roll in the wheel worlds. Take off from a landed state in the flight-only worlds. |
+| `T` | Roll in the wheel worlds · take off from landed in flight-only worlds |
 | `M` / `N` / `G` | Cycle mission preset / skip a survey stop / return home |
 | `O` / `R` / `V` | Toggle mapped test obstacle / replan / toggle route overlay |
 | `D` / `Y` / `Z` | Toggle hybrid sonar handling / inspect terrain / request terrain-checked landing |
-| `C` / `B` | Capture downward / front image in the configured image format |
+| `+` / `−` and `H` / `J` | Adjust flight speed and altitude |
+| `U` | Reload the saved manual route |
+
+### Cameras & capture
+
+| Key | Action |
+| --- | --- |
+| `C` / `B` | Capture downward / front image in the configured format |
 | `K` / `F` | Capture downward / front PNG |
 | `A` / `P` | Toggle automatic photos / pause or resume UAV motion |
-| `+` / `-` and `H` / `J` | Adjust flight speed and altitude |
-| `U` | Load the saved manual route |
 
-Air-to-ground mode requests depend on the site's depth assessment and available ground route. Use `hybrid.wbt` to demonstrate walking directly at startup. Close camera overlays in the 3D view when they obscure the farm.
+> 💡 Air-to-ground mode requests depend on the site's depth assessment and an available ground route. Use `hybrid.wbt` to demonstrate walking from startup. Close camera overlays when they hide the farm.
 
-## Manage missions and outputs
+---
 
-- Edit [settings.json](Drone/controllers/drone/settings.json) for speed, altitude, clearance, photo options and sensor streaming. Reload the world after changing settings. The default survey uses a 0.75 m planning grid, 1.2 m clearance, 3.8 m/s flight speed, 13 m altitude and four-second waypoint holds.
-- Open [editor.bat](Drone/editor.bat) for the waypoint editor. Save the route to [manual_mission.json](Drone/controllers/drone/manual_mission.json), then press `U` in Webots. An invalid route is rejected and the active mission is kept. The editor requires Python's Tkinter.
-- [scene.json](Drone/controllers/drone/scene.json) defines the mapped field boundaries, home point, obstacles and preset stops. Keep it synchronized with the scene in `worlds/` when editing farm geometry.
-- Each run writes to [captures/](Drone/captures/). Open the latest `MISSION_GALLERY.html` or `photo_manifest.csv` for saved frames. The hybrid worlds tag the pre-flight image as `GROUND_INSPECTION`. `hybrid_status.json` and `CONSOLE_TELEMETRY.jsonl` record movement and final landing. Start [sensors.bat](Drone/sensors.bat) to open the live dashboard.
-- The front and downward survey cameras produce 3840 × 2160 images. The separate streaming camera has lower resolution. A default hybrid survey with two PNGs per stop uses several hundred MB. Archive old runs when you no longer need them. `capture_front_also` and `photo_format` control future output size.
-- The original roof PNG was truncated inside its archive. The working copy uses the bundled 4096 × 4096 farm-wood texture at the roof's asset path. The supplied ZIP manifests describe the original distribution.
+## 📁 Project Structure
 
-## Test and troubleshoot
+```
+BioInspiredHybridUAV/
+├── README.md
+├── .gitignore
+└── Drone/
+    ├── controllers/
+    │   ├── drone/          # drone.py · planner.py · hybrid_planner.py
+    │   │                   # terrain_perception.py · console_telemetry.py
+    │   │                   # fast_livo_stream.py · livo_protocol.py
+    │   │                   # settings.json · scene.json · manual_mission.json
+    │   ├── hybrid/         # hybrid.py      — four-leg walking
+    │   └── wheels/         # wheels.py      — wheel-driven rolling
+    ├── worlds/             # 12 Webots .wbt worlds
+    ├── textures/           # 4K farm-wood and terrain textures
+    ├── tools/              # path_editor.py · farm_geometry.py
+    │                       # create_worlds.py · add_wheels_worlds.py
+    ├── tests/              # 8 offline unittest modules — 66 tests
+    ├── docs/               # 15 markdown guides + screenshots + evidence
+    ├── integration/        # monitor.py / monitor.bat — TCP sensor bridge
+    ├── ros2_ws/src/drone_ros_bridge/   # ROS 2 Humble package
+    ├── captures/           # per-session images, telemetry, galleries
+    ├── dashboard.html      # live sensor dashboard (refreshed during runs)
+    └── *.bat               # 20+ one-click launchers
+```
 
-Run the offline tests from the project root.
+---
+
+## ⚙️ Configuration
+
+| File | Controls |
+| --- | --- |
+| [settings.json](Drone/controllers/drone/settings.json) | Speed, altitude, clearance, photo options, sensor streaming, landing thresholds |
+| [scene.json](Drone/controllers/drone/scene.json) | Field boundaries, home point, mapped obstacles, survey stops, mission presets |
+| [manual_mission.json](Drone/controllers/drone/manual_mission.json) | Custom route written by the waypoint editor |
+
+**Default survey parameters** — 0.75 m planning grid · 1.2 m clearance · 3.8 m/s flight speed · 13 m altitude · 4 s waypoint holds.
+
+Reload the world after changing any of these.
+
+### Outputs
+
+Each run writes to [Drone/captures/](Drone/captures/):
+
+- `MISSION_GALLERY.html` — browsable photo gallery
+- `photo_manifest.csv` — stop IDs and camera names
+- `CONSOLE_TELEMETRY.jsonl` / `SENSOR_TELEMETRY.csv` — full telemetry
+- `hybrid_status.json` — mode transitions and final landing
+- 4K PNG/JPG frames, tagged `GROUND_INSPECTION` for the pre-flight image
+
+> ⚠️ A default hybrid survey uses several hundred MB. `capture_front_also` and `photo_format` control future output size — archive old runs you no longer need.
+
+---
+
+## 🧪 Testing
 
 ```powershell
 python -m unittest discover -s Drone/tests -v
 ```
 
-The Windows [test launcher](Drone/RUN_OFFLINE_TESTS.bat) runs the same suite from `Drone/`. PyYAML is only needed for the ROS calibration-config test and tool. To smoke-test the rendered demo, start a fresh run, watch `ROLLING` or `WALKING` transition to `FLYING` and check for `[MISSION COMPLETE]` and `LANDED`. A default hybrid run writes one ground image plus two images at each of the 17 survey stops. Check the stop IDs and camera names in the manifest against the selected mission.
+| Metric | Value |
+| --- | --- |
+| Test modules | 8 — navigation, perception, routes, hybrid, wheels, console telemetry, LIVO2 stream, ROS 2 package |
+| Tests | **66 passing**, 1 skipped (needs PyYAML) |
+| Runtime | ~5 s |
+| Webots required | No — uses mocked Webots objects and synthetic depth arrays |
 
-### Verification on this PC
+| Module | Covers |
+| --- | --- |
+| [test_navigation.py](Drone/tests/test_navigation.py) | A* occupancy-grid planning and replanning |
+| [test_perception.py](Drone/tests/test_perception.py) | Depth-based ground-plane fit and landing decisions |
+| [test_routes.py](Drone/tests/test_routes.py) | Manual waypoint validation and mission presets |
+| [test_hybrid.py](Drone/tests/test_hybrid.py) / [test_wheels.py](Drone/tests/test_wheels.py) | Mode transitions for walking and rolling |
+| [test_console_telemetry.py](Drone/tests/test_console_telemetry.py) | Telemetry logging and state formatting |
+| [test_livo_stream.py](Drone/tests/test_livo_stream.py) | FAST-LIVO2 sensor stream framing |
+| [test_ros2_package.py](Drone/tests/test_ros2_package.py) | ROS 2 bridge packaging (skips without PyYAML) |
+
+See [Drone/docs/testing.md](Drone/docs/testing.md) for what these tests do **not** prove.
+
+---
+
+## 📸 Screenshots
+
+| Architecture | Route plan | Path editor |
+| --- | --- | --- |
+| <img src="Drone/docs/screenshots/architecture.png" width="300"> | <img src="Drone/docs/screenshots/route_plan.png" width="300"> | <img src="Drone/docs/screenshots/path_editor.png" width="300"> |
+
+| Hybrid planning preview |
+| --- |
+| <img src="Drone/docs/evidence/hybrid_planning_preview.png" width="620"> |
+
+> ℹ️ Full-resolution survey frames from real runs live in [Drone/captures/](Drone/captures/) — open the latest `MISSION_GALLERY.html` to browse them.
+
+---
+
+## 📚 Documentation
+
+### 🔧 Getting started
+| Guide | Description |
+| --- | --- |
+| [Drone/docs/guide.md](Drone/docs/guide.md) | Setup, launchers, editable parameters, output data |
+| [Drone/README_START_HERE.txt](Drone/README_START_HERE.txt) | Original merged-project walkthrough |
+| [Drone/docs/testing.md](Drone/docs/testing.md) | What the test suite verifies — and what it does not |
+| [Drone/README_VALID_ZIPS.txt](Drone/READ_ME_VALID_ZIPS.txt) | Integrity notes for the source archives |
+
+### 🦿 Locomotion & worlds
+| Guide | Description |
+| --- | --- |
+| [Drone/README_WHEELS.md](Drone/README_WHEELS.md) | Wheel-drive mode |
+| [Drone/docs/FLIGHT_WALK_SETUP.md](Drone/docs/FLIGHT_WALK_SETUP.md) | Flight and walking setup |
+| [Drone/docs/WHEEL_LEGS_DEMO.md](Drone/docs/WHEEL_LEGS_DEMO.md) | Combined wheel + leg demonstration |
+| [Drone/docs/WHEEL_QA_SUMMARY.md](Drone/docs/WHEEL_QA_SUMMARY.md) | Wheel-mode QA notes |
+
+### 📡 Sensors, ROS 2 & SLAM
+| Guide | Description |
+| --- | --- |
+| [Drone/docs/specifications.md](Drone/docs/specifications.md) | Per-sensor status: what works, what is approximated, what is missing |
+| [Drone/docs/SENSOR_MOUNTS.md](Drone/docs/SENSOR_MOUNTS.md) | Sensor placement |
+| [Drone/docs/ROS2_CONNECTION.md](Drone/docs/ROS2_CONNECTION.md) | Ubuntu/WSL2 ROS 2 bridge setup |
+| [Drone/README_ROS2.md](Drone/README_ROS2.md) | ROS 2 overview |
+| [Drone/README_CONSOLE_DEMO.txt](Drone/README_CONSOLE_DEMO.txt) | Console-only demonstration |
+| [Drone/docs/FAST_LIVO2_SETUP.md](Drone/docs/FAST_LIVO2_SETUP.md) | External FAST-LIVO2 estimator setup |
+| [Drone/docs/FAST_LIVO2_VALIDATION.md](Drone/docs/FAST_LIVO2_VALIDATION.md) | What has and has not been validated |
+| [Drone/docs/4k_quality.md](Drone/docs/4k_quality.md) | 4K texture and image quality notes |
+
+### 📈 Project status
+| Guide | Description |
+| --- | --- |
+| [Drone/docs/PROGRESS_2026-11-21.md](Drone/docs/PROGRESS_2026-11-21.md) | Latest progress log |
+| [Drone/docs/PROFESSOR_STATUS.md](Drone/docs/PROFESSOR_STATUS.md) | Supervisor-facing status |
+| [Drone/docs/UPGRADE_NOTES.md](Drone/docs/UPGRADE_NOTES.md) | Upgrade notes |
+| [Drone/docs/report.docx](Drone/docs/report.docx) | Word-format project report |
+
+---
+
+## 🧭 Optional Sensor Bridge
+
+```powershell
+.\Drone\integration\monitor.bat
+```
+
+The TCP monitor listens on `127.0.0.1:15882`, reports IMU, LiDAR, RGB and GPS counts, and writes samples to [Drone/integration/recordings/](Drone/integration/recordings/).
+
+- ROS 2 publishing → [Drone/docs/ROS2_CONNECTION.md](Drone/docs/ROS2_CONNECTION.md)
+- External estimator → [Drone/docs/FAST_LIVO2_SETUP.md](Drone/docs/FAST_LIVO2_SETUP.md)
+- Source → [Drone/ros2_ws/src/drone_ros_bridge/](Drone/ros2_ws/src/drone_ros_bridge/)
+
+A disconnected receiver never stops the local mission.
+
+---
+
+## ✅ Verification on This PC
 
 | Webots run | First logged landing | Survey output |
 | --- | --- | --- |
-| Wheel drive to flight | 196.05 simulated seconds, 0.091 m from home | 17 stops, 35 decodable 3840 × 2160 PNGs |
-| Leg walking to flight | 198.05 simulated seconds, 0.091 m from home | 17 stops, 35 decodable 3840 × 2160 PNGs |
+| 🛞 Wheel drive → ✈️ flight | 196.05 simulated seconds, **0.091 m** from home | 17 stops, 35 decodable 3840 × 2160 PNGs |
+| 🦿 Leg walking → ✈️ flight | 198.05 simulated seconds, **0.091 m** from home | 17 stops, 35 decodable 3840 × 2160 PNGs |
 
-The wheel run confirms the corrected 0.60 m model landing height and the ground inspection label. The walking run was recorded before those two changes. The local TCP monitor received live IMU, LiDAR, RGB and GPS data from Webots and wrote a camera sample and a point cloud. The offline suite passed 65 tests and skipped the PyYAML-dependent calibration test.
+The wheel run confirms the corrected 0.60 m model landing height and the `GROUND_INSPECTION` label. The walking run predates those two changes. The local TCP monitor received live IMU, LiDAR, RGB and GPS data and wrote a camera sample plus a point cloud.
+
+---
+
+## 📌 Scope and Limitations
+
+This repository is honest about what it does and does not demonstrate. Read [Drone/docs/specifications.md](Drone/docs/specifications.md) for the full matrix.
+
+| Area | Reality |
+| --- | --- |
+| Locomotion | Wheels, walking and flying are **Supervisor-kinematic visual demonstrations**. There is no wheel traction model and no validated leg force. |
+| Foot force | Four force-3d device nodes exist; their Newton outputs are **not physically validated**. |
+| Localization | Known simulated GPS pose only — **no visual-inertial localization**. |
+| Mapping | Small observed ground-height grid from depth — **not SLAM**. |
+| LiDAR | Generic Webots range scan; the exact Livox Mid-360 scan pattern is not modelled. |
+| Barometer | ISA pressure derived from the altimeter, not a pressure sensor model. |
+| FAST-LIVO2 | **Interface only** — the sensor stream and ROS 2 publisher are supplied; the estimator, calibration, map and trajectory are not verified. |
+| Navigation | Known-map 2D A* with a Python Supervisor, not state-augmented Hybrid A*. |
+| Landing check | Educational heuristic assuming a vertical sensor and a `Z=0` farm ground reference. Thresholds need tuning per scene. **It cannot guarantee real-world safe landing.** |
+
+> Offline tests and ZIP integrity are **not** proof of Webots GUI behaviour, tire-ground friction, leg forces or ROS 2 estimator correctness. Capture real screenshots and metrics from `farm.wbt` before reporting results.
+
+---
+
+## 🔧 Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
-| Pink checkerboards | Open the world inside the assembled project and check for the matching files in `Drone/textures/`. |
-| Controller stops or simulation stays still | Switch to Real-time, check **View → Console** for the first traceback and confirm Webots is using the intended Python executable. |
-| Test obstacle is refused | Try `O` during a longer flight leg so the controller has room to place the obstacle. |
-| Air-to-walk or air-to-roll is rejected | Press `Y` to see the depth assessment. The controller requires a safe footprint and a usable ground route for descent. |
-| TCP status says disconnected | Start the monitor or ROS 2 receiver before the world. A disconnected receiver does not stop the local mission. |
+| 🩷 Pink checkerboards | Open the world from inside the assembled project and confirm matching files exist in `Drone/textures/`. |
+| Controller stops / scene frozen | Switch to **Real-time**, open **View → Console** for the first traceback, confirm Webots uses the intended Python executable. |
+| `No Project` on world open | Open the world from inside `Drone/worlds/` rather than a detached copy. |
+| Test obstacle refused | Press `O` on a longer flight leg so the controller has room to place it. |
+| Air-to-walk or air-to-roll rejected | Press `Y` to see the depth assessment — a safe footprint and usable ground route are required. |
+| TCP status says disconnected | Start the monitor or ROS 2 receiver **before** the world. |
+| Webots can't start the controller | Set its Python command in **Tools → Preferences → General** to your installed Python, then reopen the world. |
 
-For source edits, use [controllers/drone/](Drone/controllers/drone/) for flight, planning and sensors, [controllers/hybrid/](Drone/controllers/hybrid/) for walking, and [controllers/wheels/](Drone/controllers/wheels/) for wheels. Use [tools/add_wheels_worlds.py](Drone/tools/add_wheels_worlds.py) after editing the hybrid world sources if the wheel variants need regeneration. Read the [generator guide](Drone/docs/guide.md) before running broader rebuilds. Webots may offer to save controller-generated scene changes when closing a world after a run. Discard those runtime changes during routine testing so the source world opens in its original starting state.
+---
 
-## Optional sensor bridge
+## 🗂️ Report Scope
 
-Run [integration/monitor.bat](Drone/integration/monitor.bat) and start a compatible world. The TCP monitor listens on `127.0.0.1:15882` by default and reports IMU, LiDAR, RGB and GPS counts. It writes sample files under `integration/recordings/`. For Ubuntu/WSL2 ROS 2 publishing, see the [ROS 2 connection guide](Drone/docs/ROS2_CONNECTION.md). For the external estimator, see the [FAST-LIVO2 setup](Drone/docs/FAST_LIVO2_SETUP.md).
-
-## Report scope
-
-| Design report | Workspace coverage |
+| Design report section | Workspace coverage |
 | --- | --- |
-| §4.3 Webots navigation | Farm, known-map 2D A*, waypoint editing, obstacle replanning, survey images and return-home. Leg and wheel demonstrations extend the navigation sandbox. |
-| §4.2 Structure, wing folding and flight/leg dynamics | The MATLAB studies and URDF are separate inputs. The Webots quadcopter models locomotion visually. |
-| §4.4–4.7 IoT, crop-health AI, fusion, visitor routing and dashboards | Separate subsystem experiments. Reproducing them requires their source, datasets and model weights. The local Webots dashboard shows sensor telemetry. |
-| FAST-LIVO2 and physical KPIs | The TCP bridge supplies simulated measurements. Estimator convergence, power, thrust, contact force and tracking accuracy require separate validation. |
+| §4.3 Webots navigation | ✅ Farm, known-map 2D A*, waypoint editing, obstacle replanning, survey images, return-home. Leg and wheel demonstrations extend the sandbox. |
+| §4.2 Structure, wing folding, flight/leg dynamics | 🔬 MATLAB studies and URDF are separate inputs; the Webots quadcopter models locomotion visually. |
+| §4.4–4.7 IoT, crop-health AI, fusion, visitor routing, dashboards | 🔬 Separate subsystem experiments requiring their own source, datasets and model weights. The local Webots dashboard shows sensor telemetry. |
+| FAST-LIVO2 and physical KPIs | 🔬 The TCP bridge supplies simulated measurements. Estimator convergence, power, thrust, contact force and tracking accuracy need separate validation. |
+
+---
+
+<div align="center">
+
+**Built with** [Webots](https://cyberbotics.com/) · Python 3 · ROS 2 Humble
+
+</div>

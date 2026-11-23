@@ -1,3 +1,12 @@
 # Local LaTeX source, figures, and compiled report
 /LaTeX/
 *.pdf
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Windows and editor noise
+Thumbs.db
+Desktop.ini
+.vscode/
