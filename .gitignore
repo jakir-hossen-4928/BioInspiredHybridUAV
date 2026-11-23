@@ -1,2 +1,5 @@
 # Local LaTeX source, figures, and compiled report
 /LaTeX/
+
+# Compiled documentation
+*.pdf
