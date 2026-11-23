@@ -10,3 +10,6 @@ __pycache__/
 Thumbs.db
 Desktop.ini
 .vscode/
+
+# Local agent instructions (kept on this machine only)
+AGENTS.md
