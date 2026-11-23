@@ -1,7 +1,6 @@
 # Bio-Inspired Hybrid UAV in Webots
 
-
-This Windows project implements the agricultural navigation simulation in Section 4.3 of the [design report](Bio-Inspired%20Hybrid%20UAV.pdf). It adds animated leg and wheel modes, terrain screening and an optional simulated sensor stream. The navigation demonstration uses a Webots Supervisor to move a kinematic robot around a known farm map.
+This Windows project implements the agricultural navigation simulation in Section 4.3 of the design report. It adds animated leg and wheel modes, terrain screening and an optional simulated sensor stream. The navigation demonstration uses a Webots Supervisor to move a kinematic robot around a known farm map.
 
 ## Run on Windows
 
