@@ -94,7 +94,12 @@ docker exec -it farm-livo bash -c 'source /opt/ros/humble/setup.bash && ros2 top
 
 Restart the estimator after resetting the Webots clock. To finish, press Ctrl+C in the launch terminal and run `docker stop farm-livo`.
 
-**Testing status.** In the combined run the vehicle followed a 10-pose rolling route, visited 17 survey stops, saved 35 images and landed at 196.024 simulated seconds. FAST-LIVO2 published odometry, a path, registered clouds and RGB. Airborne position drift exceeded 1 km. The mission uses the Supervisor pose for control. The rolling Hybrid A* planner uses continuous poses, heading bins, gear and bounded-curvature motion. The separate flight/walk grid search tracks heading and locomotion mode. Validation of the full research State-Augmented Hybrid A* algorithm remains open.
+**Kiri on Windows.** Start Kiri and check `docker context show`. The validation run used the `kiri` context. If a different context is active, use `docker context use kiri` before running the Docker commands above.
+
+**Webots and ROS 2 results, 24 November 2026.** The wheel mission reached `LANDED` at 196.024 simulated seconds, with 27,107 bridge packets sent and zero reported drops. The controller used the Supervisor pose. FAST-LIVO2 produced odometry and registered clouds, but its airborne position diverged. Six near-synchronous odometry/reference pairs from 5.208 to 123.288 s had a rigidly aligned position RMSE of **1,036.5 m** (no scale adjustment, maximum timestamp difference 0.208 s). The [six checkpoint pairs](Drone/docs/fast_livo2_webots_checkpoints.jsonl) include the original timestamps and positions in metres. A full-trajectory benchmark and a surveyed map comparison remain open.
+
+**State-Augmented Hybrid A*.** For a requested flight-to-walk transition the planner searches continuous ground arcs, horizontal flight segments and vertical transitions at approved cells. Each pose stores position, yaw and mode. Flight and walking each use a fixed height, with collision checks against the inflated planar grid. The controller accepts a descent only at its terrain-screened current site. Tests exercise both search directions, height changes and rejection without an approved site. In a separate Webots walking-world run, the controller descended from 13.0 m to 0.6 m, walked to the inspection point and resumed flight. The autonomous wheel survey uses a separate rolling planner and flight waypoint controller. Full 3D clearance and integrated research-design acceptance remain open.
+
 
 ### Launcher cheat sheet
 
@@ -331,7 +336,7 @@ This repository is honest about what it does and does not demonstrate. Read [Dro
 | LiDAR | Generic Webots range scan; the exact Livox Mid-360 scan pattern is not modelled. |
 | Barometer | ISA pressure derived from the altimeter, not a pressure sensor model. |
 | FAST-LIVO2 | The external estimator ran on simulated data. Substantial airborne drift limits trajectory and map accuracy. |
-| Navigation | Rolling uses bounded-curvature Hybrid A*. Walking and mode transitions use a heading-aware grid. Aerial survey uses known-map 2D A*. |
+| Navigation | Rolling uses bounded-curvature Hybrid A*. Standalone walking uses a heading-aware grid. The screened descent uses land-air Hybrid A*. Aerial survey uses known-map 2D A*. |
 | Landing check | Educational heuristic assuming a vertical sensor and a `Z=0` farm ground reference. Thresholds need tuning per scene. **It cannot guarantee real-world safe landing.** |
 
 > Offline tests and ZIP integrity are **not** proof of Webots GUI behaviour, tire-ground friction, leg forces or ROS 2 estimator correctness. Capture real screenshots and metrics from `farm.wbt` before reporting results.

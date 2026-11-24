@@ -106,8 +106,13 @@ class HybridMission(Mission):
             grid=self.make_planner()
             goal,_=choose_safe_walk_goal(grid,self.planar())
             self.pending_hybrid_route=HybridStatePlanner(
-                grid,transition_zones=[self.planar()]).plan(
+                grid, transition_zones=[self.planar()], ground_height=self.walk_height,
+                flight_height=self.position[2]).plan(
                     self.planar(),goal,'FLIGHT','WALK',self.yaw)
+            if any(
+                    p.mode != 'WALK' for p in self.pending_hybrid_route[1:]):
+                self.pending_hybrid_route = None
+                raise ValueError('Descent requires an immediate transition at the screened site')
             self.walk_goal=goal
         except ValueError as exc:
             self.warning_message='No hybrid route: '+str(exc)

@@ -44,6 +44,12 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(result[-1].mode,'WALK')
         switches=[(a,b) for a,b in zip(result,result[1:]) if a.mode!=b.mode]
         self.assertEqual(len(switches),1)
+        self.assertTrue(all(p.z == (13.0 if p.mode == 'FLIGHT' else 0.6) for p in result))
+        self.assertLessEqual(math.dist((result[-1].x,result[-1].y),goal),grid.resolution)
+        reverse=HybridStatePlanner(grid,transition_zones=[transition]).plan(
+            goal,origin,start_mode='WALK',goal_mode='FLIGHT')
+        self.assertEqual((reverse[0].mode, reverse[-1].mode), ('WALK', 'FLIGHT'))
+        self.assertTrue(all(grid.is_free(grid.xy_to_cell(p.x,p.y)) for p in reverse))
         a,b=switches[0]
         self.assertAlmostEqual(a.x,b.x)
         self.assertAlmostEqual(a.y,b.y)
@@ -135,6 +141,9 @@ class HybridControllerTests(unittest.TestCase):
         self.assertEqual(h.state,'FLYING')
         h.evaluate_terrain=lambda force=False: {'status':'SAFE','reason':'flat'}
         self.assertTrue(h.request_walk())
+        self.assertEqual(h.pending_hybrid_route[0].z,6.0)
+        self.assertEqual(h.pending_hybrid_route[1].z,h.walk_height)
+        self.assertTrue(all(p.mode=='WALK' for p in h.pending_hybrid_route[1:]))
         self.assertEqual(h.state,'TO_WALK')
 
     def test_walk_force_is_labelled_analytical(self):
