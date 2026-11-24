@@ -2,8 +2,7 @@
 
 This is a visually animated all-terrain wheel mode and retains the walking and
 flight demonstrations. It does not simulate motor torque or wheel-ground grip.
-The ground A* state is reused for both walking and rolling (not a validated
-three-mode or continuous-curvature State-Augmented Hybrid A* algorithm).
+Rolling uses Hybrid A* with bounded-curvature arcs over the known farm map.
 """
 from collections import deque
 import json
@@ -14,7 +13,9 @@ from pathlib import Path
 CONTROLLERS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CONTROLLERS / 'hybrid'))
 from hybrid import HybridMission, BufferedKeyboard
-from drone import clamp, angle_difference
+from drone import clamp
+from hybrid_astar import Pose, arc_poses, plan
+from hybrid_planner import choose_safe_walk_goal
 from hybrid_support import LEG_NAMES
 
 
@@ -31,6 +32,7 @@ class WheelMission(HybridMission):
         self.wheel_fields = {}
         self.wheel_angles = {leg: 0.0 for leg in LEG_NAMES}
         self.ground_distance = 0.0
+        self.roll_progress = 0.0
         for leg in LEG_NAMES:
             node = self.robot.getFromDef('WHEEL_' + leg.upper())
             if node:
@@ -64,7 +66,10 @@ class WheelMission(HybridMission):
             return False
         if self.state in ('WALKING', 'WALK_HOLD', 'TO_WALK'):
             self.paused = False
-            self.state = 'ROLLING' if self.state == 'WALKING' else 'TO_ROLL'
+            was_walking = self.state == 'WALKING'
+            self.state = 'TO_ROLL'
+            if was_walking and abs(self.walk_height - self.rolling_height) <= 0.003:
+                self.state = 'ROLLING' if self._replan_roll() else 'ROLL_HOLD'
             print('[WHEEL HYBRID] Switched from walking to wheel drive')
             return True
         if self.state == 'LANDED':
@@ -84,6 +89,7 @@ class WheelMission(HybridMission):
             self.paused = False
             if self.state == 'ROLLING':
                 self.state = 'WALKING'
+                self._replan_walk()
             else:
                 self.state = 'TO_WALK'
             self.walk_phase = 0.0
@@ -101,13 +107,43 @@ class WheelMission(HybridMission):
         return super().request_flight()
 
     def begin_roll(self):
-        super().begin_walk()  # use existing 8-heading ground planner
-        if self.state == 'WALKING':
+        if not self.pending_hybrid_route:
+            self.walk_goal = None
+        self.pending_hybrid_route = None
+        self.walk_hold_elapsed = 0.0
+        if self._replan_roll():
             self.state = 'ROLLING'
-            print('[WHEEL HYBRID] Autonomous wheel-route started: %d states' %
-                  len(self.walk_path))
-        elif self.state == 'WALK_HOLD':
+        else:
             self.state = 'ROLL_HOLD'
+
+    def _replan_roll(self):
+        grid = self.make_planner()
+        start = self.planar()
+
+        def route_for_goal(goal):
+            return plan(grid, start, goal, start_yaw=self.yaw)
+
+        try:
+            if self.walk_goal is None:
+                self.walk_goal, self.walk_path = choose_safe_walk_goal(grid, start, route_for_goal=route_for_goal)
+            else:
+                self.walk_path = route_for_goal(self.walk_goal)
+        except ValueError as exc:
+            self.walk_path = []
+            self.warning_message = str(exc)
+            self.paused = True
+            print('[ROLL NO PATH]', exc)
+            return False
+        self.walk_index = 1
+        self.roll_progress = 0.0
+        self.warning_message = ''
+        print('[HYBRID A*] rolling poses:', len(self.walk_path), 'to', self.walk_goal)
+        return True
+
+    def _replan_walk(self):
+        if self.state == 'ROLLING':
+            return self._replan_roll()
+        return super()._replan_walk()
 
     def _advance_wheels(self, forward_m, turn_rad):
         self.ground_distance += abs(forward_m)
@@ -138,25 +174,19 @@ class WheelMission(HybridMission):
                 self.walk_photographed = False
                 print('[WHEEL HYBRID] Wheel route reached its destination')
                 return
-            x, y, _ = self.position
             goal = self.walk_path[self.walk_index]
-            dx, dy = goal.x - x, goal.y - y
-            distance = math.hypot(dx, dy)
-            if distance < 0.12:
+            remaining = abs(goal.length) - self.roll_progress
+            distance = min(self.rolling_speed * self.dt, remaining)
+            signed = math.copysign(distance, goal.length)
+            pose = arc_poses(Pose(*self.planar(), self.yaw), goal.curvature, signed, segments=1)[0]
+            self.yaw = pose.yaw
+            self._advance_wheels(signed, goal.curvature * signed)
+            self._set_pose(pose.x, pose.y, self.rolling_height)
+            if distance == remaining:
                 self.walk_index += 1
-                return
-            desired = math.atan2(dy, dx)
-            remaining = angle_difference(desired, self.yaw)
-            turn = clamp(remaining, -1.3 * self.dt, 1.3 * self.dt)
-            self.yaw = angle_difference(self.yaw + turn, 0)
-            forward = 0.0
-            # Turn before driving to avoid visible sideways sliding.
-            if abs(angle_difference(desired, self.yaw)) < 0.22:
-                forward = min(self.rolling_speed * self.dt, distance)
-                x += forward * math.cos(self.yaw)
-                y += forward * math.sin(self.yaw)
-            self._advance_wheels(forward, turn)
-            self._set_pose(x, y, self.rolling_height)
+                self.roll_progress = 0.0
+            else:
+                self.roll_progress += distance
         elif self.state == 'ROLL_HOLD':
             self.walk_hold_elapsed += self.dt
             if not self.walk_photographed and self.walk_hold_elapsed >= 0.75:

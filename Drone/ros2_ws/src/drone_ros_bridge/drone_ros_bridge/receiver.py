@@ -62,15 +62,17 @@ def quaternion(roll, pitch, yaw):
 
 
 class SensorBridge(Node):
-    def __init__(self):
+    def __init__(self, add_sim_gravity=False):
         super().__init__('webots_fast_livo_bridge')
-        self.imu_pub = self.create_publisher(Imu, '/livox/imu', qos_profile_sensor_data)
+        self.add_sim_gravity = add_sim_gravity
+        # FAST-LIVO2's depth-only subscriptions request reliable delivery.
+        self.imu_pub = self.create_publisher(Imu, '/livox/imu', 10)
         self.cloud_pub = self.create_publisher(PointCloud2, '/webots/lidar/points', qos_profile_sensor_data)
-        self.image_pub = self.create_publisher(Image, '/webots/slam/image_raw', qos_profile_sensor_data)
+        self.image_pub = self.create_publisher(Image, '/webots/slam/image_raw', 10)
         self.info_pub = self.create_publisher(CameraInfo, '/webots/slam/camera_info', qos_profile_sensor_data)
         self.truth_pub = self.create_publisher(PoseStamped, '/webots/ground_truth', qos_profile_sensor_data)
         self.clock_pub = self.create_publisher(Clock, '/clock', 10)
-        self.livox_pub = (self.create_publisher(CustomMsg, '/livox/lidar', qos_profile_sensor_data)
+        self.livox_pub = (self.create_publisher(CustomMsg, '/livox/lidar', 10)
                           if HAVE_LIVOX_MSG else None)
         self.count = {'lidar':0,'imu':0,'image':0,'gps':0}
         self.latest_sim_time = -1
@@ -109,10 +111,17 @@ class SensorBridge(Node):
     def _imu(self, m, stamp):
         msg = Imu()
         msg.header = self._header(stamp, 'imu_link')
-        q = quaternion(*[float(n) for n in m['rpy']])
+        roll, pitch, yaw = map(float, m['rpy'])
+        q = quaternion(roll, pitch, yaw)
         msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w = q
         msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z = m['omega_rad_s']
-        msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = m['accel_m_s2']
+        ax, ay, az = m['accel_m_s2']
+        if self.add_sim_gravity:
+            # Add world-up specific force in IMU coordinates for the zero-gravity worlds.
+            ax -= 9.81 * math.sin(pitch)
+            ay += 9.81 * math.cos(pitch) * math.sin(roll)
+            az += 9.81 * math.cos(pitch) * math.cos(roll)
+        msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = ax, ay, az
         # Covariances are not calibrated. A ROS all-zero covariance means unknown.
         self.imu_pub.publish(msg)
 
@@ -232,9 +241,11 @@ def main():
     parser = argparse.ArgumentParser(description='Bridge Webots sensor messages to ROS2 topics')
     parser.add_argument('--host', default='127.0.0.1', help='Host to bind; use 0.0.0.0 only on trusted networks')
     parser.add_argument('--port', type=int, default=15882)
-    args = parser.parse_args()
+    parser.add_argument('--add-sim-gravity', action='store_true')
+    from rclpy.utilities import remove_ros_args
+    args = parser.parse_args(remove_ros_args()[1:])
     rclpy.init()
-    node = SensorBridge()
+    node = SensorBridge(add_sim_gravity=args.add_sim_gravity)
     stop = threading.Event()
     thread = threading.Thread(target=listen, args=(node,args.host,args.port,stop), daemon=True)
     thread.start()

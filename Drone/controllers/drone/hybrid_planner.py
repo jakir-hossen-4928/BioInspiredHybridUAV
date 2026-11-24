@@ -95,13 +95,17 @@ class HybridStatePlanner:
         raise ValueError('No state-feasible path between start and goal')
 
 
-def choose_safe_walk_goal(grid,position,offsets=((5,0),(4,4),(0,6),(-5,0),(0,-5))):
-    """Find a short walk target in the currently available known map."""
+def choose_safe_walk_goal(grid,position,offsets=((5,0),(4,4),(0,6),(-5,0),(0,-5)),
+                          *, route_for_goal=None):
+    """Find a short ground target reachable by the requested planner."""
+    if route_for_goal is None:
+        planner = HybridStatePlanner(grid)
+        route_for_goal = lambda target: planner.plan(position,target,'WALK','WALK')
     for dx,dy in offsets:
         target=(position[0]+dx,position[1]+dy)
         if grid.is_free(grid.xy_to_cell(*target)):
             try:
-                route=HybridStatePlanner(grid).plan(position,target,'WALK','WALK')
+                route=route_for_goal(target)
                 if len(route)>2:return target,route
             except ValueError:pass
-    raise ValueError('No safe walking destination near current drone position')
+    raise ValueError('No safe ground destination near current drone position')

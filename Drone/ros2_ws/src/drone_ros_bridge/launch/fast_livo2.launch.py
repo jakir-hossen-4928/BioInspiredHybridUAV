@@ -24,7 +24,7 @@ def generate_launch_description():
                               default_value=os.path.join(upstream, 'config', 'camera_pinhole.yaml')),
         DeclareLaunchArgument('use_rviz', default_value='false'),
         Node(package='drone_ros_bridge', executable='webots_receiver',
-             output='screen', arguments=['--host', LaunchConfiguration('host'),
+             output='screen', arguments=['--add-sim-gravity', '--host', LaunchConfiguration('host'),
                                          '--port', LaunchConfiguration('port')]),
         Node(package='drone_ros_bridge', executable='sensor_health', output='screen'),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(launch_path),
@@ -32,5 +32,6 @@ def generate_launch_description():
                                      'mid360_params_file': LaunchConfiguration('mid360_params_file'),
                                      'camera_params_file': LaunchConfiguration('camera_params_file'),
                                      'use_rviz': LaunchConfiguration('use_rviz'),
+                                     'use_respawn': 'false',
                                  }.items()),
     ])

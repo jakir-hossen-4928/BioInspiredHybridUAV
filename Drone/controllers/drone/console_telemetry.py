@@ -107,8 +107,9 @@ def get_snapshot(mission, now=None):
         'sensor_obstacle': getattr(mission, 'sensor_obstacle', None),
         'planner_route_nodes': len(getattr(mission, 'walk_path', []) or []),
         'flight_astar_route_nodes': len(getattr(mission, 'waypoints', []) or []),
-        'planner_type': ('8-heading mode-augmented grid A* demo, not research Hybrid A*'
-                         if hasattr(mission, 'walk_path') else 'known-grid 2D A*'),
+        'planner_type': ('Hybrid A* (bounded-curvature arcs)' if state in ('ROLLING', 'ROLL_HOLD', 'TO_ROLL')
+                         else '8-heading mode-augmented grid A*' if state in ('WALKING', 'WALK_HOLD', 'TO_WALK')
+                         else 'known-grid 2D A*'),
         'terrain': {k: v for k, v in (getattr(mission, 'terrain_assessment', {}) or {}).items()
                     if k in ('status', 'slope_deg', 'roughness_m', 'sample_count', 'confidence_pct')},
         'wheel_angles_rad': dict(getattr(mission, 'wheel_angles', {}) or {}),

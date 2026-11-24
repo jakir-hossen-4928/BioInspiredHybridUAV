@@ -66,8 +66,11 @@ class ROS2StructureTests(unittest.TestCase):
             new=yaml.safe_load(generated[0].read_text())['/**']['ros__parameters']
             cp=yaml.safe_load(generated[1].read_text())['/**']['ros__parameters']
             self.assertEqual(new['common']['lid_topic'],'/livox/lidar')
+            self.assertEqual(new['preprocess']['lidar_type'], 1)
             self.assertEqual(new['common']['imu_topic'],'/livox/imu')
-            self.assertEqual(new['extrin_calib']['extrinsic_T'],[0.0]*3)
+            self.assertEqual(new['preprocess']['scan_line'], 24)
+            self.assertEqual(new['extrin_calib']['extrinsic_T'], [0.0, 0.0, 0.555])
+            self.assertEqual(new['extrin_calib']['Pcl'], [0.0, -0.82065, -0.69])
             self.assertFalse(new['rolling_shutter']['enable'])
             self.assertEqual(cp['cam_width'],640)
             self.assertEqual(cp['cam_height'],480)

@@ -11,7 +11,7 @@ fi
 source /opt/ros/humble/setup.bash
 mkdir -p "$HOME/fast_ws/src"
 cd "$HOME/fast_ws/src"
-if [[ ! -d fast_livo/.git ]]; then git clone https://github.com/U-AMC/FAST-LIVO2-AGX.git fast_livo; fi
+if [[ ! -d fast_livo/.git ]]; then git clone https://github.com/U-AMC/FAST-LIVO2-ROS2.git fast_livo; fi
 if [[ ! -d rpg_vikit/.git ]]; then git clone https://github.com/U-AMC/rpg_vikit_rational_polynomial.git rpg_vikit; fi
 if [[ ! -d livox_ros_driver2/.git ]]; then git clone https://github.com/Livox-SDK/livox_ros_driver2.git livox_ros_driver2; fi
 printf '\nFAST-LIVO2 ROS2 source repositories fetched at ~/fast_ws/src\n'

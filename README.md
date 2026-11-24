@@ -6,7 +6,7 @@
 
 ![Webots R2025a](https://img.shields.io/badge/Webots-R2025a-1f6feb)
 ![Python 3+](https://img.shields.io/badge/Python-3%2B-3776AB?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-66%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-75%20passing-brightgreen)
 ![ROS 2](https://img.shields.io/badge/ROS%202-Humble-22314E)
 ![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
 ![Worlds](https://img.shields.io/badge/Worlds-12-9cf)
@@ -43,7 +43,7 @@
 | 🛬 **Terrain-aware landing** | Depth-based ground assessment returns `SAFE` / `UNSAFE` / `NO_DATA` before allowing descent. |
 | 📡 **Live sensor bridge** | TCP stream of IMU, LiDAR, RGB and GPS to a browser dashboard at `127.0.0.1:15882`. |
 | 🔁 **ROS 2 ready** | Optional `drone_ros_bridge` package for Ubuntu / WSL2 Humble publishing. |
-| ✅ **66 offline tests** | Planning, routes, perception, telemetry and wheel/leg logic run without launching Webots. |
+| ✅ **75 offline tests** | Planning, routes, perception, telemetry and wheel/leg logic run without launching Webots. |
 
 ---
 
@@ -64,6 +64,37 @@ python -m unittest discover -s Drone/tests -v
 ```
 
 > 💡 Or open [Drone/worlds/hybrid_wheels.wbt](Drone/worlds/hybrid_wheels.wbt) directly in Webots via **File → Open World**, then press **Reset** and **Real-time**.
+
+### Docker setup for ROS 2, FAST-LIVO2 and Hybrid A*
+
+Use Windows PowerShell from the cloned repository root, with Webots R2025a, Python 3 and Docker running Linux containers. Close any TCP monitor using port `15882`. Build the tested U-AMC FAST-LIVO2 revision and start a local Humble container. The first build downloads and compiles the estimator dependencies.
+
+```powershell
+docker build -t farm-fast-livo:humble "https://github.com/U-AMC/FAST-LIVO2-ROS2.git#a09599a288c56b832114d7ad9e898248a4111d9e"
+docker run -d --name farm-livo -p 127.0.0.1:15882:15882 farm-fast-livo:humble sleep infinity
+docker cp Drone/ros2_ws/src farm-livo:/tmp/src
+docker cp Drone/integration/ros2/prepare_fast_config.py farm-livo:/tmp/prepare_fast_config.py
+docker exec farm-livo bash -c 'apt-get update && apt-get install -y --no-install-recommends ros-humble-demo-nodes-cpp python3-yaml'
+docker exec farm-livo bash -c 'source /opt/ros/humble/setup.bash && source /fast_livo_ws/install/setup.bash && cd /tmp && colcon build --packages-select drone_ros_bridge && python3 prepare_fast_config.py --upstream /fast_livo_ws/src/fast_livo --output /tmp/farm-config'
+```
+
+Start the bridge and estimator in the first terminal. For later sessions, start the existing container with `docker start farm-livo` and repeat this launch command.
+
+```powershell
+docker exec -it farm-livo bash -c 'source /opt/ros/humble/setup.bash && source /fast_livo_ws/install/setup.bash && source /tmp/install/setup.bash && ros2 launch drone_ros_bridge fast_livo2.launch.py mid360_params_file:=/tmp/farm-config/mid360_webots.yaml camera_params_file:=/tmp/farm-config/camera_webots.yaml use_rviz:=false'
+```
+
+When the receiver reports it is listening, open a second PowerShell terminal in the repository root. Run the launcher below and press Play in Webots. Look for `[HYBRID A*] rolling poses:` in the controller console. Check each ROS topic rate in turn, pressing Ctrl+C between checks.
+
+```powershell
+.\Drone\RUN_ROS2_DEMO.bat
+docker exec -it farm-livo bash -c 'source /opt/ros/humble/setup.bash && ros2 topic hz /aft_mapped_to_init'
+docker exec -it farm-livo bash -c 'source /opt/ros/humble/setup.bash && ros2 topic hz /cloud_registered'
+```
+
+Restart the estimator after resetting the Webots clock. To finish, press Ctrl+C in the launch terminal and run `docker stop farm-livo`.
+
+**Testing status.** In the combined run the vehicle followed a 10-pose rolling route, visited 17 survey stops, saved 35 images and landed at 196.024 simulated seconds. FAST-LIVO2 published odometry, a path, registered clouds and RGB. Airborne position drift exceeded 1 km. The mission uses the Supervisor pose for control. The rolling Hybrid A* planner uses continuous poses, heading bins, gear and bounded-curvature motion. The separate flight/walk grid search tracks heading and locomotion mode. Validation of the full research State-Augmented Hybrid A* algorithm remains open.
 
 ### Launcher cheat sheet
 
@@ -142,7 +173,7 @@ BioInspiredHybridUAV/
     ├── textures/           # 4K farm-wood and terrain textures
     ├── tools/              # path_editor.py · farm_geometry.py
     │                       # create_worlds.py · add_wheels_worlds.py
-    ├── tests/              # 8 offline unittest modules — 66 tests
+    ├── tests/              # offline unittest suite
     ├── docs/               # 15 markdown guides + screenshots + evidence
     ├── integration/        # monitor.py / monitor.bat — TCP sensor bridge
     ├── ros2_ws/src/drone_ros_bridge/   # ROS 2 Humble package
@@ -187,8 +218,8 @@ python -m unittest discover -s Drone/tests -v
 
 | Metric | Value |
 | --- | --- |
-| Test modules | 8 — navigation, perception, routes, hybrid, wheels, console telemetry, LIVO2 stream, ROS 2 package |
-| Tests | **66 passing**, 1 skipped (needs PyYAML) |
+| Coverage | Navigation, perception, routes, hybrid modes, wheel arcs, telemetry, sensor transport, ROS 2 packaging and local estimator math |
+| Tests | **75 passed** with PyYAML installed. The calibration configuration test skips when PyYAML is unavailable. |
 | Runtime | ~5 s |
 | Webots required | No — uses mocked Webots objects and synthetic depth arrays |
 
@@ -299,8 +330,8 @@ This repository is honest about what it does and does not demonstrate. Read [Dro
 | Mapping | Small observed ground-height grid from depth — **not SLAM**. |
 | LiDAR | Generic Webots range scan; the exact Livox Mid-360 scan pattern is not modelled. |
 | Barometer | ISA pressure derived from the altimeter, not a pressure sensor model. |
-| FAST-LIVO2 | **Interface only** — the sensor stream and ROS 2 publisher are supplied; the estimator, calibration, map and trajectory are not verified. |
-| Navigation | Known-map 2D A* with a Python Supervisor, not state-augmented Hybrid A*. |
+| FAST-LIVO2 | The external estimator ran on simulated data. Substantial airborne drift limits trajectory and map accuracy. |
+| Navigation | Rolling uses bounded-curvature Hybrid A*. Walking and mode transitions use a heading-aware grid. Aerial survey uses known-map 2D A*. |
 | Landing check | Educational heuristic assuming a vertical sensor and a `Z=0` farm ground reference. Thresholds need tuning per scene. **It cannot guarantee real-world safe landing.** |
 
 > Offline tests and ZIP integrity are **not** proof of Webots GUI behaviour, tire-ground friction, leg forces or ROS 2 estimator correctness. Capture real screenshots and metrics from `farm.wbt` before reporting results.

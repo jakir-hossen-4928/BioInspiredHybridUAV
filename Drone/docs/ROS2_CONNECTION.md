@@ -2,9 +2,11 @@
 
 ## Status and requirements
 
-This project now contains an **ament_python ROS 2 package** (`drone_ros_bridge`) that publishes live Webots LiDAR, IMU, RGB, GNSS-derived pose and simulation clock topics. `hybrid_ros2.wbt` uses the existing *flight and walking* controller, with 8 ms Webots basic time step to allow nominal 125 Hz IMU updates. The Webots project has four-leg kinematic gait and state-augmented heading/mode A* path selection.
+The **ament_python ROS 2 package** (`drone_ros_bridge`) publishes Webots LiDAR, IMU, RGB, GNSS-derived pose and simulation clock topics. Open `hybrid_wheels_ros2.wbt` to demonstrate rolling Hybrid A*, flight and the ROS 2 sensor feed in one world. The 8 ms Webots step supports a nominal 125 Hz IMU feed. `hybrid_ros2.wbt` provides the walking and flight version.
 
-**The ROS 2 package and FAST-LIVO2 *launcher* are included.** Actual Ubuntu ROS installation, the external FAST-LIVO2 estimator, Livox message definitions, camera/IMU/LiDAR calibration, and successful trajectory/map results **are not contained in this ZIP and have not been verified**. Webots does not reproduce an authentic Livox Mid-360 firing pattern, intensity or per-ray timestamps; that may prevent reliable convergence even with correct calibration. Flight/walking controls still use kinematic motion and known-map navigation, **not FAST-LIVO2 estimates**.
+The ROS 2 bridge was exercised with Webots R2025a and Humble. The wheel world rolled using Hybrid A*, flew the 17-stop survey and landed. A ROS 2 subscriber received IMU, point cloud, RGB, camera intrinsics, pose reference and clock messages. The combined launch depends on the U-AMC FAST-LIVO2 port and Livox message definitions, which are installed separately. Flight and ground control use kinematic motion and the known farm map. Webots supplies a generic LiDAR scan pattern, fixed reflectivity and simulated timing.
+
+A live combined launch with the U-AMC port published finite odometry, a path, nonempty registered clouds and RGB output from Webots. The airborne estimate drifted substantially from the simulated pose, so the combined run establishes data flow and estimator execution.
 
 Source of upstream estimator (third-party): https://github.com/U-AMC/FAST-LIVO2-ROS2 ; original research project: https://github.com/hku-mars/FAST-LIVO2 . The third-party source is not redistributed in this package; fetch its source separately and comply with its license.
 
@@ -71,14 +73,16 @@ colcon build --symlink-install --continue-on-error
 source ~/fast_ws/install/setup.bash
 ```
 
-The fork has `mapping_mid360_lvi.launch.py` and accepts `mid360_params_file` + `camera_params_file` launch arguments (checked in current public upstream source). Generate **non-calibrated placeholders** from that actual upstream source file:
+The upstream launch uses the ROS 2 parameter blackboard. If your Humble installation lacks it, install `ros-humble-demo-nodes-cpp`.
+
+Generate simulation YAML from the installed fork's parameter files:
 
 ```bash
 python3 /path/to/Drone/integration/ros2/prepare_fast_config.py \
   --upstream ~/fast_ws/src/fast_livo --output ~/drone_ros_config
 ```
 
-**Edit extrinsics and sensor timing in the generated YAML** before trusting results. The prepared files use correct Webots topics and camera image dimensions but initial zero/identity extrinsic placeholders. They are not a substitute for calibration. **DO NOT infer that zero timing is physically correct.**
+The generated defaults use the nominal mounts and pinhole intrinsics of the two hybrid ROS 2 worlds. The fork's AVIA input branch accepts the simulated 24-layer Livox-format messages. The combined launch adds a body-frame specific-force reference for the zero-gravity world. Verify mounts, timing and estimation quality against recorded simulation data before using the results quantitatively.
 
 To run the ROS 2 bridge **and** the external estimator within the same launch context, close the bridge-only terminal and run:
 
@@ -87,7 +91,7 @@ cd /path/to/Drone
 bash integration/ros2/run_ros2_fast_livo2.sh
 ```
 
-Then open the Windows `hybrid_ros2.wbt` world, press Play and monitor logs. Record evidence:
+Then open `worlds/hybrid_wheels_ros2.wbt` in Webots and press Play. Look for the `[HYBRID A*] rolling poses:` log, then check actual topic traffic:
 
 ```bash
 ros2 topic list -t
@@ -95,10 +99,11 @@ ros2 topic hz /livox/lidar
 ros2 topic hz /livox/imu
 ros2 topic hz /webots/slam/image_raw
 ros2 topic echo /webots/ground_truth --once
-ros2 topic list | grep -E 'cloud_registered|aft_mapped|path|odometry'
+ros2 topic hz /aft_mapped_to_init
+ros2 topic hz /cloud_registered
 ```
 
-The last command only **lists** estimator topics; it does not prove a valid map. Save actual odometry and pointcloud outputs and compare against `/webots/ground_truth`. After resetting the Webots world, restart the estimator because simulation timestamps go backwards.
+Save actual odometry and point-cloud outputs and compare against `/webots/ground_truth` after aligning the estimator's local frame to the Webots map frame. After resetting the Webots world, restart the estimator because simulation timestamps go backwards.
 
 ## 3. Topics and limitations
 

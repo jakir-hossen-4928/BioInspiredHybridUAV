@@ -9,7 +9,7 @@ fi
 mkdir -p "$HOME/fast_ws/src"
 cd "$HOME/fast_ws/src"
 if [[ ! -e fast_livo ]]; then
-  git clone https://github.com/U-AMC/FAST-LIVO2-AGX.git fast_livo
+  git clone https://github.com/U-AMC/FAST-LIVO2-ROS2.git fast_livo
 fi
 if [[ ! -e livox_ros_driver2 ]]; then
   git clone https://github.com/Livox-SDK/livox_ros_driver2.git

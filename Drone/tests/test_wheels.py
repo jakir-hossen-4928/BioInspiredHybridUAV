@@ -101,6 +101,10 @@ class WheelControllerTests(unittest.TestCase):
             self.assertIn('ROLL_HOLD', states)
             self.assertIn('TO_FLIGHT', states)
             self.assertEqual(obj.state, 'FLYING')
+            endpoint = obj.walk_path[-1]
+            self.assertAlmostEqual(obj.position[0], endpoint.x)
+            self.assertAlmostEqual(obj.position[1], endpoint.y)
+            self.assertAlmostEqual(obj.yaw, endpoint.yaw)
             self.assertGreater(obj.ground_distance, 1.0)
             self.assertTrue(any(abs(v) > .1 for v in obj.wheel_angles.values()))
             self.assertGreater(obj.photo_count, 0)
