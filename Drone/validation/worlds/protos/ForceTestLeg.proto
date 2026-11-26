@@ -1,0 +1,80 @@
+#VRML_SIM R2025a utf8
+# template language: javascript
+
+PROTO ForceTestLeg [
+  field SFVec3f translation 0 0 0
+  field SFString label "FL"
+] {
+  %< const label = fields.label.value; >%
+  Pose {
+    translation IS translation
+    children [
+      SliderJoint {
+        jointParameters JointParameters { axis 1 0 0 dampingConstant 0.2 }
+        device [
+          LinearMotor { name "%<= label >% stride" maxForce 50 maxVelocity 0.4 }
+        ]
+        endPoint Solid {
+          name "%<= label >% carriage"
+          children [
+            Pose {
+              translation 0 0 -0.0775
+              children [
+                Shape {
+                  appearance PBRAppearance { baseColor 0.24 0.33 0.41 metalness 0 }
+                  geometry Box { size 0.066 0.066 0.155 }
+                }
+              ]
+            }
+            SliderJoint {
+              jointParameters JointParameters { axis 0 0 1 dampingConstant 0.2 }
+              device [
+                LinearMotor {
+                  name "%<= label >% lift"
+                  controlPID 30 0 0
+                  maxForce 150
+                  maxVelocity 0.4
+                }
+              ]
+              endPoint Solid {
+                name "%<= label >% leg"
+                translation 0 0 -0.20
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.75 0.79 0.81
+                      metalness 0
+                    }
+                    geometry DEF LEG_BOX Box { size 0.04 0.04 0.14 }
+                  }
+                  DEF PAD TouchSensor {
+                    translation 0 0 -0.085
+                    name "%<= label >% force"
+                    type "force-3d"
+                    lookupTable []
+                    contactMaterial "foot pad"
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.16 0.48 0.30
+                          metalness 0
+                        }
+                        geometry DEF PAD_BOX Box { size 0.20 0.16 0.03 }
+                      }
+                    ]
+                    boundingObject USE PAD_BOX
+                    physics Physics { density -1 mass 0.025 }
+                  }
+                ]
+                boundingObject USE LEG_BOX
+                physics Physics { density -1 mass 0.075 }
+              }
+            }
+          ]
+          boundingObject Box { size 0.05 0.05 0.05 }
+          physics Physics { density -1 mass 0.10 }
+        }
+      }
+    ]
+  }
+}

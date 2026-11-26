@@ -11,7 +11,7 @@
 | Barometer | Approximation only | ISA pressure derived from simulated altimeter, NOT pressure sensor |
 | Ultrasonic | Yes | Webots front/down DistanceSensor raw readings |
 | Foot contact | Yes | 4 bumper contact sensors; proper physical contact not GUI-validated |
-| Foot force | No | Physical force in Newtons NOT implemented under current kinematic model |
+| Foot force | Validated in the separate Webots rig | Four three-axis force sensors in Newtons passed drop, standing, motor-driven walking and known horizontal load checks. The farm demo remains kinematic. |
 | Localization | Partial | Known simulated GPS pose. No visual-inertial localization |
 | FAST-LIVO2 | Interface only | Webots sensor stream and ROS2 message publisher supplied; estimator, calibrated fusion, map and trajectory not yet verified |
 | Mapping | Partial | Small observed ground-height grid from depth plus known GPS, NOT SLAM |

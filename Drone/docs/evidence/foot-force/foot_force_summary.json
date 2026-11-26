@@ -1,0 +1,358 @@
+{
+  "passed": true,
+  "rig_weight_n": 38.259,
+  "expected_sensor_support_n": 37.278,
+  "first_pad_contact_s": 0.124,
+  "peak_touchdown_time_s": 0.128,
+  "touchdown_momentum_change_n_s": 4.622554270374166,
+  "checks": {
+    "samples": {
+      "value": 4250,
+      "min": 4250,
+      "max": 4250,
+      "pass": true
+    },
+    "max_sample_period_error_s": {
+      "value": 2.2169766022983595e-15,
+      "min": 0,
+      "max": 1e-08,
+      "pass": true
+    },
+    "airborne_max_foot_force_n": {
+      "value": 5.126303093670374e-15,
+      "min": 0,
+      "max": 0.1,
+      "pass": true
+    },
+    "airborne_min_pad_clearance_m": {
+      "value": 0.045177599999999984,
+      "min": 0.02,
+      "max": 0.08,
+      "pass": true
+    },
+    "touchdown_peak_total_n": {
+      "value": 719.0361414974924,
+      "min": 41.0058,
+      "max": null,
+      "pass": true
+    },
+    "touchdown_impulse_n_s": {
+      "value": 4.622547347381339,
+      "min": 4.572554270374166,
+      "max": 4.672554270374166,
+      "pass": true
+    },
+    "standing_total_mean_n": {
+      "value": 37.278000002263155,
+      "min": 35.4141,
+      "max": 39.1419,
+      "pass": true
+    },
+    "standing_max_horizontal_resultant_n": {
+      "value": 1.0517273305645878e-11,
+      "min": 0,
+      "max": 0.5,
+      "pass": true
+    },
+    "walking_forward_displacement_m": {
+      "value": 0.15971850820169248,
+      "min": 0.08,
+      "max": 0.25,
+      "pass": true
+    },
+    "walking_min_body_height_m": {
+      "value": 0.2993869840407202,
+      "min": 0.24,
+      "max": 0.33,
+      "pass": true
+    },
+    "walking_max_body_tilt_deg": {
+      "value": 0.11698365904910096,
+      "min": 0,
+      "max": 15,
+      "pass": true
+    },
+    "final_standing_total_mean_n": {
+      "value": 37.27801350546791,
+      "min": 35.4141,
+      "max": 39.1419,
+      "pass": true
+    },
+    "FL_standing_mean_n": {
+      "value": 9.319500000563588,
+      "min": 8.38755,
+      "max": 10.25145,
+      "pass": true
+    },
+    "FL_touchdown_peak_n": {
+      "value": 179.75903537437335,
+      "min": 9.3195,
+      "max": null,
+      "pass": true
+    },
+    "FR_standing_mean_n": {
+      "value": 9.3195000005684,
+      "min": 8.38755,
+      "max": 10.25145,
+      "pass": true
+    },
+    "FR_touchdown_peak_n": {
+      "value": 179.759035374373,
+      "min": 9.3195,
+      "max": null,
+      "pass": true
+    },
+    "RL_standing_mean_n": {
+      "value": 9.319500000569816,
+      "min": 8.38755,
+      "max": 10.25145,
+      "pass": true
+    },
+    "RL_touchdown_peak_n": {
+      "value": 179.75903537437307,
+      "min": 9.3195,
+      "max": null,
+      "pass": true
+    },
+    "RR_standing_mean_n": {
+      "value": 9.319500000561355,
+      "min": 8.38755,
+      "max": 10.25145,
+      "pass": true
+    },
+    "RR_touchdown_peak_n": {
+      "value": 179.75903537437296,
+      "min": 9.3195,
+      "max": null,
+      "pass": true
+    },
+    "step_1_FL_min_clearance_m": {
+      "value": 0.05892604475447853,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_1_FL_max_swing_force_n": {
+      "value": 0.24556752186564834,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_1_FL_mean_stance_support_n": {
+      "value": 37.2196387927705,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_1_FL_reloaded_mean_n": {
+      "value": 9.190457372507849,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_2_RR_min_clearance_m": {
+      "value": 0.058307784795068596,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_2_RR_max_swing_force_n": {
+      "value": 0.245625947557977,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_2_RR_mean_stance_support_n": {
+      "value": 37.21712719742477,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_2_RR_reloaded_mean_n": {
+      "value": 9.26010548071696,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_3_FR_min_clearance_m": {
+      "value": 0.059153391206027084,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_3_FR_max_swing_force_n": {
+      "value": 0.24564276898937265,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_3_FR_mean_stance_support_n": {
+      "value": 37.22112511193481,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_3_FR_reloaded_mean_n": {
+      "value": 9.190042575852948,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_4_RL_min_clearance_m": {
+      "value": 0.05895937074384989,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_4_RL_max_swing_force_n": {
+      "value": 0.2456173014499754,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_4_RL_mean_stance_support_n": {
+      "value": 37.218436313295754,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_4_RL_reloaded_mean_n": {
+      "value": 9.277409770885917,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_5_FL_min_clearance_m": {
+      "value": 0.05892486941798588,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_5_FL_max_swing_force_n": {
+      "value": 0.2455683787305016,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_5_FL_mean_stance_support_n": {
+      "value": 37.219647941474214,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_5_FL_reloaded_mean_n": {
+      "value": 9.19370094506971,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_6_RR_min_clearance_m": {
+      "value": 0.05917764232594331,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_6_RR_max_swing_force_n": {
+      "value": 0.24562593883685166,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_6_RR_mean_stance_support_n": {
+      "value": 37.21954573869316,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_6_RR_reloaded_mean_n": {
+      "value": 9.260511246352165,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_7_FR_min_clearance_m": {
+      "value": 0.05915339123364589,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_7_FR_max_swing_force_n": {
+      "value": 0.2456427682733208,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_7_FR_mean_stance_support_n": {
+      "value": 37.219356376484086,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_7_FR_reloaded_mean_n": {
+      "value": 9.187443199786399,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "step_8_RL_min_clearance_m": {
+      "value": 0.05895937076291587,
+      "min": 0.025,
+      "max": 0.1,
+      "pass": true
+    },
+    "step_8_RL_max_swing_force_n": {
+      "value": 0.2456173014703989,
+      "min": 0,
+      "max": 0.3,
+      "pass": true
+    },
+    "step_8_RL_mean_stance_support_n": {
+      "value": 37.218436313641554,
+      "min": 33.5502,
+      "max": 41.0058,
+      "pass": true
+    },
+    "step_8_RL_reloaded_mean_n": {
+      "value": 9.277411400721702,
+      "min": 2,
+      "max": 37.278,
+      "pass": true
+    },
+    "x_load_mean_x_reaction_n": {
+      "value": -5.999343753232351,
+      "min": -6.3,
+      "max": -5.7,
+      "pass": true
+    },
+    "x_load_mean_y_reaction_n": {
+      "value": -1.2272119620926337e-06,
+      "min": -0.3,
+      "max": 0.3,
+      "pass": true
+    },
+    "x_load_mean_vertical_support_n": {
+      "value": 37.27799995333298,
+      "min": 35.4141,
+      "max": 39.1419,
+      "pass": true
+    },
+    "y_load_mean_x_reaction_n": {
+      "value": -9.504254500991589e-10,
+      "min": -0.3,
+      "max": 0.3,
+      "pass": true
+    },
+    "y_load_mean_y_reaction_n": {
+      "value": -5.999343872448805,
+      "min": -6.3,
+      "max": -5.7,
+      "pass": true
+    },
+    "y_load_mean_vertical_support_n": {
+      "value": 37.27799999779939,
+      "min": 35.4141,
+      "max": 39.1419,
+      "pass": true
+    }
+  }
+}

@@ -1,0 +1,80 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "protos/ForceTestLeg.proto"
+
+WorldInfo {
+  info [ "Free-body touchdown and walking with four instrumented legs" ]
+  title "Hybrid UAV Foot Force Validation"
+  basicTimeStep 4
+  coordinateSystem "ENU"
+  gravity 9.81
+  contactProperties [
+    ContactProperties {
+      material1 "foot pad"
+      material2 "test floor"
+      coulombFriction [ 0.9 ]
+      softCFM 0.006
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.191412 0.106263 0.975741 2.148719
+  position 1.7 -2.6 1.45
+}
+Background {
+  skyColor [ 0.8 0.85 0.92 ]
+}
+DirectionalLight {
+  direction -1 1 -2
+  intensity 1.5
+  ambientIntensity 0.35
+}
+Solid {
+  translation 0 0 -0.05
+  contactMaterial "test floor"
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.46 0.51 0.55
+        roughness 1
+        metalness 0
+      }
+      geometry DEF FLOOR_BOX Box { size 6 4 0.1 }
+    }
+  ]
+  boundingObject USE FLOOR_BOX
+}
+DEF RIG Robot {
+  translation 0 0 0.375
+  name "force validation quadruped"
+  controller "foot_force_validation"
+  supervisor TRUE
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.12 0.24 0.40
+        metalness 0
+      }
+      geometry DEF CHASSIS Box { size 0.72 0.48 0.11 }
+    }
+    Pose {
+      translation 0 0.28 0
+      children [
+        DEF STRIDE_RAIL Shape {
+          appearance PBRAppearance { baseColor 0.20 0.29 0.38 metalness 0 }
+          geometry Box { size 1.04 0.09 0.045 }
+        }
+      ]
+    }
+    Pose {
+      translation 0 -0.28 0
+      children [ USE STRIDE_RAIL ]
+    }
+    DEF FL ForceTestLeg { translation 0.40 0.28 0 label "FL" }
+    DEF FR ForceTestLeg { translation 0.40 -0.28 0 label "FR" }
+    DEF RL ForceTestLeg { translation -0.40 0.28 0 label "RL" }
+    DEF RR ForceTestLeg { translation -0.40 -0.28 0 label "RR" }
+  ]
+  boundingObject USE CHASSIS
+  physics Physics { density -1 mass 3.1 }
+}

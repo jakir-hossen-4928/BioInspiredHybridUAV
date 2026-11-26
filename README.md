@@ -130,6 +130,8 @@ All under [Drone/worlds/](Drone/worlds/).
 | [livo2.wbt](Drone/worlds/livo2.wbt), `livo2_fast.wbt` | ✈️ Flight only | FAST-LIVO2 sensor-stream variants |
 | [hybrid_ros2.wbt](Drone/worlds/hybrid_ros2.wbt), [hybrid_wheels_ros2.wbt](Drone/worlds/hybrid_wheels_ros2.wbt) | 🦿/🛞 → ✈️ | Same demos with the ROS 2 bridge enabled |
 
+The [foot-force validation world](Drone/validation/worlds/foot_force_validation.wbt) runs as a separate Webots project. It exercises physical landing and walking on a controlled test rig.
+
 ---
 
 ## 🎮 Controls
@@ -321,6 +323,42 @@ A disconnected receiver never stops the local mission.
 
 The wheel run confirms the corrected 0.60 m model landing height and the `GROUND_INSPECTION` label. The walking run predates those two changes. The local TCP monitor received live IMU, LiDAR, RGB and GPS data and wrote a camera sample plus a point cloud.
 
+### Foot-force validation in Newtons
+
+Webots R2025a ran a **3.900 kg free-body quadruped** through a **75 mm vertical drop**, a settled stand, **eight motor-driven crawl steps**, and two static horizontal load cases. Each leg has motorized stride and lift joints and a colliding pad with a `force-3d` sensor. An empty lookup table makes `getValues()` return Newtons. The controller logs all four three-axis vectors in their local frames and transforms them to the world frame (ENU, +Z up) at **250 Hz**. The Supervisor observes poses and applies the prescribed horizontal loads during the static load cases.
+
+| Check | Webots result |
+| --- | --- |
+| Free-fall baseline | All four force magnitudes were effectively 0 N before contact |
+| Landing | First pad contact at **0.124 s**. Combined vertical peak **719.036 N** at **0.128 s**. Net vertical impulse **4.623 N·s**, matching the momentum-change reference to within **0.05 N·s** |
+| Standing on four feet | **37.278 N** combined raw vertical support and **9.3195 N** per foot |
+| Walking | **0.160 m** forward over eight steps. Each swing foot cleared the floor by at least **58.3 mm** in its measurement window, stayed below **0.246 N** in magnitude, and reloaded to **9.19–9.28 N** mean vertical force |
+| Horizontal reference loads | Separate **+6.000 N** chassis loads along world X and world Y produced mean reactions of **−5.999 N** along the loaded axis with negligible cross-axis response |
+| Repeatability | **58/58 checks passed** on two runs with byte-identical CSV traces. Each trace contains **4,250 timestamps** |
+
+The unloaded sensor pads account for 0.100 kg of the rig. The pad sensors report the reaction at their fixed attachments, so the standing reference for the raw sum is `(3.900 − 0.100) × 9.81 = 37.278 N`. The small swing reading includes pad weight and inertia. The impact peak depends on contact settings and the 4 ms physics step. The results cover this level-floor test rig and its prescribed loads. The farm missions use Supervisor kinematics, and physical sensor calibration remains open.
+
+**Reproduce on Windows** from the repository root with Webots R2025a and Python 3 installed.
+
+```powershell
+$env:FOOT_FORCE_OUTPUT = Join-Path $env:TEMP "webots-foot-force-$([guid]::NewGuid())"
+$world = (Resolve-Path 'Drone/validation/worlds/foot_force_validation.wbt').Path
+$webots = 'C:/Program Files/Webots/msys64/mingw64/bin/webots.exe'
+$run = Start-Process -FilePath $webots -ArgumentList @('--batch', '--mode=fast', '--no-rendering', ('"{0}"' -f $world)) -WindowStyle Hidden -PassThru -Wait
+Get-Content (Join-Path $env:FOOT_FORCE_OUTPUT 'foot_force_summary.json')
+$run.ExitCode
+```
+
+The run writes the raw CSV and check results to `FOOT_FORCE_OUTPUT`; exit code 0 means all checks passed. For an interactive run, open the validation world in Webots and select Real-time. The controller completes automatically after 17 simulated seconds. With no output override, files go to `~/webots-foot-force/`.
+
+Download the [full CSV trace (gzip)](Drone/docs/evidence/foot-force/foot_force.csv.gz) and [machine-readable validation results](Drone/docs/evidence/foot-force/foot_force_summary.json). The CSV fields ending in `_x_n`, `_y_n` and `_z_n` are in Newtons. Fields containing `_world_` use world axes. To rerun the acceptance checks against the committed trace:
+
+```powershell
+python Drone/validation/controllers/foot_force_validation/foot_force_validation.py Drone/docs/evidence/foot-force/foot_force.csv.gz
+```
+
+Sensor units and axis conventions are documented in the [Webots R2025a TouchSensor reference](https://github.com/cyberbotics/webots/blob/R2025a/docs/reference/touchsensor.md).
+
 ---
 
 ## 📌 Scope and Limitations
@@ -329,8 +367,8 @@ This repository is honest about what it does and does not demonstrate. Read [Dro
 
 | Area | Reality |
 | --- | --- |
-| Locomotion | Wheels, walking and flying are **Supervisor-kinematic visual demonstrations**. There is no wheel traction model and no validated leg force. |
-| Foot force | Four force-3d device nodes exist; their Newton outputs are **not physically validated**. |
+| Locomotion | Farm wheels, walking and flying are Supervisor-kinematic demonstrations. The separate foot-force rig uses physics-driven walking. |
+| Foot force | Four three-axis readings in Newtons passed controlled landing, walking and static load checks on the validation rig. |
 | Localization | Known simulated GPS pose only — **no visual-inertial localization**. |
 | Mapping | Small observed ground-height grid from depth — **not SLAM**. |
 | LiDAR | Generic Webots range scan; the exact Livox Mid-360 scan pattern is not modelled. |
@@ -364,7 +402,7 @@ This repository is honest about what it does and does not demonstrate. Read [Dro
 | §4.3 Webots navigation | ✅ Farm, known-map 2D A*, waypoint editing, obstacle replanning, survey images, return-home. Leg and wheel demonstrations extend the sandbox. |
 | §4.2 Structure, wing folding, flight/leg dynamics | 🔬 MATLAB studies and URDF are separate inputs; the Webots quadcopter models locomotion visually. |
 | §4.4–4.7 IoT, crop-health AI, fusion, visitor routing, dashboards | 🔬 Separate subsystem experiments requiring their own source, datasets and model weights. The local Webots dashboard shows sensor telemetry. |
-| FAST-LIVO2 and physical KPIs | 🔬 The TCP bridge supplies simulated measurements. Estimator convergence, power, thrust, contact force and tracking accuracy need separate validation. |
+| FAST-LIVO2 and physical KPIs | 🔬 The TCP bridge supplies simulated measurements. The foot-force rig has separate force evidence. Estimator accuracy, power, thrust and physical hardware performance remain open. |
 
 ---
 
