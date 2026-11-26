@@ -125,6 +125,58 @@ def read_samples(path):
                 for row in csv.DictReader(stream)]
 
 
+def pad_measurement(pad, sensor):
+    local = sensor.getValues()[:3]
+    rotation = pad.getOrientation()
+    world = [sum(a * b for a, b in zip(rotation[start:start + 3], local))
+             for start in (0, 3, 6)]
+    # Lowest point of the pad's oriented collision box, relative to the floor.
+    clearance = pad.getPosition()[2] - sum(
+        abs(axis) * half for axis, half in zip(rotation[6:9], (0.10, 0.08, 0.015)))
+    return local, world, clearance
+
+
+def calibrate(robot, pads, sensors, lifts, output):
+    """Exercise both force signs on each lifted sensor with a known load vector."""
+    reference_loads = ((0.0, 0.0, 0.0), (2.0, -3.0, 4.0), (-2.0, 3.0, -4.0))
+    tolerance = 0.05
+    checks = []
+    if robot.step(1000) == -1:
+        return
+    for foot in FEET:
+        lifts[foot].setPosition(0.065)
+        windows = []
+        for force in reference_loads:
+            samples = []
+            for step in range(200):
+                pads[foot].addForce(force, False)
+                if robot.step(PERIOD_MS) == -1:
+                    return
+                if step >= 100:
+                    _, world, clearance = pad_measurement(pads[foot], sensors[foot])
+                    samples.append((*world, clearance))
+            windows.append(samples)
+        lifts[foot].setPosition(0)
+        if robot.step(600) == -1:
+            return
+        baseline = [mean(axis) for axis in zip(*windows[0])][:3]
+        for samples, force in zip(windows[1:], reference_loads[1:]):
+            clearance = min(row[3] for row in samples + windows[0])
+            measured = [mean(axis) - zero for axis, zero in zip(zip(*samples), baseline)]
+            errors = [measured_axis - expected_axis for measured_axis, expected_axis in zip(measured, force)]
+            checks.append({"foot": foot, "applied_world_xyz_n": force, "tare_world_xyz_n": baseline,
+                           "measured_world_xyz_n": measured, "error_world_xyz_n": errors,
+                           "minimum_floor_clearance_m": clearance,
+                           "passed": clearance >= 0.025 and all(abs(error) <= tolerance for error in errors)})
+    passed = all(check["passed"] for check in checks)
+    result = {"passed": passed, "axis_tolerance_n": tolerance, "cases": checks}
+    (output / "foot_force_calibration.json").write_text(json.dumps(result, indent=2) + "\n",
+                                                        encoding="utf-8")
+    print(f"Per-foot force references {'PASSED' if passed else 'FAILED'}. Results: {output}",
+          flush=True)
+    robot.simulationQuit(0 if passed else 1)
+
+
 def run():
     from controller import Supervisor
 
@@ -141,12 +193,15 @@ def run():
         sensors[foot].enable(period)
         strides[foot].setPosition(0)
         lifts[foot].setPosition(0)
+    output = Path(os.environ.get("FOOT_FORCE_OUTPUT", Path.home() / "webots-foot-force"))
+    output.mkdir(parents=True, exist_ok=True)
+    if os.environ.get("FOOT_FORCE_CALIBRATE") == "1":
+        calibrate(robot, pads, sensors, lifts, output)
+        return
     offsets = dict.fromkeys(FEET, 0.0)
     stage = -1
     step_ms = round(STEP_TIME * 1000)
     samples = []
-    output = Path(os.environ.get("FOOT_FORCE_OUTPUT", Path.home() / "webots-foot-force"))
-    output.mkdir(parents=True, exist_ok=True)
 
     while robot.step(period) != -1:
         now = round(robot.getTime(), 6)
@@ -177,13 +232,7 @@ def run():
             if start <= now < stop:
                 body.addForce([load_x, load_y, 0], False)
         for foot in FEET:
-            local = sensors[foot].getValues()[:3]
-            rotation = pads[foot].getOrientation()
-            world = [sum(a * b for a, b in zip(rotation[start:start + 3], local))
-                     for start in (0, 3, 6)]
-            # Lowest point of the pad's oriented collision box, relative to the floor.
-            clearance = pads[foot].getPosition()[2] - sum(
-                abs(axis) * half for axis, half in zip(rotation[6:9], (0.10, 0.08, 0.015)))
+            local, world, clearance = pad_measurement(pads[foot], sensors[foot])
             row.update({f"{foot}_{field}": value
                         for field, value in zip(FIELDS, [*local, *world, clearance])})
         samples.append(row)

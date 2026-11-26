@@ -28,10 +28,10 @@ Existing controls are unchanged (M mission, O manual obstacle, R route replan, Y
 ### Safety and validity notes
 
 - Flight and walking translate the robot pose with Webots **Supervisor**, not realistic thrust, gait torque or body dynamics. This project's world has `gravity 0` and moving the robot resets its physics; realistic Newton contact forces cannot be inferred from its kinematic gait.
-- `walk_force_*` are real Webots `force-3d` devices, but **raw measured force values are not validated** and may be zero. The `estimated_support_n` field is `mass * 9.81 / 4`, an *analytical example*, **not a measured load**.
+- `walk_force_*` use direct Newton units in the farm worlds. The gravity-free, kinematic farm model gives them no representative load. `estimated_support_n` is the analytical reference `mass * 9.81 / 4`. Use the separate [foot-force validation world](../validation/worlds/foot_force_validation.wbt) for physics-driven drop, walking and per-foot reference-load tests.
 - Ultrasonic sensor `ultrasonic_front` can stop travel below 1.8 m or add a conservatively projected obstacle for replanning farther away. It does not run a full sensor-fusion occupancy mapper.
 - Generic Webots 3D LiDAR / IMU / camera are streamed through the bridge; this is **not** validated Livox Mid-360 hardware emulation.
-- An actual FAST-LIVO2 estimate and map **have not** been computed. To finish, build the external ROS 2 Humble FAST-LIVO2 fork on Ubuntu 22.04, calibrate camera-LiDAR-IMU, synchronize simulated timestamps, feed the topics and compare `/aft_mapped_to_init`, `/path`, and `/cloud_registered` with ground truth. See `docs/FAST_LIVO2_SETUP.md`.
+- The external FAST-LIVO2 process published estimates and registered point clouds. Position accuracy failed the comparison with Webots ground truth, and quantitative map accuracy remains open. See [FAST-LIVO2 validation](FAST_LIVO2_VALIDATION.md).
 
 ### Validation tasks for the Windows laptop
 

@@ -4,7 +4,9 @@
 
 **Implemented in this package:** Webots LiDAR point-cloud, IMU, front RGB camera and GPS/ground-truth stream, TCP transfer, ROS 2 topic publishing, Livox-compatible `CustomMsg` *message format*, simulated timestamps, and optional Windows stream monitor.
 
-**Not verified or implemented in this package:** the FAST-LIVO2 estimator source/build, converged trajectory or 3D map, physically realistic non-repetitive Livox Mid-360 scan pattern, authentic LiDAR reflectivity and per-point firing timestamps, calibrated camera-LiDAR-IMU extrinsics, physically realistic IMU dynamics, and improved flight dynamics. The unchanged farm navigation uses known-map A*, not FAST-LIVO2 output.
+**Runtime and accuracy:** The external estimator ran with live Webots data in ROS 2 Humble and published odometry and registered clouds. The full mission trajectory failed the accuracy comparison. The farm navigation uses Webots reference pose and known-map planning. See [the trajectory benchmark and ordered startup instructions](FAST_LIVO2_VALIDATION.md).
+
+**Outstanding realism checks:** a metric map reference, non-repetitive Livox Mid-360 scanning, physical reflectivity and point timing, calibrated camera-LiDAR-IMU extrinsics, and dynamic IMU and flight behavior.
 
 ### Why these distinctions matter
 

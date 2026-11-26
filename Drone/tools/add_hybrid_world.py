@@ -32,6 +32,7 @@ def leg_node(name,x,y):
           translation 0 0 -0.228
           name "walk_force_{name}"
           type "force-3d"
+          lookupTable []
           children [ Shape {{ appearance {footmat} geometry Box {{ size 0.165 0.128 0.045 }} }} ]
           boundingObject Box {{ size 0.165 0.128 0.045 }}
           physics Physics {{ density -1 mass 0.05 }}

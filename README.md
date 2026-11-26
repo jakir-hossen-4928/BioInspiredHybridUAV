@@ -323,6 +323,18 @@ A disconnected receiver never stops the local mission.
 
 The wheel run confirms the corrected 0.60 m model landing height and the `GROUND_INSPECTION` label. The walking run predates those two changes. The local TCP monitor received live IMU, LiDAR, RGB and GPS data and wrote a camera sample plus a point cloud.
 
+### Delivery verification — 26 November 2026
+
+| Area | Result |
+| --- | --- |
+| Offline verification | **77/77** tests passed, including route and landing logic, sensor transport and force-trace replay. |
+| Farm walking and rolling missions | **21/21** live checks passed. The walking mission returned at **198.048 s** and the rolling mission at **196.048 s**, each **0.091 m** horizontally from home. Each mission produced 35 decodable 3840 × 2160 PNGs across 17 survey stops plus a ground inspection. The depth-based classifier emitted `SAFE`, `UNSAFE` and `NO_DATA`. |
+| Binary foot contact | All four bumper devices switched from 0 to 1 and back during a controlled height probe. They stayed at 0 in both normal missions, so the normal mission does not demonstrate bumper-triggered touchdown. |
+| Foot-force rig | **58/58** landing and walking checks and **24/24** signed axis comparisons on the four individual pads passed. See the section below. |
+| ROS 2 and FAST-LIVO2 | The ROS 2 wheel mission completed at **196.024 s** with **27,107** TCP packets sent and zero reported drops. The external estimator published odometry, a path and registered point clouds. **Localization accuracy failed**. Across 624 paired observations the rigidly aligned position RMSE was **7,654.23 m**. |
+
+The farm runs assess controller and simulation behavior. They do not establish full 3D obstacle clearance, terrain false-safe rates, metric map accuracy, or physical flight, traction, contact loads or energy performance. [Run results](Drone/docs/evidence/delivery_2026-11-26.json) · [FAST-LIVO2 trajectory and method](Drone/docs/FAST_LIVO2_VALIDATION.md)
+
 ### Foot-force validation in Newtons
 
 Webots R2025a ran a **3.900 kg free-body quadruped** through a **75 mm vertical drop**, a settled stand, **eight motor-driven crawl steps**, and two static horizontal load cases. Each leg has motorized stride and lift joints and a colliding pad with a `force-3d` sensor. An empty lookup table makes `getValues()` return Newtons. The controller logs all four three-axis vectors in their local frames and transforms them to the world frame (ENU, +Z up) at **250 Hz**. The Supervisor observes poses and applies the prescribed horizontal loads during the static load cases.
@@ -356,6 +368,8 @@ Download the [full CSV trace (gzip)](Drone/docs/evidence/foot-force/foot_force.c
 ```powershell
 python Drone/validation/controllers/foot_force_validation/foot_force_validation.py Drone/docs/evidence/foot-force/foot_force.csv.gz
 ```
+
+**Per-foot reference loads.** A separate run raised each pad in turn while the other three supported the rig. It tared the lifted sensor and applied known world-frame vectors of `[2, -3, 4]` N and `[-2, 3, -4]` N directly to the pad. All **24 signed axis comparisons** passed the ±0.05 N tolerance. Absolute error stayed below **0.000081 N** and the minimum pad clearance during measurement was **61.8 mm**. Rerun the same Webots command with `$env:FOOT_FORCE_CALIBRATE = '1'` to produce `foot_force_calibration.json`, then clear that environment variable before running the drop and walking test. [Per-foot results](Drone/docs/evidence/foot-force/foot_force_calibration.json)
 
 Sensor units and axis conventions are documented in the [Webots R2025a TouchSensor reference](https://github.com/cyberbotics/webots/blob/R2025a/docs/reference/touchsensor.md).
 

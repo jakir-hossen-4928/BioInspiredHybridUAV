@@ -80,6 +80,7 @@ class PlannerTests(unittest.TestCase):
         txt=(ROOT/'worlds/hybrid.wbt').read_text()
         self.assertIn('controller "hybrid"',txt)
         self.assertEqual(txt.count('type "force-3d"'),4)
+        self.assertEqual(txt.count('type "force-3d"\n          lookupTable []'),4)
         self.assertEqual(txt.count('name "walk_force_'),4)
         for leg in ('FL','FR','RL','RR'):
             self.assertEqual(txt.count('DEF LEG_'+leg+'_HIP Transform'),1)

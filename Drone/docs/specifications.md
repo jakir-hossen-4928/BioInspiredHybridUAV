@@ -10,14 +10,14 @@
 | GPS / GNSS | Simulated GPS only | Webots local XYZ coordinates, not true GNSS receiver modeling |
 | Barometer | Approximation only | ISA pressure derived from simulated altimeter, NOT pressure sensor |
 | Ultrasonic | Yes | Webots front/down DistanceSensor raw readings |
-| Foot contact | Yes | 4 bumper contact sensors; proper physical contact not GUI-validated |
-| Foot force | Validated in the separate Webots rig | Four three-axis force sensors in Newtons passed drop, standing, motor-driven walking and known horizontal load checks. The farm demo remains kinematic. |
-| Localization | Partial | Known simulated GPS pose. No visual-inertial localization |
-| FAST-LIVO2 | Interface only | Webots sensor stream and ROS2 message publisher supplied; estimator, calibrated fusion, map and trajectory not yet verified |
+| Foot contact | Device response verified | All four farm bumpers switched on and released during a controlled height probe. They stayed off during the normal walking and rolling missions. |
+| Foot force | Validated in the separate Webots rig | Four three-axis force sensors in Newtons passed drop, standing, motor-driven walking and signed reference loads applied to each foot. The farm demo remains kinematic. |
+| Localization | Partial | Navigation uses the known simulated pose. The external visual–LiDAR–inertial estimate does not meet the localization objective. |
+| FAST-LIVO2 | Runs with external estimator | ROS 2 inputs and external odometry, path and registered point-cloud outputs were observed. Localization accuracy failed and map accuracy was unverified. |
 | Mapping | Partial | Small observed ground-height grid from depth plus known GPS, NOT SLAM |
 | Terrain perception | Yes (educational heuristic) | Depth samples, measured slope, RMS roughness, height classification |
 | Landing assessment | Yes (educational heuristic) | SAFE/UNSAFE/NO_DATA from measured depth, rejects Z for unsafe/unknown |
 | Autonomous navigation | Yes (simplified) | Known-map 2D A* + Python Supervisor movement |
-| State-Augmented Hybrid A* | No | Standard 2D A*, no vehicle-state search |
+| State-Augmented Hybrid A* | Implemented for defined transitions | The planner handles flight and walking states through screened descent and uses planar obstacle clearance with fixed mode heights. |
 
 The landing check assumes the drone's sensor is vertical (roll/pitch near zero) and the farm ground reference height is Z=0. Thresholds need tuning for different scenes. The code cannot guarantee real-world safe landing.

@@ -4956,6 +4956,7 @@ DEF LEG_FL_HIP Transform {
           translation 0 0 -0.228
           name "walk_force_fl"
           type "force-3d"
+          lookupTable []
           children [ Shape { appearance PBRAppearance { baseColor 0.75 0.47 0.22 roughness 0.71 metalness 0.16 } geometry Box { size 0.165 0.128 0.045 } } ]
           boundingObject Box { size 0.165 0.128 0.045 }
           physics Physics { density -1 mass 0.05 }
@@ -4982,6 +4983,7 @@ DEF LEG_FR_HIP Transform {
           translation 0 0 -0.228
           name "walk_force_fr"
           type "force-3d"
+          lookupTable []
           children [ Shape { appearance PBRAppearance { baseColor 0.75 0.47 0.22 roughness 0.71 metalness 0.16 } geometry Box { size 0.165 0.128 0.045 } } ]
           boundingObject Box { size 0.165 0.128 0.045 }
           physics Physics { density -1 mass 0.05 }
@@ -5008,6 +5010,7 @@ DEF LEG_RL_HIP Transform {
           translation 0 0 -0.228
           name "walk_force_rl"
           type "force-3d"
+          lookupTable []
           children [ Shape { appearance PBRAppearance { baseColor 0.75 0.47 0.22 roughness 0.71 metalness 0.16 } geometry Box { size 0.165 0.128 0.045 } } ]
           boundingObject Box { size 0.165 0.128 0.045 }
           physics Physics { density -1 mass 0.05 }
@@ -5034,6 +5037,7 @@ DEF LEG_RR_HIP Transform {
           translation 0 0 -0.228
           name "walk_force_rr"
           type "force-3d"
+          lookupTable []
           children [ Shape { appearance PBRAppearance { baseColor 0.75 0.47 0.22 roughness 0.71 metalness 0.16 } geometry Box { size 0.165 0.128 0.045 } } ]
           boundingObject Box { size 0.165 0.128 0.045 }
           physics Physics { density -1 mass 0.05 }

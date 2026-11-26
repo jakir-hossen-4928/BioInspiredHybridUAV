@@ -1,0 +1,231 @@
+{
+  "walking": {
+    "world": "hybrid.wbt",
+    "mission_checks_passed": 11,
+    "first_state_time_s": {
+      "WALKING": 0.016,
+      "WALK_HOLD": 8.016,
+      "TO_FLIGHT": 12.016,
+      "FLYING": 16.016000000000002,
+      "HOVER": 20.016000000000002,
+      "LANDING": 192.048,
+      "LANDED": 198.048
+    },
+    "home_horizontal_error_m": 0.09110747701700435,
+    "packets_sent_at_first_logged_landing": 15008,
+    "packets_dropped_at_first_logged_landing": 0,
+    "decoded_3840x2160_pngs": 35,
+    "survey_stops": 17,
+    "terrain_classification_counts": {
+      "NO_DATA": 3,
+      "UNSAFE": 4,
+      "SAFE": 94
+    },
+    "bumper_nonzero_samples": 0,
+    "bumper_samples": 101
+  },
+  "wheels": {
+    "world": "hybrid_wheels.wbt",
+    "mission_checks_passed": 10,
+    "first_state_time_s": {
+      "TO_ROLL": 0.016,
+      "ROLLING": 2.016,
+      "ROLL_HOLD": 6.016,
+      "TO_FLIGHT": 10.016,
+      "FLYING": 14.016,
+      "HOVER": 18.016000000000002,
+      "LANDING": 190.048,
+      "LANDED": 196.048
+    },
+    "home_horizontal_error_m": 0.09110762948491141,
+    "packets_sent_at_first_logged_landing": 14857,
+    "packets_dropped_at_first_logged_landing": 0,
+    "decoded_3840x2160_pngs": 35,
+    "survey_stops": 17,
+    "terrain_classification_counts": {
+      "NO_DATA": 6,
+      "SAFE": 94,
+      "UNSAFE": 3
+    },
+    "bumper_nonzero_samples": 0,
+    "bumper_samples": 103
+  },
+  "bumper_probe": {
+    "world": "hybrid.wbt with diagnostic controller",
+    "xyz_m": [
+      -49.0,
+      -47.0,
+      null
+    ],
+    "samples_per_height_per_sensor": 10,
+    "checks_passed": 200,
+    "probe": [
+      {
+        "body_z_m": 0.6,
+        "readings": {
+          "fl": 0.0,
+          "fr": 0.0,
+          "rl": 0.0,
+          "rr": 0.0
+        }
+      },
+      {
+        "body_z_m": 0.38,
+        "readings": {
+          "fl": 0.0,
+          "fr": 0.0,
+          "rl": 0.0,
+          "rr": 0.0
+        }
+      },
+      {
+        "body_z_m": 0.36,
+        "readings": {
+          "fl": 1.0,
+          "fr": 1.0,
+          "rl": 1.0,
+          "rr": 1.0
+        }
+      },
+      {
+        "body_z_m": 0.34,
+        "readings": {
+          "fl": 1.0,
+          "fr": 1.0,
+          "rl": 1.0,
+          "rr": 1.0
+        }
+      },
+      {
+        "body_z_m": 0.6,
+        "readings": {
+          "fl": 0.0,
+          "fr": 0.0,
+          "rl": 0.0,
+          "rr": 0.0
+        }
+      }
+    ]
+  },
+  "release_source_commit": "5e7bb09f5101d73a36ad849ef4c9791c954b921f",
+  "release_followup_probe": {
+    "all_four_farm_force_lookup_tables_empty": true,
+    "bumper_trace_unchanged": true
+  },
+  "ros2_mission": {
+    "world": "hybrid_wheels_ros2.wbt",
+    "first_logged_landing_s": 196.024,
+    "sent_tcp_packets_at_landing": 27107,
+    "dropped_tcp_packets_at_landing": 0,
+    "home_horizontal_error_m": 0.09561114811299015,
+    "topic_observations": {
+      "counts": {
+        "/clock": 26187,
+        "/livox/imu": 23788,
+        "/webots/ground_truth": 784,
+        "/webots/slam/camera_info": 627,
+        "/webots/lidar/points": 1253,
+        "/livox/lidar": 1253,
+        "/aft_mapped_to_init": 624,
+        "/cloud_registered": 1248,
+        "/path": 624,
+        "/webots/slam/image_raw": 53
+      },
+      "first_stamp_s": {
+        "/clock": 0.008,
+        "/livox/imu": 0.008,
+        "/webots/ground_truth": 0.008,
+        "/webots/slam/camera_info": 0.008,
+        "/webots/lidar/points": 0.168,
+        "/livox/lidar": 0.168,
+        "/aft_mapped_to_init": 1.048,
+        "/cloud_registered": 1.048,
+        "/path": 0.0,
+        "/webots/slam/image_raw": 1.288
+      },
+      "last_stamp_s": {
+        "/clock": 200.568,
+        "/livox/imu": 200.568,
+        "/webots/ground_truth": 200.456,
+        "/webots/slam/camera_info": 200.328,
+        "/webots/lidar/points": 200.488,
+        "/livox/lidar": 200.488,
+        "/aft_mapped_to_init": 200.408,
+        "/cloud_registered": 200.504,
+        "/path": 0.0,
+        "/webots/slam/image_raw": 199.368
+      },
+      "stamp_regressions": {},
+      "frames": {
+        "/livox/imu": "imu_link",
+        "/webots/ground_truth": "map",
+        "/webots/slam/camera_info": "slam_camera_optical_frame",
+        "/webots/lidar/points": "livox_frame",
+        "/livox/lidar": "livox_frame",
+        "/aft_mapped_to_init": "camera_init",
+        "/cloud_registered": "camera_init",
+        "/path": "camera_init",
+        "/webots/slam/image_raw": "slam_camera_optical_frame"
+      },
+      "latest_details": {
+        "/livox/imu": {
+          "gyro_xyz_rad_s": [
+            -0.0,
+            0.0,
+            0.0
+          ],
+          "accel_xyz_m_s2": [
+            -5.560985301096627e-16,
+            -1.1022391141995708e-16,
+            9.81
+          ]
+        },
+        "/webots/lidar/points": {
+          "points": 4248,
+          "data_bytes": 101952
+        },
+        "/livox/lidar": {
+          "points": 4248
+        },
+        "/cloud_registered": {
+          "points": 594,
+          "data_bytes": 19008
+        },
+        "/path": {
+          "poses": 624
+        },
+        "/webots/slam/image_raw": {
+          "width": 640,
+          "height": 480,
+          "encoding": "bgr8"
+        }
+      }
+    },
+    "alignment_benchmark": {
+      "ground_truth_messages_unique": 784,
+      "estimator_odometry_messages_unique": 624,
+      "paired_estimates": 624,
+      "pair_time_range_s": [
+        1.048,
+        200.408
+      ],
+      "nearest_truth_delta_max_s": 0.1280000000000001,
+      "rigid_alignment_without_scale": true,
+      "ground_truth_frame": "map",
+      "odometry_frame": "camera_init",
+      "ate_rmse_m": 7654.230575774458,
+      "ate_max_m": 22874.973091573152,
+      "ate_median_m": 5017.163039973064,
+      "estimate_end_aligned_m": [
+        -5453.094001826116,
+        -22198.763970912783,
+        -1831.7329764996227
+      ],
+      "reference_end_m": [
+        -48.907495289387654,
+        -46.97582625064227,
+        0.6
+      ]
+    }
+  }
+}
