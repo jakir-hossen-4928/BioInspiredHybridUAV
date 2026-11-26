@@ -339,6 +339,8 @@ The farm runs assess controller and simulation behavior. They do not establish f
 
 Webots R2025a ran a **3.900 kg free-body quadruped** through a **75 mm vertical drop**, a settled stand, **eight motor-driven crawl steps**, and two static horizontal load cases. Each leg has motorized stride and lift joints and a colliding pad with a `force-3d` sensor. An empty lookup table makes `getValues()` return Newtons. The controller logs all four three-axis vectors in their local frames and transforms them to the world frame (ENU, +Z up) at **250 Hz**. The Supervisor observes poses and applies the prescribed horizontal loads during the static load cases.
 
+The four farm-world variants also use empty lookup tables for their foot-force devices, so Webots reports the raw values directly in Newtons. A live device probe confirmed all four settings in the walking world. Force accuracy was tested on the separate physics-driven rig.
+
 | Check | Webots result |
 | --- | --- |
 | Free-fall baseline | All four force magnitudes were effectively 0 N before contact |
