@@ -8,6 +8,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 WORLDS = ROOT / 'worlds'
 LEGS = ('fl', 'fr', 'rl', 'rr')
+OAK_CAMERAS = '''    # OAK-D Pro OV9782 RGB and idealized OV9282 stereo depth output.
+    Camera { name "oak_rgb" translation .72 0 .05 width 1280 height 800 fieldOfView 1.3962634 }
+    Camera { name "oak_left" translation .72 .0375 .05 width 640 height 400 fieldOfView 1.3962634 }
+    Camera { name "oak_right" translation .72 -.0375 .05 width 640 height 400 fieldOfView 1.3962634 }
+    RangeFinder { name "oak_depth" translation .72 0 .05 width 96 height 60 fieldOfView 1.3962634
+      near .10 minRange .20 maxRange 8 }
+'''
 
 
 def wheel_node(leg):
@@ -63,6 +70,9 @@ def build():
             assert idx > 0 and pos - idx < 160, leg
             src = src[:idx] + wheel_node(leg) + src[idx:]
         src = src.replace('controller "hybrid"', 'controller "wheels"', 1)
+        camera_anchor = '    Camera { name "survey_camera"'
+        assert src.count(camera_anchor) == 1
+        src = src.replace(camera_anchor, OAK_CAMERAS + camera_anchor, 1)
         src = src.replace('Drone - Flight Walking ROS2',
                           'Drone - Flight Walking Wheels ROS2', 1)
         src = src.replace('Drone - Flight and Walking',

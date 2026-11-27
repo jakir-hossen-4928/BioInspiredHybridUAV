@@ -1,0 +1,169 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-11-27-19-23-29-781854-15d384d63f3b-39
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [webots_receiver-1]: process started with pid [91]
+[INFO] [static_transform_publisher-2]: process started with pid [93]
+[INFO] [static_transform_publisher-3]: process started with pid [108]
+[INFO] [lio_sam_imuPreintegration-4]: process started with pid [116]
+[INFO] [lio_sam_imageProjection-5]: process started with pid [118]
+[INFO] [lio_sam_featureExtraction-6]: process started with pid [129]
+[INFO] [lio_sam_mapOptimization-7]: process started with pid [133]
+[static_transform_publisher-3] [INFO] [1795807409.837979638] [static_transform_publisher_uUMm34zBYhFBEptj]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.555000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'base_link' to 'livox_frame'
+[static_transform_publisher-2] [INFO] [1795807409.850564385] [static_transform_publisher_k114JfLeEqutD89C]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'odom'
+[lio_sam_featureExtraction-6] [INFO] [1795807409.854421019] [rclcpp]: [1;32m----> Feature Extraction Started.[0m
+[lio_sam_imageProjection-5] [INFO] [1795807409.895826821] [rclcpp]: [1;32m----> Image Projection Started.[0m
+[lio_sam_mapOptimization-7] [INFO] [1795807409.899823835] [rclcpp]: [1;32m----> Map Optimization Started.[0m
+[lio_sam_imuPreintegration-4] [INFO] [1795807409.910942340] [rclcpp]: [1;32m----> IMU Preintegration Started.[0m
+[webots_receiver-1] [WARN] [1795807409.976495807] [webots_fast_livo_bridge]: livox_ros_driver2 missing: /livox/lidar NOT published; only PointCloud2
+[webots_receiver-1] [INFO] [1795807409.977432768] [webots_fast_livo_bridge]: Listening for Webots on 0.0.0.0:15882
+[webots_receiver-1] [INFO] [1795807419.075611479] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 37858)
+[lio_sam_imageProjection-5] [INFO] [1795807419.242129425] [lio_sam_imageProjection]: Waiting for IMU data ...
+[webots_receiver-1] [INFO] [1795807420.273554512] [webots_fast_livo_bridge]: frames IMU=260 LiDAR=20 camera=0 GPS=9
+[webots_receiver-1] [INFO] [1795807421.860261438] [webots_fast_livo_bridge]: frames IMU=520 LiDAR=40 camera=0 GPS=17
+[webots_receiver-1] [INFO] [1795807423.554775826] [webots_fast_livo_bridge]: frames IMU=780 LiDAR=60 camera=0 GPS=25
+[webots_receiver-1] [INFO] [1795807425.221318624] [webots_fast_livo_bridge]: frames IMU=1040 LiDAR=80 camera=0 GPS=33
+[webots_receiver-1] [INFO] [1795807426.587300783] [webots_fast_livo_bridge]: frames IMU=1300 LiDAR=100 camera=0 GPS=41
+[webots_receiver-1] [INFO] [1795807428.859450067] [webots_fast_livo_bridge]: frames IMU=1560 LiDAR=120 camera=0 GPS=49
+[webots_receiver-1] [INFO] [1795807430.834388301] [webots_fast_livo_bridge]: frames IMU=1820 LiDAR=140 camera=0 GPS=57
+[webots_receiver-1] [INFO] [1795807432.401311281] [webots_fast_livo_bridge]: frames IMU=2080 LiDAR=160 camera=0 GPS=65
+[webots_receiver-1] [INFO] [1795807433.691059876] [webots_fast_livo_bridge]: frames IMU=2340 LiDAR=180 camera=0 GPS=74
+[webots_receiver-1] [INFO] [1795807434.789965954] [webots_fast_livo_bridge]: frames IMU=2600 LiDAR=200 camera=0 GPS=82
+[webots_receiver-1] [INFO] [1795807435.831032578] [webots_fast_livo_bridge]: frames IMU=2860 LiDAR=220 camera=0 GPS=90
+[webots_receiver-1] [INFO] [1795807436.868515749] [webots_fast_livo_bridge]: frames IMU=3120 LiDAR=240 camera=0 GPS=98
+[webots_receiver-1] [INFO] [1795807437.957787007] [webots_fast_livo_bridge]: frames IMU=3380 LiDAR=260 camera=0 GPS=106
+[webots_receiver-1] [INFO] [1795807439.029218516] [webots_fast_livo_bridge]: frames IMU=3640 LiDAR=280 camera=0 GPS=114
+[webots_receiver-1] [INFO] [1795807440.238398790] [webots_fast_livo_bridge]: frames IMU=3900 LiDAR=300 camera=0 GPS=122
+[webots_receiver-1] [INFO] [1795807441.889590717] [webots_fast_livo_bridge]: frames IMU=4160 LiDAR=320 camera=0 GPS=130
+[webots_receiver-1] [INFO] [1795807442.990967879] [webots_fast_livo_bridge]: frames IMU=4420 LiDAR=340 camera=0 GPS=139
+[webots_receiver-1] [INFO] [1795807444.045720928] [webots_fast_livo_bridge]: frames IMU=4680 LiDAR=360 camera=0 GPS=147
+[webots_receiver-1] [INFO] [1795807445.188387414] [webots_fast_livo_bridge]: frames IMU=4940 LiDAR=380 camera=0 GPS=155
+[webots_receiver-1] [INFO] [1795807446.247798343] [webots_fast_livo_bridge]: frames IMU=5200 LiDAR=400 camera=0 GPS=163
+[webots_receiver-1] [INFO] [1795807447.259226503] [webots_fast_livo_bridge]: frames IMU=5460 LiDAR=420 camera=0 GPS=171
+[webots_receiver-1] [INFO] [1795807448.294172203] [webots_fast_livo_bridge]: frames IMU=5720 LiDAR=440 camera=0 GPS=179
+[webots_receiver-1] [INFO] [1795807449.398188509] [webots_fast_livo_bridge]: frames IMU=5980 LiDAR=460 camera=0 GPS=187
+[webots_receiver-1] [INFO] [1795807450.443266866] [webots_fast_livo_bridge]: frames IMU=6240 LiDAR=480 camera=0 GPS=195
+[webots_receiver-1] [INFO] [1795807451.468084338] [webots_fast_livo_bridge]: frames IMU=6500 LiDAR=500 camera=0 GPS=204
+[lio_sam_mapOptimization-7] [WARN] [1795807452.381257629] [lio_sam_mapOptimization]: Not enough features! Only 9 edge and 417 planar features available.
+[webots_receiver-1] [INFO] [1795807452.507818634] [webots_fast_livo_bridge]: frames IMU=6760 LiDAR=520 camera=0 GPS=212
+[lio_sam_mapOptimization-7] [WARN] [1795807452.515516917] [lio_sam_mapOptimization]: Not enough features! Only 6 edge and 316 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807452.613152898] [lio_sam_mapOptimization]: Not enough features! Only 9 edge and 300 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807453.316345901] [lio_sam_mapOptimization]: Not enough features! Only 9 edge and 111 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807453.409389060] [lio_sam_mapOptimization]: Not enough features! Only 12 edge and 81 planar features available.
+[webots_receiver-1] [INFO] [1795807453.576938053] [webots_fast_livo_bridge]: frames IMU=7020 LiDAR=540 camera=0 GPS=220
+[lio_sam_mapOptimization-7] [WARN] [1795807453.584589118] [lio_sam_mapOptimization]: Not enough features! Only 10 edge and 62 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807453.637923851] [lio_sam_mapOptimization]: Not enough features! Only 9 edge and 47 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807453.727240212] [lio_sam_mapOptimization]: Not enough features! Only 6 edge and 37 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807453.812192721] [lio_sam_mapOptimization]: Not enough features! Only 9 edge and 25 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807453.897514056] [lio_sam_mapOptimization]: Not enough features! Only 7 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.048407005] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.146019211] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.245160763] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.330626288] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.450878814] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[webots_receiver-1] [INFO] [1795807454.537248980] [webots_fast_livo_bridge]: frames IMU=7280 LiDAR=560 camera=0 GPS=228
+[lio_sam_mapOptimization-7] [WARN] [1795807454.544418625] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.634707572] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.719350704] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.795589650] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807454.938904330] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.014177083] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.100201585] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.191567998] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.264528139] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.393988449] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[webots_receiver-1] [INFO] [1795807455.484650787] [webots_fast_livo_bridge]: frames IMU=7540 LiDAR=580 camera=0 GPS=236
+[lio_sam_mapOptimization-7] [WARN] [1795807455.492132327] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.571209079] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.652842228] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.734153451] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.882150165] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807455.962627285] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.082975161] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.133079343] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.207740446] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.337736325] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[webots_receiver-1] [INFO] [1795807456.432229456] [webots_fast_livo_bridge]: frames IMU=7800 LiDAR=600 camera=0 GPS=244
+[lio_sam_mapOptimization-7] [WARN] [1795807456.437657666] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.528582610] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.616306957] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.796442467] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.810506712] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.897045470] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807456.993749816] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.082413865] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.222452007] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.320171306] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[webots_receiver-1] [INFO] [1795807457.399053711] [webots_fast_livo_bridge]: frames IMU=8060 LiDAR=620 camera=0 GPS=252
+[lio_sam_mapOptimization-7] [WARN] [1795807457.404445534] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.496566165] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.589593617] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.718378223] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.799766976] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.887831649] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807457.994333177] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.082496422] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.229024499] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.316846899] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[webots_receiver-1] [INFO] [1795807458.397339856] [webots_fast_livo_bridge]: frames IMU=8320 LiDAR=640 camera=0 GPS=260
+[lio_sam_mapOptimization-7] [WARN] [1795807458.402373006] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.494063768] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.602076613] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.728901285] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.830109808] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807458.920342883] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.031855851] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.176832220] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.264154130] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.356364869] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[webots_receiver-1] [INFO] [1795807459.439584739] [webots_fast_livo_bridge]: frames IMU=8580 LiDAR=660 camera=0 GPS=269
+[lio_sam_mapOptimization-7] [WARN] [1795807459.444821822] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.550466704] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.686077967] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.786007779] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.887218782] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807459.987363388] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.091487420] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.234853147] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.329557953] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.431786341] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[webots_receiver-1] [INFO] [1795807460.528260756] [webots_fast_livo_bridge]: frames IMU=8840 LiDAR=680 camera=0 GPS=277
+[lio_sam_mapOptimization-7] [WARN] [1795807460.530965009] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.631173883] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.790560318] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.878459741] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807460.976349178] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.065434261] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.157543170] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.312143149] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.405365823] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 16 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.502504966] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[webots_receiver-1] [INFO] [1795807461.602103975] [webots_fast_livo_bridge]: frames IMU=9100 LiDAR=700 camera=0 GPS=285
+[lio_sam_mapOptimization-7] [WARN] [1795807461.606436035] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 17 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.760500602] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.846273667] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807461.949484800] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.050219404] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.143101696] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.301998972] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.395314776] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.489916404] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.577544122] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[webots_receiver-1] [INFO] [1795807462.670512071] [webots_fast_livo_bridge]: frames IMU=9360 LiDAR=720 camera=0 GPS=293
+[lio_sam_mapOptimization-7] [WARN] [1795807462.679958686] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.806792311] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.912987546] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807462.990451811] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807463.077407393] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 18 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807463.171705865] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807463.307005582] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 19 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807463.393146338] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 20 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807463.497928342] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 21 planar features available.
+[lio_sam_mapOptimization-7] [WARN] [1795807463.571234629] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 21 planar features available.
+[webots_receiver-1] [INFO] [1795807463.671596217] [webots_fast_livo_bridge]: frames IMU=9620 LiDAR=740 camera=0 GPS=301
+[lio_sam_mapOptimization-7] [WARN] [1795807463.677970356] [lio_sam_mapOptimization]: Not enough features! Only 2 edge and 21 planar features available.
+[webots_receiver-1] [INFO] [1795807463.887310427] [webots_fast_livo_bridge]: Waiting for reconnection

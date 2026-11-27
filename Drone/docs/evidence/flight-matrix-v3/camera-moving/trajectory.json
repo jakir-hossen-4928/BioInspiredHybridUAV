@@ -1,0 +1,14 @@
+{
+  "label": "camera-moving",
+  "matched_samples": 83,
+  "odometry_samples": 83,
+  "ground_truth_samples": 68,
+  "duration_s": 16.4,
+  "reference_path_m": 11.389,
+  "raw_position_rmse_m": 1.9889,
+  "aligned_position_rmse_m": 0.0368,
+  "aligned_position_max_m": 0.0752,
+  "aligned_final_error_m": 0.0516,
+  "rpe_translation_rmse_m": 0.0275,
+  "drift_percent": 0.453
+}

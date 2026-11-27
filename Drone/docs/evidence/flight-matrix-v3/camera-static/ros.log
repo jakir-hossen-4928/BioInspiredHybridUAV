@@ -1,0 +1,58 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-11-27-19-26-54-114046-15d384d63f3b-39
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [webots_receiver-1]: process started with pid [101]
+[INFO] [static_transform_publisher-2]: process started with pid [103]
+[INFO] [static_transform_publisher-3]: process started with pid [105]
+[INFO] [lio_sam_imuPreintegration-4]: process started with pid [110]
+[INFO] [lio_sam_imageProjection-5]: process started with pid [118]
+[INFO] [lio_sam_featureExtraction-6]: process started with pid [121]
+[INFO] [lio_sam_mapOptimization-7]: process started with pid [123]
+[static_transform_publisher-2] [INFO] [1795807614.168501329] [static_transform_publisher_PNikB8ab8vI1atjx]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'odom'
+[lio_sam_featureExtraction-6] [INFO] [1795807614.190548517] [rclcpp]: [1;32m----> Feature Extraction Started.[0m
+[static_transform_publisher-3] [INFO] [1795807614.199537805] [static_transform_publisher_VTQOwlG0P3iIwSzQ]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.555000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'base_link' to 'livox_frame'
+[lio_sam_imageProjection-5] [INFO] [1795807614.201526140] [rclcpp]: [1;32m----> Image Projection Started.[0m
+[lio_sam_mapOptimization-7] [INFO] [1795807614.227983552] [rclcpp]: [1;32m----> Map Optimization Started.[0m
+[lio_sam_imuPreintegration-4] [INFO] [1795807614.246140790] [rclcpp]: [1;32m----> IMU Preintegration Started.[0m
+[webots_receiver-1] [WARN] [1795807614.303933797] [webots_fast_livo_bridge]: livox_ros_driver2 missing: /livox/lidar NOT published; only PointCloud2
+[webots_receiver-1] [INFO] [1795807614.304804589] [webots_fast_livo_bridge]: Listening for Webots on 0.0.0.0:15882
+[webots_receiver-1] [INFO] [1795807615.228230384] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 54570)
+[webots_receiver-1] [INFO] [1795807619.232910381] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807619.233217153] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 54584)
+[webots_receiver-1] [INFO] [1795807620.231913949] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.232298390] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 54596)
+[webots_receiver-1] [INFO] [1795807620.232562408] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.232911499] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57144)
+[webots_receiver-1] [INFO] [1795807620.233179189] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.438407213] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57146)
+[webots_receiver-1] [INFO] [1795807620.438722686] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.506379741] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57158)
+[webots_receiver-1] [INFO] [1795807620.506669515] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.598483757] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57160)
+[webots_receiver-1] [INFO] [1795807620.599049159] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.726380640] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57170)
+[webots_receiver-1] [INFO] [1795807620.726688180] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.790483276] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57172)
+[webots_receiver-1] [INFO] [1795807620.790825817] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807620.918408514] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57174)
+[webots_receiver-1] [INFO] [1795807620.918695941] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807621.018427275] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57180)
+[webots_receiver-1] [INFO] [1795807621.018708236] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807621.078399799] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57194)
+[webots_receiver-1] [INFO] [1795807621.078675107] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795807622.530510132] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 57206)
+[lio_sam_imageProjection-5] [INFO] [1795807622.614331264] [lio_sam_imageProjection]: Waiting for IMU data ...
+[webots_receiver-1] [INFO] [1795807623.416489922] [webots_fast_livo_bridge]: frames IMU=476 LiDAR=20 camera=0 GPS=8
+[webots_receiver-1] [INFO] [1795807624.358592219] [webots_fast_livo_bridge]: frames IMU=976 LiDAR=40 camera=0 GPS=16
+[webots_receiver-1] [INFO] [1795807625.311769829] [webots_fast_livo_bridge]: frames IMU=1476 LiDAR=60 camera=0 GPS=24
+[webots_receiver-1] [INFO] [1795807626.309077936] [webots_fast_livo_bridge]: frames IMU=1976 LiDAR=80 camera=0 GPS=32
+[webots_receiver-1] [INFO] [1795807627.296635239] [webots_fast_livo_bridge]: frames IMU=2476 LiDAR=100 camera=0 GPS=40
+[webots_receiver-1] [INFO] [1795807628.349596803] [webots_fast_livo_bridge]: frames IMU=2976 LiDAR=120 camera=0 GPS=48
+[webots_receiver-1] [INFO] [1795807629.279095601] [webots_fast_livo_bridge]: frames IMU=3476 LiDAR=140 camera=0 GPS=56
+[webots_receiver-1] [INFO] [1795807630.246206663] [webots_fast_livo_bridge]: frames IMU=3976 LiDAR=160 camera=0 GPS=64
+[webots_receiver-1] [INFO] [1795807630.658206993] [webots_fast_livo_bridge]: Waiting for reconnection

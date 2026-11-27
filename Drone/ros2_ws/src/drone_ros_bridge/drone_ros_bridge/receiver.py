@@ -99,7 +99,7 @@ class SensorBridge(Node):
             self.get_logger().warning('Webots time reset: restart FAST-LIVO2 after resetting the world')
         self.latest_sim_time = value
         if kind == 'imu': self._imu(meta, stamp)
-        elif kind == 'lidar': self._lidar(meta, payload, stamp)
+        elif kind == 'lidar': self._lidar(meta, payload, stamp_from_seconds(meta.get('scan_start_s', value)))
         elif kind == 'image': self._image(meta, payload, stamp)
         elif kind == 'gps': self._gps(meta, stamp)
         else: self.get_logger().warning('Unknown stream type %r' % kind)
@@ -148,7 +148,7 @@ class SensorBridge(Node):
         if self.livox_pub:
             msg = CustomMsg()
             msg.header = self._header(stamp, 'livox_frame')
-            msg.timebase = int(float(m['sim_time_s']) * 1e9)
+            msg.timebase = int(float(m.get('scan_start_s', m['sim_time_s'])) * 1e9)
             msg.point_num = len(points)
             msg.lidar_id = 1
             msg.rsvd = [0,0,0]
@@ -242,10 +242,11 @@ def main():
     parser.add_argument('--host', default='127.0.0.1', help='Host to bind; use 0.0.0.0 only on trusted networks')
     parser.add_argument('--port', type=int, default=15882)
     parser.add_argument('--add-sim-gravity', action='store_true')
+    parser.add_argument('--gravity-mode', choices=('zero-world', 'physical'), default='physical')
     from rclpy.utilities import remove_ros_args
     args = parser.parse_args(remove_ros_args()[1:])
     rclpy.init()
-    node = SensorBridge(add_sim_gravity=args.add_sim_gravity)
+    node = SensorBridge(add_sim_gravity=args.add_sim_gravity or args.gravity_mode == 'zero-world')
     stop = threading.Event()
     thread = threading.Thread(target=listen, args=(node,args.host,args.port,stop), daemon=True)
     thread.start()

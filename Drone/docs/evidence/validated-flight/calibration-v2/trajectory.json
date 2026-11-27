@@ -1,0 +1,14 @@
+{
+  "label": "calibration-v2",
+  "matched_samples": 98,
+  "odometry_samples": 98,
+  "ground_truth_samples": 80,
+  "duration_s": 19.5,
+  "reference_path_m": 10.856,
+  "raw_position_rmse_m": 2.0046,
+  "aligned_position_rmse_m": 0.125,
+  "aligned_position_max_m": 0.225,
+  "aligned_final_error_m": 0.0799,
+  "rpe_translation_rmse_m": 0.0513,
+  "drift_percent": 0.736
+}

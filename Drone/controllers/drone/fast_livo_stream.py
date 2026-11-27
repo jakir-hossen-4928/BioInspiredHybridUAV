@@ -137,13 +137,15 @@ class FastLivoStreamer:
             if lidar:
                 try:
                     points = lidar.getPointCloud()
+                    start = min(p.time for p in points) if points and self.settings.get("native_lidar_timing") else None
                     packed, count = pack_point_cloud(points, lidar.getHorizontalResolution(),
-                                                      self.time_assumption_ns)
+                                                      self.time_assumption_ns, native_start=start)
                     if count:
                         self.writer.submit({'type': 'lidar', 'sim_time_s': t,
                                             'frame': 'livox_frame', 'point_count': count,
                                             'point_record_bytes': 19,
-                                            'temporal_offsets': 'assumed' if self.time_assumption_ns else 'none',
+                                            'scan_start_s': t if start is None else start,
+                                            'temporal_offsets': 'native' if start is not None else ('assumed' if self.time_assumption_ns else 'none'),
                                             'reflectivity': 'fixed_simulated'}, packed)
                 except Exception as exc:
                     print('[LIVO STREAM] LiDAR read error:', exc)

@@ -1,0 +1,14 @@
+{
+  "label": "combined-static",
+  "matched_samples": 144,
+  "odometry_samples": 144,
+  "ground_truth_samples": 116,
+  "duration_s": 28.6,
+  "reference_path_m": 18.762,
+  "raw_position_rmse_m": 1.9968,
+  "aligned_position_rmse_m": 0.0512,
+  "aligned_position_max_m": 0.0835,
+  "aligned_final_error_m": 0.0748,
+  "rpe_translation_rmse_m": 0.0272,
+  "drift_percent": 0.399
+}

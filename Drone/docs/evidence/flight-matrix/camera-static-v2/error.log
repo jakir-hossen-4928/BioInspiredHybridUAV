@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "D:\projects\BioInspiredHybridUAV\Drone\validation\controllers\inertial_flight\inertial_flight.py", line 28, in <module>
+    fly(r,body,sensors,cams,stream,out,os.environ['UAV_SENSOR_MODE'],os.environ['UAV_SCENARIO'])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\BioInspiredHybridUAV\Drone\validation\controllers\inertial_flight\navigation_trial.py", line 32, in fly
+    msg=json.loads((out/'pose.json').read_text())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python315\Lib\pathlib\__init__.py", line 986, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python315\Lib\pathlib\__init__.py", line 970, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'D:\\projects\\BioInspiredHybridUAV\\Drone\\docs\\evidence\\flight-matrix\\camera-static-v2\\pose.json'

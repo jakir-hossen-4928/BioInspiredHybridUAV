@@ -1,0 +1,14 @@
+{
+  "label": "lidar-moving",
+  "matched_samples": 86,
+  "odometry_samples": 86,
+  "ground_truth_samples": 70,
+  "duration_s": 17.0,
+  "reference_path_m": 11.641,
+  "raw_position_rmse_m": 1.9875,
+  "aligned_position_rmse_m": 0.0362,
+  "aligned_position_max_m": 0.0735,
+  "aligned_final_error_m": 0.0589,
+  "rpe_translation_rmse_m": 0.0233,
+  "drift_percent": 0.506
+}

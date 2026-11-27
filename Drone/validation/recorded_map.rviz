@@ -1,0 +1,36 @@
+Visualization Manager:
+  Global Options:
+    Fixed Frame: odom
+    Background Color: 38; 48; 58
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Recorded LIO-SAM global map
+      Enabled: true
+      Topic:
+        Value: /evidence/map
+        Reliability Policy: Reliable
+        History Policy: Keep Last
+        Depth: 5
+        Durability Policy: Volatile
+      Color Transformer: AxisColor
+      Axis: Z
+      Style: Squares
+      Size (m): 0.16
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 43
+      Pitch: 0.8
+      Yaw: 0.85
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+Window Geometry:
+  Width: 1220
+  Height: 760
+  X: 0
+  Y: 0

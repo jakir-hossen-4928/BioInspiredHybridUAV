@@ -1,9 +1,9 @@
 {
-  "sim_time_s": 5028.06,
+  "sim_time_s": 10644.06,
   "mode": "FLIGHT",
   "state": "LANDED",
   "position_xyz_m": [
-    -48.919,
+    -48.91,
     -47.0,
     0.6
   ],

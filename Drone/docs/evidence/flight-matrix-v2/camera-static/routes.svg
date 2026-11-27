@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650"><rect width="900" height="650" fill="#fbfbfb"/>
+<text x="40" y="24" font-family="sans-serif" font-size="16">camera-static: original (blue) vs replanned (red/green/purple) routes</text>
+<path d="M40.0,431.7 L860.0,431.8" fill="none" stroke="#1f77b4" stroke-width="1.8"/>
+<text x="48" y="638" font-family="sans-serif" font-size="12" fill="#1f77b4">route 1 before</text>
+<path d="M40.0,431.7 L444.1,590.2 L681.8,590.2 L860.0,431.8" fill="none" stroke="#d62728" stroke-width="1.8"/>
+<text x="258" y="638" font-family="sans-serif" font-size="12" fill="#d62728">route 1 after</text>
+<path d="M159.2,534.9 L444.1,590.2 L681.8,590.2 L860.0,431.8" fill="none" stroke="#2ca02c" stroke-width="1.8"/>
+<text x="468" y="638" font-family="sans-serif" font-size="12" fill="#2ca02c">route 2 before</text>
+<path d="M159.2,534.9 L602.6,610.0 L800.6,610.0 L860.0,431.8" fill="none" stroke="#ff7f0e" stroke-width="1.8"/>
+<text x="678" y="638" font-family="sans-serif" font-size="12" fill="#ff7f0e">route 2 after</text>
+</svg>

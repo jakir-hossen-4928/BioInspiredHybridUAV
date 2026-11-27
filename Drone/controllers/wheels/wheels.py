@@ -17,6 +17,8 @@ from drone import clamp
 from hybrid_astar import Pose, arc_poses, plan
 from hybrid_planner import choose_safe_walk_goal
 from hybrid_support import LEG_NAMES
+from flight_obstacles import camera_hit, lidar_hit
+from oak_stereo import objects as stereo_objects
 
 
 class WheelMission(HybridMission):
@@ -39,10 +41,61 @@ class WheelMission(HybridMission):
                 self.wheel_fields[leg] = node.getField('rotation')
         self.state = 'TO_ROLL'
         self.paused = False
+        self.oak_depth = self.robot.getDevice('oak_depth')
+        self.stereo = [self.robot.getDevice(name) for name in ('oak_rgb','oak_left','oak_right')]
+        for camera in self.stereo:
+            if camera: camera.enable(20 * self.step_ms)
+        if self.oak_depth:
+            self.oak_depth.enable(20 * self.step_ms)
+        self.last_flight_detection = -math.inf
         print('[WHEEL HYBRID] tire nodes %d/4 | autonomous wheel-drive startup' %
               len(self.wheel_fields))
         print('[WHEEL HYBRID] T roll | W walk | I fly | D sensor avoidance')
         print('[WHEEL HYBRID] Ground locomotion is Supervisor-kinematic; no wheel traction model')
+
+    def stereo_hit(self, enabled):
+        hits = stereo_objects(*self.stereo, mount_x=.72)
+        return min(((x,y) for x,y,_,_ in hits if abs(y)<.85 and x<8), default=None)
+
+    def sense_obstacles(self):
+        if not self.oak_depth or self.state != 'FLYING':
+            return super().sense_obstacles()
+        if self.paused or not self.sensor_obstacle_enabled:
+            return
+        now = self.robot.getTime()
+        if now - self.last_flight_detection < .20:
+            return
+        self.last_flight_detection = now
+        for source, sensor, detect in (('OAK RGB stereo', all(self.stereo), self.stereo_hit),
+                                       ('OAK depth', self.oak_depth, camera_hit),
+                                       ('LiDAR', self.sensor.get('lidar'), lidar_hit)):
+            hit = detect(sensor) if sensor else None
+            if hit is None:
+                continue
+            forward, left = hit
+            x, y = self.planar()
+            c, s = math.cos(self.yaw), math.sin(self.yaw)
+            ox, oy = x + c * forward - s * left, y + s * forward + c * left
+            if not self.planner.is_free(self.planner.xy_to_cell(ox, oy)):
+                continue
+            # shortcut: fixed footprint for compact obstacles, estimate extent for wider objects.
+            obstacle = {'name': source, 'x': ox, 'y': oy, 'sx': 1.2, 'sy': 1.2}
+            self.obstacles.append(obstacle)
+            proposed = self.make_planner()
+            active = [self.planar(), *self.waypoints[self.waypoint_idx:]]
+            if all(proposed.clear_segment(a, b) for a, b in zip(active, active[1:])):
+                self.obstacles.pop()
+                continue
+            if forward < self.sensor_obstacle_stop_m:
+                self.obstacles.pop()
+                self.paused = True
+                self.warning_message = f'{source} emergency stop at {forward:.2f}m'
+                print('[PERCEPTION]', self.warning_message, flush=True)
+                return
+            ok = self.replan(draw_overview=True)
+            print(f'[PERCEPTION] {source} obstacle at ({ox:.2f}, {oy:.2f}), '
+                  f'{forward:.2f}m ahead -> A* {"replanned" if ok else "held"}', flush=True)
+            return
 
     def read_keys(self):
         other = []

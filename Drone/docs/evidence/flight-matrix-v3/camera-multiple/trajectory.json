@@ -1,0 +1,14 @@
+{
+  "label": "camera-multiple",
+  "matched_samples": 22,
+  "odometry_samples": 22,
+  "ground_truth_samples": 19,
+  "duration_s": 4.2,
+  "reference_path_m": 3.096,
+  "raw_position_rmse_m": 1.9935,
+  "aligned_position_rmse_m": 0.0356,
+  "aligned_position_max_m": 0.0663,
+  "aligned_final_error_m": 0.0192,
+  "rpe_translation_rmse_m": 0.0403,
+  "drift_percent": 0.619
+}

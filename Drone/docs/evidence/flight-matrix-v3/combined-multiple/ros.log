@@ -1,0 +1,28 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-11-27-19-29-20-388155-15d384d63f3b-39
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [webots_receiver-1]: process started with pid [101]
+[INFO] [static_transform_publisher-2]: process started with pid [103]
+[INFO] [static_transform_publisher-3]: process started with pid [105]
+[INFO] [lio_sam_imuPreintegration-4]: process started with pid [113]
+[INFO] [lio_sam_imageProjection-5]: process started with pid [120]
+[INFO] [lio_sam_featureExtraction-6]: process started with pid [129]
+[INFO] [lio_sam_mapOptimization-7]: process started with pid [132]
+[static_transform_publisher-2] [INFO] [1795807760.445513310] [static_transform_publisher_HHdNUG5ASr0v8L84]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'odom'
+[lio_sam_featureExtraction-6] [INFO] [1795807760.448104827] [rclcpp]: [1;32m----> Feature Extraction Started.[0m
+[static_transform_publisher-3] [INFO] [1795807760.456112917] [static_transform_publisher_UPWx5eOLDYUOyKN1]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.555000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'base_link' to 'livox_frame'
+[lio_sam_imageProjection-5] [INFO] [1795807760.479863427] [rclcpp]: [1;32m----> Image Projection Started.[0m
+[lio_sam_imuPreintegration-4] [INFO] [1795807760.495401305] [rclcpp]: [1;32m----> IMU Preintegration Started.[0m
+[lio_sam_mapOptimization-7] [INFO] [1795807760.512939829] [rclcpp]: [1;32m----> Map Optimization Started.[0m
+[webots_receiver-1] [WARN] [1795807760.575631247] [webots_fast_livo_bridge]: livox_ros_driver2 missing: /livox/lidar NOT published; only PointCloud2
+[webots_receiver-1] [INFO] [1795807760.576497006] [webots_fast_livo_bridge]: Listening for Webots on 0.0.0.0:15882
+[webots_receiver-1] [INFO] [1795807764.042531871] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 50660)
+[lio_sam_imageProjection-5] [INFO] [1795807764.218978456] [lio_sam_imageProjection]: Waiting for IMU data ...
+[webots_receiver-1] [INFO] [1795807765.252285505] [webots_fast_livo_bridge]: frames IMU=500 LiDAR=20 camera=0 GPS=8
+[webots_receiver-1] [INFO] [1795807766.507189798] [webots_fast_livo_bridge]: frames IMU=1000 LiDAR=40 camera=0 GPS=16
+[webots_receiver-1] [INFO] [1795807766.858663960] [webots_fast_livo_bridge]: Waiting for reconnection

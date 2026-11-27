@@ -51,7 +51,12 @@ class Planner:
         s = self.xy_to_cell(*start)
         g = self.xy_to_cell(*goal)
         if not self.is_free(s):
-            raise ValueError('Start lies inside an obstacle or too close to one.')
+            if not (0 <= s[0] < self.n and 0 <= s[1] < self.n):
+                raise ValueError('Start outside the planning grid.')
+            # Tracking error can leave the UAV inside a keep-out margin it
+            # planned around. Free only the start cell so it can drive out;
+            # every other cell keeps its margin.
+            self.occupied.discard(s)
         if not self.is_free(g):
             raise ValueError('Goal lies inside an obstacle or too close to one.')
         moves = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1)]

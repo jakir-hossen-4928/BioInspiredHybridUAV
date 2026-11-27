@@ -24,6 +24,8 @@ class WheelWorldTests(unittest.TestCase):
                 self.assertEqual(text.count('type "force-3d"'), 4)
                 self.assertIn('name "lidar"', text)
                 self.assertIn('name "slam_camera"', text)
+                self.assertIn('name "oak_depth"', text)
+                self.assertIn('name "oak_rgb"', text)
                 self.assertIn('name "survey_camera"', text)
                 self.assertIn('width 3840 height 2160', text)
                 for leg in ('fl', 'fr', 'rl', 'rr'):
@@ -178,6 +180,26 @@ class WheelControllerTests(unittest.TestCase):
         obj.robot.time = 5.0
         obj.sense_obstacles()
         self.assertTrue(obj.sensor_obstacle is not None or obj.warning_message)
+
+    def test_flight_depth_hit_replans_around_an_unmapped_box(self):
+        obj = self.wheelmod.WheelMission()
+        obj.position = [0., 0., 13.]
+        obj.state = 'FLYING'
+        obj.goal = (13., 0.)
+        obj.obstacles = []
+        obj.draw_paths = lambda **kwargs: None
+        self.assertTrue(obj.replan())
+        obj.stereo = [None, None, None]
+        obj.oak_depth = types.SimpleNamespace(
+            getWidth=lambda: 5, getHeight=lambda: 3, getFov=lambda: 1.4,
+            getRangeImage=lambda: [math.inf] * 5 + [math.inf, 6., 6., 6., math.inf] + [math.inf] * 5,
+        )
+        obj.sense_obstacles()
+        self.assertEqual(len(obj.obstacles), 1)
+        self.assertEqual(obj.obstacles[0]['name'], 'OAK depth')
+        self.assertEqual(obj.waypoints[-1], obj.goal)
+        self.assertGreater(len(obj.waypoints), 2)
+        self.assertFalse(obj.planner.clear_segment(obj.planar(), obj.goal))
 
     def test_telemetry_says_roll_and_keeps_force_limits(self):
         obj = self.wheelmod.WheelMission()

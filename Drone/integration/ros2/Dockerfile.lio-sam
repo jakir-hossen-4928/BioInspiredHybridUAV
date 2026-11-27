@@ -1,0 +1,8 @@
+FROM uav-fast-livo2-check:latest
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ARG LIO_SAM_REV=ff4aff79d628411883120109905278d7460caca0
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common curl ros-humble-pcl-msgs && add-apt-repository -y ppa:borglab/gtsam-release-4.1 && apt-get install -y --no-install-recommends libgtsam-dev libgtsam-unstable-dev
+RUN mkdir -p /lio_sam_ws/src/lio_sam && curl -fLsS https://codeload.github.com/TixiaoShan/LIO-SAM/tar.gz/$LIO_SAM_REV | tar -xz --strip-components=1 -C /lio_sam_ws/src/lio_sam
+WORKDIR /lio_sam_ws
+RUN source /opt/ros/humble/setup.bash && CMAKE_BUILD_PARALLEL_LEVEL=1 colcon build --executor sequential --cmake-args -DBUILD_TESTING=OFF '-DCMAKE_CXX_FLAGS_RELEASE=-O1 -DNDEBUG'

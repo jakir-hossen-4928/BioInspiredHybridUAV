@@ -1,0 +1,43 @@
+#VRML_SIM R2025a utf8
+WorldInfo { basicTimeStep 4 gravity 9.81 coordinateSystem "ENU" }
+Viewpoint { orientation -0.27 0.49 0.83 1.5 position -9 -15 9 }
+Background { skyColor [ 0.68 0.82 0.94 ] }
+DirectionalLight { direction 0.3 0.4 -1 }
+DEF AIRFRAME Robot {
+ translation 0 0 2
+ supervisor TRUE
+ controller "inertial_flight"
+ children [
+ Shape { appearance PBRAppearance { baseColor 0.05 0.3 0.4 } geometry Box { size 0.6 0.5 0.2 } }
+ Accelerometer { name "accelerometer" }
+ Gyro { name "gyro" }
+ InertialUnit { name "inertial unit" }
+ GPS { name "gps" }
+ Lidar { name "lidar" translation 0 0 0.555 horizontalResolution 360 numberOfLayers 24 fieldOfView 6.283185 verticalFieldOfView 1.05 minRange 0.25 maxRange 45 type "fixed" projection "cylindrical" }
+ Camera { name "oak_rgb" translation .32 0 0 width 1280 height 800 fieldOfView 1.3962634 }
+ Camera { name "oak_left" translation .32 .0375 0 width 640 height 400 fieldOfView 1.3962634 }
+ Camera { name "oak_right" translation .32 -.0375 0 width 640 height 400 fieldOfView 1.3962634 }
+ ]
+ boundingObject Box { size 0.6 0.5 0.2 }
+ physics Physics { density -1 mass 1 }
+}
+Solid { translation 0 0 -.1 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.49 0.52 roughness 1 } geometry Box { size 30 24 0.2 } } ] boundingObject Box { size 30 24 0.2 } }
+Solid { translation -14 0 3 children [ Shape { appearance PBRAppearance { baseColor 0.5 0.6 0.65 roughness 1 } geometry Box { size 0.4 24 6 } } ] boundingObject Box { size 0.4 24 6 } }
+Solid { translation 14 0 3 children [ Shape { appearance PBRAppearance { baseColor 0.5 0.6 0.65 roughness 1 } geometry Box { size 0.4 24 6 } } ] boundingObject Box { size 0.4 24 6 } }
+Solid { translation 0 -11 3 children [ Shape { appearance PBRAppearance { baseColor 0.72 0.68 0.55 roughness 1 } geometry Box { size 28 0.4 6 } } ] boundingObject Box { size 28 0.4 6 } }
+Solid { translation 0 11 3 children [ Shape { appearance PBRAppearance { baseColor 0.72 0.68 0.55 roughness 1 } geometry Box { size 28 0.4 6 } } ] boundingObject Box { size 28 0.4 6 } }
+Solid { translation -10 -8 3 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 6 } } ] boundingObject Box { size 1 1.5 6 } }
+Solid { translation -10 7 3 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 6 } } ] boundingObject Box { size 1 1.5 6 } }
+Solid { translation -6 -7 3 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 6 } } ] boundingObject Box { size 1 1.5 6 } }
+Solid { translation -6 8 3 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 6 } } ] boundingObject Box { size 1 1.5 6 } }
+Solid { translation -3 -7 3.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 7 } } ] boundingObject Box { size 1 1.5 7 } }
+Solid { translation -3 8 3.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 7 } } ] boundingObject Box { size 1 1.5 7 } }
+Solid { translation 1 -6 2.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 5 } } ] boundingObject Box { size 1 1.5 5 } }
+Solid { translation 1 9 2.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 5 } } ] boundingObject Box { size 1 1.5 5 } }
+Solid { translation 5 -5 2.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 5 } } ] boundingObject Box { size 1 1.5 5 } }
+Solid { translation 5 10 2.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 5 } } ] boundingObject Box { size 1 1.5 5 } }
+Solid { translation 9 -7 2.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 5 } } ] boundingObject Box { size 1 1.5 5 } }
+Solid { translation 9 8 2.5 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 5 } } ] boundingObject Box { size 1 1.5 5 } }
+Solid { translation 12 -7 2 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 4 } } ] boundingObject Box { size 1 1.5 4 } }
+Solid { translation 12 8 2 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.47 0.35 roughness 1 } geometry Box { size 1 1.5 4 } } ] boundingObject Box { size 1 1.5 4 } }
+DEF OBSTACLE Solid { translation 8 0 2 children [ Shape { appearance PBRAppearance { baseColor 1 0.05 0.02 roughness 1 } geometry Box { size 1 1.2 2 } } ] boundingObject Box { size 1 1.2 2 } }

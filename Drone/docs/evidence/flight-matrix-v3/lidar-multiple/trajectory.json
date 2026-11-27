@@ -1,0 +1,14 @@
+{
+  "label": "lidar-multiple",
+  "matched_samples": 98,
+  "odometry_samples": 98,
+  "ground_truth_samples": 79,
+  "duration_s": 19.4,
+  "reference_path_m": 12.784,
+  "raw_position_rmse_m": 1.9918,
+  "aligned_position_rmse_m": 0.0437,
+  "aligned_position_max_m": 0.0796,
+  "aligned_final_error_m": 0.06,
+  "rpe_translation_rmse_m": 0.0259,
+  "drift_percent": 0.469
+}

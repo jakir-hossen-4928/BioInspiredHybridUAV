@@ -4756,6 +4756,12 @@ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../texture
 ] } ] boundingObject Box { size 1.55 1.55 2.70 } }
 DEF DRONE Robot { translation -49 -47 .585 rotation 0 0 1 0 name "Drone" supervisor TRUE controller "wheels" children [
 
+    # OAK-D Pro OV9782 RGB and idealized OV9282 stereo depth output.
+    Camera { name "oak_rgb" translation .72 0 .05 width 1280 height 800 fieldOfView 1.3962634 }
+    Camera { name "oak_left" translation .72 .0375 .05 width 640 height 400 fieldOfView 1.3962634 }
+    Camera { name "oak_right" translation .72 -.0375 .05 width 640 height 400 fieldOfView 1.3962634 }
+    RangeFinder { name "oak_depth" translation .72 0 .05 width 96 height 60 fieldOfView 1.3962634
+      near .10 minRange .20 maxRange 8 }
     Camera { name "survey_camera" translation .135 0 -.3 rotation 0 1 0 1.57079632679 width 3840 height 2160 fieldOfView 1.12 near 0.06 far 175 }
     Camera { name "slam_camera" translation .69 0 -.26565 width 640 height 480 fieldOfView 1.05 near 0.03 far 145 }
     # Downward depth sensor for terrain assessment

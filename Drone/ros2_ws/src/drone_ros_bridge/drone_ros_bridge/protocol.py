@@ -73,10 +73,10 @@ def recv_frame(sock):
     return meta, recv_exact(sock, body_len)
 
 
-def pack_point_cloud(points, horizontal_resolution, scan_duration_ns=0, reflectivity=180):
+def pack_point_cloud(points, horizontal_resolution, scan_duration_ns=0, reflectivity=180, native_start=None):
     """Pack Webots point objects as an *approximate* Livox-compatible point set.
 
-    Webots does not provide per-ray temporal offsets or Livox reflectivity.
+    native_start selects Webots layer IDs and absolute per-ray simulation times.
     scan_duration_ns==0 keeps all offsets at zero (default; no fabricated times).
     Nonzero scan_duration_ns is *assumed* scan duration, not measured timing.
     """
@@ -92,8 +92,16 @@ def pack_point_cloud(points, horizontal_resolution, scan_duration_ns=0, reflecti
             continue
         layer = min(255, index // hres)
         offset = int((index % hres) * scan_ns / hres) if scan_ns else 0
+        if native_start is not None:
+            layer = int(p.layer)
+            offset = round((p.time - native_start) * 1e9)
+            if not 0 <= offset <= 0xffffffff or not 0 <= layer <= 255:
+                raise FrameError("invalid native LiDAR timestamp or layer")
         out.extend(POINT.pack(x, y, z, offset, int(reflectivity), 0, layer))
         count += 1
+    if native_start is not None:
+        records = sorted(POINT.iter_unpack(out), key=lambda record: record[3])
+        return b"".join(POINT.pack(*record) for record in records), count
     return bytes(out), count
 
 

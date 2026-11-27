@@ -1,0 +1,14 @@
+{
+  "label": "run-3",
+  "matched_samples": 88,
+  "odometry_samples": 88,
+  "ground_truth_samples": 73,
+  "duration_s": 18.096,
+  "reference_path_m": 61.763,
+  "raw_position_rmse_m": 73.8866,
+  "aligned_position_rmse_m": 13.0428,
+  "aligned_position_max_m": 31.0619,
+  "aligned_final_error_m": 31.0619,
+  "rpe_translation_rmse_m": 2.1197,
+  "drift_percent": 50.292
+}

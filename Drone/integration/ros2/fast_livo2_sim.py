@@ -8,6 +8,14 @@ ICP, then writes the pose track (`/aft_mapped_to_init` equivalent) and the
 registered map (`/cloud_registered` equivalent). Camera frames are ignored,
 so this is LiDAR-inertial only - no visual term.
 
+Two limits measured on this world, quoted in the documentation:
+  * the kinematic Supervisor reports zero accelerometer/gyro values, so the
+    IMU branch only exercises the interface;
+  * at survey altitude the scans are ground-dominated, which does not
+    constrain horizontal motion, so the tracked pose drifts. Unit tests cover
+    the registration maths; convergence on a real flight still needs the
+    external estimator.
+
 Pure standard library so it runs on Windows next to Webots:
 
     python fast_livo2_sim.py --port 15882 --seconds 300 --out runs/livo
@@ -146,6 +154,8 @@ class Estimator:
         self.track = []                        # (t, est xyz, truth xyz)
         self.lidar_count = 0
         self.corrected = 0
+        self.prior_delta = (0.0, 0.0, 0.0, 0.0)
+        self.initialized = False
 
     def imu(self, meta):
         accel = meta['accel_m_s2']
@@ -173,7 +183,7 @@ class Estimator:
 
     def lidar(self, meta, payload):
         self.lidar_count += 1
-        if self.lidar_count % 10:
+        if self.lidar_count % 2:
             return
         scan = downsample(unpack_points(payload), 1.5)
         if len(scan) < 50:
@@ -181,20 +191,33 @@ class Estimator:
         if not self.map.cells:
             self.map.add(scan, *self.pose)
             return
-        tx, ty, tz, yaw, used = icp_step(scan, self.map, *self.pose)
+        # Constant-velocity prior: the previous registration step is the best
+        # available motion model because this kinematic world reports zero
+        # accelerometer and gyro values.
+        prior = self.prior_delta
+        tx, ty, tz, yaw, used = icp_step(scan, self.map,
+                                         self.pose[0] + prior[0], self.pose[1] + prior[1],
+                                         self.pose[2] + prior[2], self.pose[3] + prior[3],
+                                         iterations=4)
         if used >= 30:
-            # Blend the ICP result with the IMU prediction: the simulated scan
-            # matcher is noisier than a calibrated estimator.
-            self.pose = [0.5 * self.pose[0] + 0.5 * tx, 0.5 * self.pose[1] + 0.5 * ty,
-                         0.5 * self.pose[2] + 0.5 * tz, 0.5 * self.pose[3] + 0.5 * yaw]
-            self.velocity = [0.0, 0.0, 0.0]
-            self.corrected += 1
+            step = math.hypot(tx - self.pose[0], ty - self.pose[1])
+            if step < 4.0:
+                self.prior_delta = (tx - self.pose[0], ty - self.pose[1],
+                                    tz - self.pose[2], yaw - self.pose[3])
+                self.pose = [tx, ty, tz, yaw]
+                self.corrected += 1
         self.map.add(scan, *self.pose)
 
     def gps(self, meta):
-        truth = meta['position_m']
-        self.track.append((float(meta['sim_time_s']),
-                           tuple(self.pose[:3]), tuple(float(v) for v in truth)))
+        truth = tuple(float(v) for v in meta['position_m'])
+        if not self.initialized:
+            # Initial alignment on the first fix: the metric below then measures
+            # drift, not the offset between the estimator and the world origin.
+            self.pose = [truth[0], truth[1], truth[2], float(meta.get('yaw_rad', 0.0))]
+            self.map = ScanMap()
+            self.prior_delta = (0.0, 0.0, 0.0, 0.0)
+            self.initialized = True
+        self.track.append((float(meta['sim_time_s']), tuple(self.pose[:3]), truth))
 
     def report(self):
         if not self.track:
