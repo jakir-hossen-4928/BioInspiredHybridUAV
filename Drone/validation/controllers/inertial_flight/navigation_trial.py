@@ -18,6 +18,19 @@ DEFAULT = dict(goal=[10.5, 0.], boundary=14., altitude=0., truth_altitude=2., ho
                hazards=[[8, 0, .5, .6, 3.]], start=None, fixture='arena',
                obstacles=[], body_half=[.3, .25, .1], obstacle_speed=.75)
 
+# Surveyed arena landmarks. The red scenario obstacles are deliberately absent.
+ARENA_LANDMARKS = [
+    [-10, -8, .5, .75, 6], [-10, 7, .5, .75, 6],
+    [-6, -7, .5, .75, 6], [-6, 8, .5, .75, 6],
+    [-3, -7, .5, .75, 7], [-3, 8, .5, .75, 7],
+    [1, -6, .5, .75, 5], [1, 9, .5, .75, 5],
+    [5, -5, .5, .75, 5], [5, 10, .5, .75, 5],
+    [9, -7, .5, .75, 5], [9, 8, .5, .75, 5],
+    [12, -7, .5, .75, 4], [12, 8, .5, .75, 4],
+    [-14, 0, .2, 12, 6], [14, 0, .2, 12, 6],
+    [0, -11, 14, .2, 6], [0, 11, 14, .2, 6],
+]
+
 
 class ObstacleTracks:
     """Keep a swept footprint through missed frames and estimate near-term motion."""
@@ -113,11 +126,14 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
              for ob in cfg['obstacles']]
     surveyed = known
     tracks = ObstacleTracks()
-    hazards = cfg['hazards']
+    hazards = list(cfg['hazards'])
     altitude, mass, step = cfg['altitude'], cfg['mass'], cfg['step']
     box = None
     if cfg['fixture'] == 'arena':
         box = r.getFromDef('OBSTACLE').getField('translation')
+        surveyed = surveyed + [dict(x=x, y=y, sx=2 * hx, sy=2 * hy)
+                               for x, y, hx, hy, _ in ARENA_LANDMARKS]
+        hazards.extend(ARENA_LANDMARKS)
     if case == 'multiple':
         r.getRoot().getField('children').importMFNodeFromString(-1,
             'DEF SECOND Solid { translation 5 -1.4 2 children [ Shape { appearance PBRAppearance { baseColor 1 .05 .02 } geometry Box { size 1 1.2 2 } } ] boundingObject Box { size 1 1.2 2 } }')
@@ -217,6 +233,10 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                         ox = xyz[0] + math.cos(yaw) * (x + sx / 2) - math.sin(yaw) * y
                         oy = xyz[1] + math.sin(yaw) * (x + sx / 2) + math.cos(yaw) * y
                         ob = dict(x=ox, y=oy, sx=sx, sy=max(1.2, w + .6), source='sensor')
+                        if src != 'camera' and any(abs(ox - old['x']) <= old['sx'] / 2 + .35 and
+                                                   abs(oy - old['y']) <= old['sy'] / 2 + .35
+                                                   for old in surveyed):
+                            continue  # the same surface is already occupied by the survey
                         observations.append(ob)
                     tracks.observe(observations, t)
                     speed = math.hypot(*velocity[:2])
@@ -244,10 +264,11 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                                                   stopping_distance_m=math.dist(start, stop)))
                     hold = bool(hold_reason)
                 target = [*route[0], altitude]
+                command = [.95 * (target[j] - xyz[j]) for j in range(3)]
+                scale = min(1., cfg['speed'] / max(cfg['speed'], math.hypot(*command[:2])))
                 for j in range(3):
-                    desired = max(-cfg['speed'], min(cfg['speed'], .95 * (target[j] - xyz[j])))
-                    if hold and j < 2:
-                        desired = 0.
+                    desired = (0. if hold else command[j] * scale) if j < 2 else max(
+                        -cfg['speed'], min(cfg['speed'], command[j]))
                     force[j] += max(-2. * mass, min(2. * mass,
                                                     cfg['gain'] * mass * (desired - velocity[j])))
                 stable = stable + 1 if (not hold and math.dist(xyz, [*goal, altitude]) < .22 and
@@ -261,14 +282,19 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
             stream.update(r.getTime(), yaw=sensors['inertial unit'].getRollPitchYaw()[2])
             # Truth is read only after issuing the force, for scoring.
             pos = body.getPosition()
-            if case == 'moving' and box is not None:
-                hazards = [h for h in hazards if h[0] != 8] + [[8, by, .5, .6, 3.]]
             hx, hy, hz = cfg['body_half']
-            gap = min((math.hypot(max(0., abs(pos[0] - h[0]) - h[2] - hx),
-                                  max(0., abs(pos[1] - h[1]) - h[3] - hy))
-                       for h in hazards if pos[2] - hz < h[4]), default=math.inf)
+            # The scenario obstacle is first. Static landmarks remain in the
+            # scoring set when its lateral coordinate changes.
+            if case == 'moving' and box is not None:
+                hazards[0] = [8, by, .5, .6, 3.]
+            gap = min(pos[2] - hz, *(math.hypot(max(0., abs(pos[0] - x) - bx - hx),
+                                               max(0., abs(pos[1] - y) - by_ - hy),
+                                               max(0., pos[2] - hz - top))
+                                     for x, y, bx, by_, top in hazards))
             clearance = min(clearance, gap)
             contacts += int(bool(body.getContactPoints()))
+            if contacts:
+                clearance = 0.
             if k % 25 == 24:
                 print(r.getTime(), *pos, *(last[1] if last else [float('nan')] * 3),
                       by, gap, sep=',', file=track)
