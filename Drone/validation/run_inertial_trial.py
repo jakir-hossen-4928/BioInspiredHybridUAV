@@ -12,6 +12,8 @@ p.add_argument('--mission',type=Path)
 p.add_argument('--gravity',default='physical')
 p.add_argument('--profile',choices=('arena', 'farm'),default='arena')
 p.add_argument('--port',type=int,default=15882)
+p.add_argument('--domain-id',type=int,default=12,
+               help='Use a different ROS domain for each concurrent validation lane')
 p.add_argument('--timeout',type=float,default=150.)
 a=p.parse_args()
 out=a.output.resolve()
@@ -20,7 +22,7 @@ base=Path(__file__).resolve().parent
 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=base, text=True).strip()
 (out/'run.json').write_text(json.dumps(dict(commit=commit, mode=a.mode, scenario=a.scenario,
                                            world=a.world, gravity=a.gravity, profile=a.profile,
-                                           port=a.port), indent=2))
+                                           port=a.port, ros_domain_id=a.domain_id), indent=2))
 docker=['docker','--context',a.context]
 def run(*args):subprocess.run(docker+list(args),check=True,stdout=subprocess.DEVNULL)
 run('restart','-t','1',a.container)
@@ -28,8 +30,9 @@ run('cp',str(base.parent/'ros2_ws/src/drone_ros_bridge')+'/.',a.container+':/tmp
 run('exec',a.container,'bash','-lc','source /opt/ros/humble/setup.bash && cd /tmp/bridge-ws && colcon build --base-paths /tmp/bridge-src --packages-select drone_ros_bridge')
 run('cp',str(base/'observe_flight.py'),a.container+':/tmp/observe_flight.py')
 source='source /opt/ros/humble/setup.bash && source /lio_sam_ws/install/setup.bash && source /tmp/bridge-ws/install/setup.bash && '
-run('exec','-d',a.container,'bash','-lc',source+'exec ros2 launch drone_ros_bridge lio_sam.launch.py host:=0.0.0.0 gravity_mode:=%s profile:=%s'%(a.gravity,a.profile)+' >/tmp/physics.log 2>&1')
-watch=subprocess.Popen(docker+['exec',a.container,'bash','-lc',source+'exec python3 -u /tmp/observe_flight.py'],stdout=subprocess.PIPE,text=True)
+domain = ['-e', 'ROS_DOMAIN_ID=%d' % a.domain_id]
+run('exec',*domain,'-d',a.container,'bash','-lc',source+'exec ros2 launch drone_ros_bridge lio_sam.launch.py host:=0.0.0.0 gravity_mode:=%s profile:=%s'%(a.gravity,a.profile)+' >/tmp/physics.log 2>&1')
+watch=subprocess.Popen(docker+['exec',*domain,a.container,'bash','-lc',source+'exec python3 -u /tmp/observe_flight.py'],stdout=subprocess.PIPE,text=True)
 def relay():
     with (out/'ros.jsonl').open('w') as log:
         for line in watch.stdout:
