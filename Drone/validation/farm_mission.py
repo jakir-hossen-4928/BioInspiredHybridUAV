@@ -6,6 +6,7 @@ the DRONE controller. Regenerate with:
 """
 import argparse
 import json
+import re
 from pathlib import Path
 
 DRONE = Path(__file__).resolve().parents[1]
@@ -21,9 +22,9 @@ def main():
     scene = json.loads((DRONE / 'controllers/drone/scene.json').read_text(encoding='utf8'))
     mission = dict(
         goal=GOAL, boundary=115.0, altitude=0.0, truth_altitude=4.5,
-        hover=0.0, mass=3.9,          # zero-gravity farm world, 3.9 kg airframe
+        hover=3.9 * 9.81, mass=3.9,   # real gravity: 3.9 kg airframe hovers on 38.3 N
         mount_x=.72, step=8, steps=24000, speed=1.5, gain=2.4,
-        resolution=1.0, detect_max=10.0, detect_min=1.1,
+        resolution=1.0, detect_max=10.0, detect_min=1.1, body_half=[.6075, .3825, .18],
         start=[-49.0, -47.0, 4.5], fixture=None, obstacle_at=OBSTACLE,
         obstacles=[dict(x=o['x'], y=o['y'], sx=o['sx'], sy=o['sy'])
                    for o in scene['obstacles']],
@@ -36,6 +37,10 @@ def main():
                             'supervisor TRUE controller "farm_flight"', 1)
     if target == source:
         raise SystemExit('DRONE controller line not found; world layout changed')
+    # Accept the mission under real gravity instead of the demo's zero-g world.
+    target, changed = re.subn(r'(WorldInfo \{[^}]*?gravity\s+)0(\s)', r'\g<1>9.81\2', target, count=1)
+    if not changed:
+        raise SystemExit('WorldInfo gravity not found; world layout changed')
     (DRONE / 'worlds/farm_flight.wbt').write_text(target, encoding='utf8')
     print(json.dumps(dict(mission=str(args.output / 'mission.json'),
                           world=str(DRONE / 'worlds/farm_flight.wbt')), indent=2))

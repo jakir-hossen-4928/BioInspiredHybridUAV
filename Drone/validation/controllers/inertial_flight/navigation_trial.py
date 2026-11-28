@@ -7,6 +7,7 @@ only from /lio_sam/odometry/imu. Ground-truth geometry is used for scoring
 import json
 import math
 import os
+from statistics import median
 
 from oak_stereo import objects
 from planner import Planner
@@ -15,7 +16,86 @@ from planner import Planner
 DEFAULT = dict(goal=[10.5, 0.], boundary=14., altitude=0., truth_altitude=2., hover=9.81, mass=1.,
                mount_x=.32, step=4, steps=12500, speed=.75, gain=2.4, resolution=.25, detect_max=6.8, detect_min=.75,
                hazards=[[8, 0, .5, .6, 3.]], start=None, fixture='arena',
-               obstacles=[])
+               obstacles=[], body_half=[.3, .25, .1], obstacle_speed=.75)
+
+
+class ObstacleTracks:
+    """Keep a swept footprint through missed frames and estimate near-term motion."""
+
+    def __init__(self):
+        self.samples = []
+
+    def observe(self, observations, stamp):
+        matched = set()
+        for ob in observations:
+            choices = [(math.hypot(ob['x'] - track[-1][1]['x'],
+                                   ob['y'] - track[-1][1]['y']), i)
+                       for i, track in enumerate(self.samples) if i not in matched]
+            distance, i = min(choices, default=(math.inf, -1))
+            if distance < 2.5:
+                self.samples[i].append((stamp, ob))
+                self.samples[i] = self.samples[i][-30:]
+            else:
+                i = len(self.samples)
+                self.samples.append([(stamp, ob)])
+            matched.add(i)
+
+    def footprints(self, now, horizon, max_speed):
+        footprints = []
+        for track in self.samples:
+            stamp, current = track[-1]
+            recent = track[-5:]
+            x = median(ob['x'] for _, ob in recent)
+            y = median(ob['y'] for _, ob in recent)
+            old_stamp, old = track[0]
+            duration = max(.1, stamp - old_stamp)
+            vy = max(-max_speed, min(max_speed, (y - old['y']) / duration))
+            # Cover previously observed reversal and the unobserved travel
+            # during the next brake, including any camera dropout.
+            # shortcut: one metre of unseen motion, upgrade with peripheral coverage.
+            unseen = min(1., max_speed * (max(0., now - stamp) + horizon))
+            lower = min(ob['y'] - ob['sy'] / 2 for _, ob in track)
+            upper = max(ob['y'] + ob['sy'] / 2 for _, ob in track)
+            predicted = y + vy * horizon
+            lower = min(lower, predicted - current['sy'] / 2) - unseen
+            upper = max(upper, predicted + current['sy'] / 2) + unseen
+            footprints.append(dict(x=x, y=(lower + upper) / 2, sx=current['sx'],
+                                   sy=upper - lower, source='sensor'))
+        return footprints
+
+
+def braking_segment(position, velocity, latency, gain):
+    speed = math.hypot(*velocity)
+    if not speed:
+        return position
+    # Integrate the saturated proportional brake to its exponential tail.
+    crossover = min(speed, 2. / gain)
+    distance = speed * latency + (speed**2 - crossover**2) / 4 + crossover / gain
+    return tuple(p + v * distance / speed for p, v in zip(position, velocity))
+
+
+def cluster_2d(points, cell=.7):
+    """Group body-frame points by 2D proximity (union of neighbouring cells)."""
+    buckets = {}
+    for p in points:
+        buckets.setdefault((int(p[0] // cell), int(p[1] // cell)), []).append(p)
+    seen, groups = set(), []
+    for key in buckets:
+        if key in seen:
+            continue
+        seen.add(key)
+        stack, group = [key], []
+        while stack:
+            k = stack.pop()
+            group.extend(buckets[k])
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    other = (k[0] + dx, k[1] + dy)
+                    if other in buckets and other not in seen:
+                        seen.add(other)
+                        stack.append(other)
+        groups.append(group)
+    return groups
 
 
 def fly(r, body, sensors, cams, stream, out, mode, case):
@@ -31,6 +111,8 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     route = [(0., 0.), goal]
     known = [dict(ob, x=ob['x'] - origin[0], y=ob['y'] - origin[1])
              for ob in cfg['obstacles']]
+    surveyed = known
+    tracks = ObstacleTracks()
     hazards = cfg['hazards']
     altitude, mass, step = cfg['altitude'], cfg['mass'], cfg['step']
     box = None
@@ -45,6 +127,8 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     if cfg.get('obstacle_at'):
         r.getFromDef('DYNAMIC_OBSTACLE').getField('translation').setSFVec3f(cfg['obstacle_at'])
     events = []
+    safety_events = []
+    hold = False
     velocity = [0.] * 3
     clearance = math.inf
     contacts = 0
@@ -86,77 +170,87 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                 last = (stamp, xyz)
                 if len(route) > 1 and math.dist(xyz[:2], route[0]) < .24:
                     route.pop(0)
-                if k % 25 == 0:
+                if k % max(1, round(100 / step)) == 0:
                     candidates = []
                     if mode != 'lidar':
                         for x, y, w, disp in objects(*cams, mount_x=cfg['mount_x']):
                             if cfg['detect_min'] < x < cfg['detect_max']:
-                                candidates.append(('camera', x, y, w, disp))
+                                candidates.append(('camera', x, y, w, disp, None))
                     if mode != 'camera':
-                        pts = sorted(((p.x, p.y) for p in sensors['lidar'].getPointCloud()
-                                      if cfg['detect_min'] < p.x < cfg['detect_max']
-                                      and abs(p.y) < 3 and abs(p.z + .555) < .4),
-                                     key=lambda q: q[1])
-                        # One candidate per lateral cluster: a thin post must not
-                        # hide the wall behind it.
-                        clusters = []
-                        for point in pts:
-                            if clusters and point[1] - clusters[-1][-1][1] < .5:
-                                clusters[-1].append(point)
-                            else:
-                                clusters.append([point])
-                        for cluster in clusters[:3]:
-                            if len(cluster) < 3:
+                        pts = [(p.x, p.y) for p in sensors['lidar'].getPointCloud()
+                               if cfg['detect_min'] < p.x < cfg['detect_max']
+                               and abs(p.y) < 3 and abs(p.z + .555) < .4]
+                        # Cluster in 2D, not by lateral gap alone: a near box and
+                        # the far wall behind it must not merge into one 6 m wall.
+                        for group in sorted(cluster_2d(pts), key=lambda g: min(q[0] for q in g))[:3]:
+                            if len(group) < 3:
                                 continue
-                            ys = [q[1] for q in cluster]
-                            candidates.append(('lidar', min(q[0] for q in cluster),
-                                               (min(ys) + max(ys)) / 2,
-                                               max(ys) - min(ys), None))
-                    for candidate in candidates:
-                        counts['camera' if candidate[0] == 'camera' else 'lidar'] += 1
-                    if mode == 'combined' and candidates and candidates[-1][0] == 'lidar':
-                        _, lx, ly, lw, _ = candidates[-1]
-                        for i, (src, cx, cy, cw, cd) in enumerate(candidates[:-1]):
-                            if abs(lx - cx) < 1.3 and abs(ly - cy) < .9:
-                                candidates[i] = ('RGB stereo + LiDAR', lx, (ly + cy) / 2,
-                                                 max(cw, lw), cd)
-                                candidates.pop()
-                                break
-                    for src, x, y, w, disp in candidates:
-                        yaw = 2 * math.atan2(msg[2][5], msg[2][6])
-                        # Detected range is the obstacle's near face, so centre the
-                        # box half a body depth beyond it. Centring on the range put
-                        # the near face behind the UAV and the planner rejected the
-                        # start cell ("no safe route").
-                        sx = 1.0
+                            xs = [q[0] for q in group]
+                            ys = [q[1] for q in group]
+                            candidates.append(('lidar', min(xs), (min(ys) + max(ys)) / 2,
+                                               max(ys) - min(ys), None, max(xs) - min(xs)))
+                    if mode == 'combined':
+                        lidar = [c for c in candidates if c[0] == 'lidar']
+                        for cam in (c for c in candidates if c[0] == 'camera'):
+                            for i, lid in enumerate(lidar):
+                                if abs(lid[1] - cam[1]) < 1.3 and abs(lid[2] - cam[2]) < .9:
+                                    lidar[i] = ('RGB stereo + LiDAR', lid[1],
+                                                (lid[2] + cam[2]) / 2,
+                                                max(lid[3], cam[3]), cam[4], lid[5])
+                                    break
+                            else:
+                                lidar.append(cam)
+                        candidates = lidar
+                    observations = []
+                    for src, x, y, w, disp, depth in candidates:
+                        counts['camera' if src == 'camera' else 'lidar'] += 1
+                        qx, qy, qz, qw = msg[2][3:7]
+                        yaw = math.atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz))
+                        # The detected range is the obstacle's near face, so the
+                        # box centre sits half a depth beyond it. Centring on the
+                        # range put the near face behind the UAV and the planner
+                        # rejected the start cell ("no safe route").
+                        # Depth is capped: a single view cannot measure it, and an
+                        # inflated cluster (a ring of stray returns) would push
+                        # the box centre onto the destination.
+                        sx = min(1.5, max(.6, depth or 1.))
                         ox = xyz[0] + math.cos(yaw) * (x + sx / 2) - math.sin(yaw) * y
                         oy = xyz[1] + math.sin(yaw) * (x + sx / 2) + math.cos(yaw) * y
-                        if any(abs(ox - ob['x']) < ob['sx'] / 2 + 1.5 and
-                               abs(oy - ob['y']) < ob['sy'] / 2 + 1.5 for ob in known):
-                            continue  # already in the known map (near face or centre)
-                        ob = dict(x=ox, y=oy, sx=sx, sy=max(1.2, w + 1.0))
-                        grid = Planner(known + [ob], cfg['resolution'], cfg['boundary'], .85)
-                        active = [tuple(xyz[:2])] + route
-                        if all(grid.clear_segment(a, b) for a, b in zip(active, active[1:])):
-                            continue
+                        ob = dict(x=ox, y=oy, sx=sx, sy=max(1.2, w + .6), source='sensor')
+                        observations.append(ob)
+                    tracks.observe(observations, t)
+                    speed = math.hypot(*velocity[:2])
+                    latency = t - stamp + .2  # camera period and controller polling period
+                    horizon = latency + speed / 2. + 1. / cfg['gain']
+                    known = surveyed + tracks.footprints(t, horizon, cfg['obstacle_speed'])
+                    grid = Planner(known, cfg['resolution'], cfg['boundary'], .85)
+                    start = tuple(xyz[:2])
+                    active = [start] + route
+                    stop = braking_segment(start, velocity[:2], latency, cfg['gain'])
+                    hold_reason = None
+                    if not grid.clear_segment(start, stop):
+                        hold_reason = 'stopping corridor occupied'
+                    elif not all(grid.clear_segment(a, b) for a, b in zip(active, active[1:])):
                         try:
-                            path = grid.route(tuple(xyz[:2]), goal)
+                            path = grid.route(start, goal)
                         except ValueError as exc:
-                            reason = 'no safe route: %s [%s at %.2f m]' % (exc, src, x)
-                            break
-                        known.append(ob)
-                        events.append(dict(t=t, source=src, range_m=x, lateral_m=y,
-                                           width_m=w, disparity_px=disp,
-                                           old=active, new=path))
-                        route = path[1:]
-                    if reason.startswith('no safe route'):
-                        break
+                            hold_reason = str(exc)
+                        else:
+                            events.append(dict(t=t, source=mode, observations=candidates,
+                                               old=active, new=path))
+                            route = path[1:]
+                    if hold != bool(hold_reason):
+                        safety_events.append(dict(t=t, reason=hold_reason, pose_age_s=t-stamp,
+                                                  stopping_distance_m=math.dist(start, stop)))
+                    hold = bool(hold_reason)
                 target = [*route[0], altitude]
                 for j in range(3):
                     desired = max(-cfg['speed'], min(cfg['speed'], .95 * (target[j] - xyz[j])))
+                    if hold and j < 2:
+                        desired = 0.
                     force[j] += max(-2. * mass, min(2. * mass,
                                                     cfg['gain'] * mass * (desired - velocity[j])))
-                stable = stable + 1 if (math.dist(xyz, [*goal, altitude]) < .22 and
+                stable = stable + 1 if (not hold and math.dist(xyz, [*goal, altitude]) < .22 and
                                         math.hypot(*velocity[:2]) < .25) else 0
             elif last and t - last[0] > 1.5:
                 reason = 'stale odometry'
@@ -169,9 +263,10 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
             pos = body.getPosition()
             if case == 'moving' and box is not None:
                 hazards = [h for h in hazards if h[0] != 8] + [[8, by, .5, .6, 3.]]
-            gap = min((math.hypot(max(0., abs(pos[0] - h[0]) - h[2] - .3),
-                                  max(0., abs(pos[1] - h[1]) - h[3] - .25))
-                       for h in hazards if pos[2] - .1 < h[4]), default=math.inf)
+            hx, hy, hz = cfg['body_half']
+            gap = min((math.hypot(max(0., abs(pos[0] - h[0]) - h[2] - hx),
+                                  max(0., abs(pos[1] - h[1]) - h[3] - hy))
+                       for h in hazards if pos[2] - hz < h[4]), default=math.inf)
             clearance = min(clearance, gap)
             contacts += int(bool(body.getContactPoints()))
             if k % 25 == 24:
@@ -179,12 +274,16 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                       by, gap, sep=',', file=track)
             if k % 125 == 124:
                 cams[0].saveImage(str(out / f'frame-{k:05}.png'), 90)
+                # Stereo pair kept for offline depth checks (see test_stereo_depth).
+                for name, cam in zip(('left', 'right'), cams[1:]):
+                    cam.saveImage(str(out / f'{name}-{k:05}.png'), 90)
             if len(events) and not (out / 'replan.png').exists():
                 r.exportImage(str(out / 'replan.png'), 95)
             if contacts or stable >= 125:
                 reason = 'contact' if contacts else 'arrived'
                 break
     result = dict(mode=mode, scenario=case, reason=reason, events=events,
+                  safety_events=safety_events,
                   observations=counts, known_obstacles=known,
                   clearance_m=clearance, contact_steps=contacts,
                   goal_error_m=math.dist(body.getPosition(), [*cfg['goal'], cfg['truth_altitude']]))

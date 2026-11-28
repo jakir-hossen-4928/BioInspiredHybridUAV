@@ -27,17 +27,21 @@ def objects(rgb,left,right, mount_x):
     hits=[]
     for group in groups:
         if len(group)<6: continue
-        edge=group[0]
-        if edge<35 or edge>width-35: continue
-        # Locate the left-camera silhouette, then match its intensity patch on the right.
-        candidates=range(edge,edge+16)
-        u=max(candidates,key=lambda x:abs(gray(views[0],x+1,row)-gray(views[0],x-1,row)))
+        if group[0]<35 or group[-1]>width-35: continue
+        # Match the whole silhouette, not one edge, and every column: sampling
+        # every other column skips the last one, so a flat-coloured box ties
+        # between two disparities and the matcher silently picks the wrong one.
         def cost(d):
-            return sum(abs(gray(views[0],u+i,row+j)-gray(views[1],u+i-d,row+j))
-                       for i in range(-3,4) for j in (-3,0,3))
-        scores=sorted((cost(d),d) for d in range(1,31))
-        best,disparity=scores[0]
-        if scores[1][0]-best<12: continue
+            return sum(abs(gray(views[0],x,row+j)-gray(views[1],x-d,row+j))
+                       for x in group for j in (-3,0,3))
+        costs={d:cost(d) for d in range(1,31)}
+        disparity=min(costs,key=costs.get)
+        best=costs[disparity]
+        if min(c for d,c in costs.items() if d!=disparity)-best<12: continue
+        before,after=costs.get(disparity-1),costs.get(disparity+1)
+        if before is not None and after is not None:
+            curvature=before-2*best+after
+            if curvature>0: disparity+=.5*(before-after)/curvature
         z=f*.075/disparity
         lateral=(width/2-(group[0]+group[-1])/2)*z/f
         hits.append((z+mount_x,lateral,len(group)*z/f,disparity))

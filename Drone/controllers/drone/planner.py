@@ -25,14 +25,17 @@ class Planner:
     def rebuild(self):
         # Include half cell width to conservatively inflate grid obstacles.
         self.occupied.clear()
-        for ix in range(self.n):
-            for iz in range(self.n):
-                x, z = self.cell_to_xy((ix, iz))
-                for ob in self.obstacles:
-                    if abs(x - ob['x']) <= ob['sx'] / 2 + self.safety + self.resolution / 2 and \
-                       abs(z - ob['y']) <= ob['sy'] / 2 + self.safety + self.resolution / 2:
-                        self.occupied.add((ix, iz))
-                        break
+        for ob in self.obstacles:
+            x, y = ob['x'], ob['y']
+            rx = ob['sx'] / 2 + self.safety + self.resolution / 2
+            ry = ob['sy'] / 2 + self.safety + self.resolution / 2
+            lo = self.xy_to_cell(x - rx, y - ry)
+            hi = self.xy_to_cell(x + rx, y + ry)
+            for ix in range(max(0, lo[0]), min(self.n, hi[0] + 1)):
+                for iy in range(max(0, lo[1]), min(self.n, hi[1] + 1)):
+                    gx, gy = self.cell_to_xy((ix, iy))
+                    if abs(gx - x) <= rx and abs(gy - y) <= ry:
+                        self.occupied.add((ix, iy))
 
     def is_free(self, cell):
         ix, iz = cell

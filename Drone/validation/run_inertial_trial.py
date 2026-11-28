@@ -15,6 +15,9 @@ a=p.parse_args()
 out=a.output.resolve()
 out.mkdir(parents=True,exist_ok=False)
 base=Path(__file__).resolve().parent
+commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=base, text=True).strip()
+(out/'run.json').write_text(json.dumps(dict(commit=commit, mode=a.mode, scenario=a.scenario,
+                                           world=a.world, gravity=a.gravity), indent=2))
 docker=['docker','--context',a.context]
 def run(*args):subprocess.run(docker+list(args),check=True,stdout=subprocess.DEVNULL)
 run('restart','-t','1',a.container)
