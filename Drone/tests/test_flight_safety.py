@@ -16,13 +16,13 @@ class FlightSafetyTests(unittest.TestCase):
         for t, y in enumerate((-.75, -.1, .75)):
             tracks.observe([dict(x=8., y=y, sx=1., sy=1.2)], t / 2)
         tracks.observe([], 5.)
-        grid = Planner(tracks.footprints(5., .5, .75), .25, 14., .85)
+        grid = Planner(tracks.footprints(.5, .75), .25, 14., .85)
         self.assertFalse(grid.clear_segment((6., -1.15), (10., -1.15)))
 
     def test_destination_obstacle_stays_occupied(self):
         tracks = ObstacleTracks()
         tracks.observe([dict(x=10.5, y=0., sx=1., sy=1.2)], 1.)
-        grid = Planner(tracks.footprints(2., .5, .75), .25, 14., .85)
+        grid = Planner(tracks.footprints(.5, .75), .25, 14., .85)
         with self.assertRaisesRegex(ValueError, 'Goal lies inside'):
             grid.route((5., 0.), (10.5, 0.))
 

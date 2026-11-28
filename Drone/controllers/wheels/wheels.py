@@ -9,6 +9,7 @@ import json
 import math
 import sys
 from pathlib import Path
+import os
 
 CONTROLLERS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CONTROLLERS / 'hybrid'))
@@ -294,4 +295,11 @@ class WheelMission(HybridMission):
 
 
 if __name__ == '__main__':
-    WheelMission().run()
+    if '--lio-sam-flight' in sys.argv[1:]:
+        if not all(os.environ.get(name) for name in
+                   ('UAV_MISSION_JSON', 'UAV_EVIDENCE', 'UAV_SENSOR_MODE', 'UAV_SCENARIO')):
+            raise SystemExit('LIO-SAM flight requires a mission, sensor mode, scenario and evidence directory')
+        sys.path.insert(0, str(CONTROLLERS.parent / 'validation/controllers/inertial_flight'))
+        import inertial_flight  # Webots controller entry point
+    else:
+        WheelMission().run()

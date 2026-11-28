@@ -53,7 +53,7 @@ class ObstacleTracks:
                 self.samples.append([(stamp, ob)])
             matched.add(i)
 
-    def footprints(self, now, horizon, max_speed):
+    def footprints(self, horizon, max_speed):
         footprints = []
         for track in self.samples:
             stamp, current = track[-1]
@@ -63,10 +63,9 @@ class ObstacleTracks:
             old_stamp, old = track[0]
             duration = max(.1, stamp - old_stamp)
             vy = max(-max_speed, min(max_speed, (y - old['y']) / duration))
-            # Cover previously observed reversal and the unobserved travel
-            # during the next brake, including any camera dropout.
-            # shortcut: one metre of unseen motion, upgrade with peripheral coverage.
-            unseen = min(1., max_speed * (max(0., now - stamp) + horizon))
+            # Reserve the dropout envelope while still planning the detour.
+            # shortcut: one metre lateral dropout allowance, upgrade with peripheral coverage.
+            unseen = 1.
             lower = min(ob['y'] - ob['sy'] / 2 for _, ob in track)
             upper = max(ob['y'] + ob['sy'] / 2 for _, ob in track)
             predicted = y + vy * horizon
@@ -184,7 +183,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                 elif last and stamp > last[0]:
                     velocity = [(u - v) / (stamp - last[0]) for u, v in zip(xyz, last[1])]
                 last = (stamp, xyz)
-                if len(route) > 1 and math.dist(xyz[:2], route[0]) < .24:
+                if len(route) > 1 and math.dist(xyz[:2], route[0]) < .12:
                     route.pop(0)
                 if k % max(1, round(100 / step)) == 0:
                     candidates = []
@@ -242,7 +241,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                     speed = math.hypot(*velocity[:2])
                     latency = t - stamp + .2  # camera period and controller polling period
                     horizon = latency + speed / 2. + 1. / cfg['gain']
-                    known = surveyed + tracks.footprints(t, horizon, cfg['obstacle_speed'])
+                    known = surveyed + tracks.footprints(horizon, cfg['obstacle_speed'])
                     grid = Planner(known, cfg['resolution'], cfg['boundary'], .85)
                     start = tuple(xyz[:2])
                     active = [start] + route
@@ -292,7 +291,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                                                max(0., pos[2] - hz - top))
                                      for x, y, bx, by_, top in hazards))
             clearance = min(clearance, gap)
-            contacts += int(bool(body.getContactPoints()))
+            contacts += int(bool(body.getContactPoints(True)))
             if contacts:
                 clearance = 0.
             if k % 25 == 24:

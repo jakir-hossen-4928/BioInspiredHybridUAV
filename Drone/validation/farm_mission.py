@@ -24,17 +24,17 @@ def main():
         goal=GOAL, boundary=115.0, altitude=0.0, truth_altitude=4.5,
         hover=3.9 * 9.81, mass=3.9,   # real gravity: 3.9 kg airframe hovers on 38.3 N
         mount_x=.72, step=8, steps=24000, speed=1.5, gain=2.4,
-        resolution=1.0, detect_max=10.0, detect_min=1.1, body_half=[.6075, .3825, .18],
+        resolution=1.0, detect_max=10.0, detect_min=1.1, body_half=[.6075, .3825, .372],
         start=[-49.0, -47.0, 4.5], fixture=None, obstacle_at=OBSTACLE,
         obstacles=[dict(x=o['x'], y=o['y'], sx=o['sx'], sy=o['sy'])
-                   for o in scene['obstacles']],
+                   for o in scene['obstacles'] if o['height'] >= 4.5 - .372 - .85],
         hazards=[[o['x'], o['y'], o['sx'] / 2, o['sy'] / 2, o['height']]
                  for o in scene['obstacles']] + [OBSTACLE[:2] + [.775, .775, 5.85]],
     )
     (args.output / 'mission.json').write_text(json.dumps(mission, indent=2))
     source = (DRONE / 'worlds/hybrid_wheels_ros2.wbt').read_text(encoding='utf8')
     target = source.replace('supervisor TRUE controller "wheels"',
-                            'supervisor TRUE controller "farm_flight"', 1)
+                            'supervisor TRUE controller "wheels" controllerArgs [ "--lio-sam-flight" ]', 1)
     if target == source:
         raise SystemExit('DRONE controller line not found; world layout changed')
     # Accept the mission under real gravity instead of the demo's zero-g world.
