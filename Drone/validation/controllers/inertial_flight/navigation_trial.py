@@ -37,8 +37,9 @@ class ObstacleTracks:
 
     def __init__(self):
         self.samples = []
+        self.clear_frames = []
 
-    def observe(self, observations, stamp):
+    def observe(self, observations, stamp, rays=(), origin=(0., 0.)):
         matched = set()
         for ob in observations:
             choices = [(math.hypot(ob['x'] - track[-1][1]['x'],
@@ -51,7 +52,18 @@ class ObstacleTracks:
             else:
                 i = len(self.samples)
                 self.samples.append([(stamp, ob)])
+                self.clear_frames.append(0)
             matched.add(i)
+        for i in reversed(range(len(self.samples))):
+            ob = self.samples[i][-1][1]
+            if i in matched:
+                self.clear_frames[i] = 0
+            elif rays:
+                self.clear_frames[i] = (self.clear_frames[i] + 1
+                                        if scan_clears(ob, origin, rays) else 0)
+                if self.clear_frames[i] >= 3:
+                    self.samples.pop(i)
+                    self.clear_frames.pop(i)
 
     def footprints(self, horizon, max_speed):
         footprints = []
@@ -74,6 +86,27 @@ class ObstacleTracks:
             footprints.append(dict(x=x, y=(lower + upper) / 2, sx=current['sx'],
                                    sy=upper - lower, source='sensor'))
         return footprints
+
+
+def scan_clears(ob, origin, rays):
+    """Require unobstructed rays across the centre of a missed detection."""
+    ox, oy = origin
+    dx = ob['x'] - ox
+    if dx <= ob['sx'] / 2:
+        return False
+    # Test the central ray and a pair on either side. A closer return at any
+    # of those bearings vetoes clearing, including partial occlusion.
+    angle = [math.atan2(ob['y'] + offset * ob['sy'] - oy, dx)
+             for offset in (-.2, 0., .2)]
+    passed = [False] * len(angle)
+    for x, y in rays:
+        bearing = math.atan2(y - oy, x - ox)
+        for i, want in enumerate(angle):
+            if abs(bearing - want) <= math.radians(1.1):
+                if x < ob['x'] + ob['sx'] / 2 + .25:
+                    return False
+                passed[i] = True
+    return all(passed)
 
 
 def braking_segment(position, velocity, latency, gain):
@@ -144,6 +177,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     events = []
     safety_events = []
     hold = False
+    goal_clear = True
     velocity = [0.] * 3
     clearance = math.inf
     contacts = 0
@@ -187,14 +221,24 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                     route.pop(0)
                 if k % max(1, round(100 / step)) == 0:
                     candidates = []
+                    rays = []
+                    qx, qy, qz, qw = msg[2][3:7]
+                    yaw = math.atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz))
+                    cs, sn = math.cos(yaw), math.sin(yaw)
                     if mode != 'lidar':
                         for x, y, w, disp in objects(*cams, mount_x=cfg['mount_x']):
                             if cfg['detect_min'] < x < cfg['detect_max']:
                                 candidates.append(('camera', x, y, w, disp, None))
                     if mode != 'camera':
-                        pts = [(p.x, p.y) for p in sensors['lidar'].getPointCloud()
-                               if cfg['detect_min'] < p.x < cfg['detect_max']
-                               and abs(p.y) < 3 and abs(p.z + .555) < .4]
+                        returns = [(p.x, p.y) for p in sensors['lidar'].getPointCloud()
+                                   if math.isfinite(p.x) and math.isfinite(p.y)
+                                   and p.x > 0 and abs(p.z + .555) < .4]
+                        pts = [(x, y) for x, y in returns if cfg['detect_min'] < x < cfg['detect_max']
+                               and abs(y) < 3]
+                        # A return beyond the detection window can still
+                        # establish line of sight through a tracked footprint.
+                        rays = [(xyz[0] + cs*x - sn*y, xyz[1] + sn*x + cs*y)
+                                for x, y in returns]
                         # Cluster in 2D, not by lateral gap alone: a near box and
                         # the far wall behind it must not merge into one 6 m wall.
                         for group in sorted(cluster_2d(pts), key=lambda g: min(q[0] for q in g))[:3]:
@@ -219,8 +263,6 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                     observations = []
                     for src, x, y, w, disp, depth in candidates:
                         counts['camera' if src == 'camera' else 'lidar'] += 1
-                        qx, qy, qz, qw = msg[2][3:7]
-                        yaw = math.atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz))
                         # The detected range is the obstacle's near face, so the
                         # box centre sits half a depth beyond it. Centring on the
                         # range put the near face behind the UAV and the planner
@@ -229,20 +271,21 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                         # inflated cluster (a ring of stray returns) would push
                         # the box centre onto the destination.
                         sx = min(1.5, max(.6, depth or 1.))
-                        ox = xyz[0] + math.cos(yaw) * (x + sx / 2) - math.sin(yaw) * y
-                        oy = xyz[1] + math.sin(yaw) * (x + sx / 2) + math.cos(yaw) * y
+                        ox = xyz[0] + cs * (x + sx / 2) - sn * y
+                        oy = xyz[1] + sn * (x + sx / 2) + cs * y
                         ob = dict(x=ox, y=oy, sx=sx, sy=max(1.2, w + .6), source='sensor')
                         if src != 'camera' and any(abs(ox - old['x']) <= old['sx'] / 2 + .35 and
                                                    abs(oy - old['y']) <= old['sy'] / 2 + .35
                                                    for old in surveyed):
                             continue  # the same surface is already occupied by the survey
                         observations.append(ob)
-                    tracks.observe(observations, t)
+                    tracks.observe(observations, t, rays, xyz[:2])
                     speed = math.hypot(*velocity[:2])
                     latency = t - stamp + .2  # camera period and controller polling period
                     horizon = latency + speed / 2. + 1. / cfg['gain']
                     known = surveyed + tracks.footprints(horizon, cfg['obstacle_speed'])
                     grid = Planner(known, cfg['resolution'], cfg['boundary'], .85)
+                    goal_clear = grid.is_free(grid.xy_to_cell(*goal))
                     start = tuple(xyz[:2])
                     active = [start] + route
                     stop = braking_segment(start, velocity[:2], latency, cfg['gain'])
@@ -253,7 +296,10 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                         try:
                             path = grid.route(start, goal)
                         except ValueError as exc:
-                            hold_reason = str(exc)
+                            # Reach an already planned, still-clear viewpoint
+                            # while the goal remains occupied.
+                            if goal_clear or len(route) == 1 or not grid.clear_segment(start, route[0]):
+                                hold_reason = str(exc)
                         else:
                             events.append(dict(t=t, source=mode, observations=candidates,
                                                old=active, new=path))
@@ -270,7 +316,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                         -cfg['speed'], min(cfg['speed'], command[j]))
                     force[j] += max(-2. * mass, min(2. * mass,
                                                     cfg['gain'] * mass * (desired - velocity[j])))
-                stable = stable + 1 if (not hold and math.dist(xyz, [*goal, altitude]) < .22 and
+                stable = stable + 1 if (goal_clear and not hold and math.dist(xyz, [*goal, altitude]) < .22 and
                                         math.hypot(*velocity[:2]) < .25) else 0
             elif last and t - last[0] > 1.5:
                 reason = 'stale odometry'

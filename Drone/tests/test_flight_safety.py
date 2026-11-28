@@ -26,6 +26,18 @@ class FlightSafetyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Goal lies inside'):
             grid.route((5., 0.), (10.5, 0.))
 
+    def test_lidar_occlusion_cannot_clear_a_track(self):
+        tracks = ObstacleTracks()
+        track = dict(x=8., y=0., sx=1., sy=1.)
+        tracks.observe([track], 0.)
+        background = [(12., -.3), (12., 0.), (12., .3)]
+        for t in (.1, .2, .3):
+            tracks.observe([], t, background + [(5., 0.)])
+        self.assertEqual(len(tracks.footprints(.5, .75)), 1)
+        for t in (.4, .5, .6):
+            tracks.observe([], t, background)
+        self.assertEqual(tracks.footprints(.5, .75), [])
+
     def test_brake_includes_perception_and_odometry_age(self):
         old = braking_segment((0., 0.), (.75, 0.), .5, 2.4)
         fresh = braking_segment((0., 0.), (.75, 0.), .2, 2.4)
