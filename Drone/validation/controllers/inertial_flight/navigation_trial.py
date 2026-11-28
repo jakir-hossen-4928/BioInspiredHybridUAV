@@ -119,6 +119,39 @@ def braking_segment(position, velocity, latency, gain):
     return tuple(p + v * distance / speed for p, v in zip(position, velocity))
 
 
+def margin_exit(start, grid, body_radius):
+    """Move out of an expanded margin only along increasing separation."""
+    cell = grid.xy_to_cell(*start)
+    if grid.is_free(cell):
+        return None
+    x, y = grid.cell_to_xy(cell)
+    margin = grid.safety + grid.resolution / 2
+    touching = [ob for ob in grid.obstacles
+                if abs(x - ob['x']) <= ob['sx'] / 2 + margin
+                and abs(y - ob['y']) <= ob['sy'] / 2 + margin]
+    if not touching:
+        return None
+
+    def separation(point, ob):
+        return math.hypot(max(0., abs(point[0] - ob['x']) - ob['sx'] / 2),
+                          max(0., abs(point[1] - ob['y']) - ob['sy'] / 2))
+
+    distances = [separation(start, ob) for ob in touching]
+    if min(distances) <= body_radius:
+        return None
+    other = Planner([ob for ob in grid.obstacles if ob not in touching],
+                    grid.resolution, grid.boundary, grid.safety)
+    for dx, dy in ((0., 1.), (0., -1.), (1., 0.), (-1., 0.),
+                   (1., 1.), (1., -1.), (-1., 1.), (-1., -1.)):
+        initial = (start[0] + .01*dx, start[1] + .01*dy)
+        if not all(separation(initial, ob) > d for ob, d in zip(touching, distances)):
+            continue
+        end = (start[0] + margin*dx, start[1] + margin*dy)
+        if grid.is_free(grid.xy_to_cell(*end)) and other.clear_segment(start, end):
+            return end
+    return None
+
+
 def cluster_2d(points, cell=.7):
     """Group body-frame points by 2D proximity (union of neighbouring cells)."""
     buckets = {}
@@ -178,6 +211,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     safety_events = []
     hold = False
     goal_clear = True
+    escape = None
     velocity = [0.] * 3
     clearance = math.inf
     contacts = 0
@@ -290,8 +324,15 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                     active = [start] + route
                     stop = braking_segment(start, velocity[:2], latency, cfg['gain'])
                     hold_reason = None
+                    was_escaping = escape is not None
+                    escape = None
                     if not grid.clear_segment(start, stop):
-                        hold_reason = 'stopping corridor occupied'
+                        if speed < (.32 if was_escaping else .08):
+                            escape = margin_exit(start, grid, math.hypot(*cfg['body_half'][:2]) + .12)
+                        if escape is None:
+                            hold_reason = 'stopping corridor occupied'
+                        elif not was_escaping:
+                            safety_events.append(dict(t=t, reason='leaving expanded margin', target=escape))
                     elif not all(grid.clear_segment(a, b) for a, b in zip(active, active[1:])):
                         try:
                             path = grid.route(start, goal)
@@ -308,9 +349,10 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                         safety_events.append(dict(t=t, reason=hold_reason, pose_age_s=t-stamp,
                                                   stopping_distance_m=math.dist(start, stop)))
                     hold = bool(hold_reason)
-                target = [*route[0], altitude]
+                target = [*(escape or route[0]), altitude]
                 command = [.95 * (target[j] - xyz[j]) for j in range(3)]
-                scale = min(1., cfg['speed'] / max(cfg['speed'], math.hypot(*command[:2])))
+                limit = .22 if escape else cfg['speed']
+                scale = limit / max(limit, math.hypot(*command[:2]))
                 for j in range(3):
                     desired = (0. if hold else command[j] * scale) if j < 2 else max(
                         -cfg['speed'], min(cfg['speed'], command[j]))
