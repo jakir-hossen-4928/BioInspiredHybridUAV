@@ -1,5 +1,5 @@
 #VRML_SIM R2025a utf8
-WorldInfo { title "Drone - Flight Walking Wheels ROS2" info [ "Farm survey with simulated sensors and known-map A* navigation; kinematic flight model." ] basicTimeStep 8 coordinateSystem "ENU" gravity 9.81 }
+WorldInfo { title "Drone - Flight Walking Wheels ROS2" info [ "Force-driven farm flight with LIO-SAM, stereo, LiDAR and an onboard altimeter." ] basicTimeStep 8 coordinateSystem "ENU" gravity 9.81 }
 Viewpoint { orientation 0.81743 -0.2894 -0.49805 1.2359 position -52.4 -51.2 3.9 near .15 far 680 fieldOfView 0.7000 ambientOcclusionRadius 1.3 follow "Drone" followType "Tracking Shot" followSmoothness 0.18 }
 Background { skyColor [ 0.66 0.80 0.95 ] }
 DirectionalLight { direction -0.35 -0.48 -0.80 color 1 0.955 0.85 intensity 1.9 ambientIntensity 0.55 castShadows TRUE }
@@ -4766,7 +4766,7 @@ DEF DRONE Robot { translation -49 -47 .585 rotation 0 0 1 0 name "Drone" supervi
     Camera { name "slam_camera" translation .69 0 -.26565 width 640 height 480 fieldOfView 1.05 near 0.03 far 145 }
     # Downward depth sensor for terrain assessment
     RangeFinder { name "terrain_depth" translation 0 0 -0.38 rotation 0 1 0 1.57079632679 width 64 height 48 fieldOfView 0.70 near 0.05 minRange 0.08 maxRange 45 }
-    Altimeter { name "altimeter" }
+    Altimeter { name "altimeter" accuracy 0.06 resolution 0.02 }
     Accelerometer { name "accelerometer" }
     Lidar {
       translation 0 0 .555

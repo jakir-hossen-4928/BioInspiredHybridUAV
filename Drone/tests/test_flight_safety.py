@@ -6,7 +6,7 @@ from pathlib import Path
 DRONE = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(DRONE / 'controllers/drone'),
                 str(DRONE / 'validation/controllers/inertial_flight')]
-from navigation_trial import ObstacleTracks, braking_segment, margin_exit, view_route
+from navigation_trial import ObstacleTracks, altitude_bias, braking_segment, margin_exit, view_route
 from planner import Planner
 
 
@@ -57,3 +57,11 @@ class FlightSafetyTests(unittest.TestCase):
         self.assertNotEqual(path[-1], goal)
         self.assertFalse(grid.is_free(grid.xy_to_cell(*goal)))
         self.assertTrue(all(grid.clear_segment(a, b) for a, b in zip(path, path[1:])))
+
+    def test_altimeter_gradually_corrects_lio_height_drift(self):
+        bias = 0.
+        for _ in range(150):
+            bias = altitude_bias(bias, -.8, 0.)
+        self.assertAlmostEqual(-.8 + bias, 0., places=3)
+        self.assertEqual(altitude_bias(bias, -.8, float('nan')), bias)
+        self.assertAlmostEqual(altitude_bias(bias, -.8, 20.) - bias, .02)

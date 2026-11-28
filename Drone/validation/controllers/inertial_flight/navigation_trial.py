@@ -1,8 +1,8 @@
 """LIO-SAM-driven flight: arena avoidance matrix and full farm mission.
 
-Everything here reads its pose from pose.json, which observe_flight.py writes
-only from /lio_sam/odometry/imu. Ground-truth geometry is used for scoring
-(clearance, arrival), never for control.
+Navigation reads pose.json from the LIO-SAM fused odometry topic. The farm
+profile also corrects slow vertical drift from the onboard altimeter.
+Ground-truth pose is used for scoring.
 """
 import json
 import math
@@ -122,6 +122,12 @@ def braking_segment(position, velocity, latency, gain):
     return tuple(p + v * distance / speed for p, v in zip(position, velocity))
 
 
+def altitude_bias(bias, odom_z, measured_z):
+    if not math.isfinite(measured_z):
+        return bias
+    return bias + .08 * max(-.25, min(.25, measured_z - odom_z - bias))
+
+
 def margin_exit(start, grid, body_radius):
     """Move out of an expanded margin only along increasing separation."""
     cell = grid.xy_to_cell(*start)
@@ -210,6 +216,12 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     tracks = ObstacleTracks()
     hazards = list(cfg['hazards'])
     altitude, mass, step = cfg['altitude'], cfg['mass'], cfg['step']
+    altimeter = None
+    height_bias = 0.
+    measured_height = math.nan
+    if cfg.get('altimeter_fusion'):
+        altimeter = r.getDevice('altimeter')
+        altimeter.enable(5 * step)
     box = None
     if cfg['fixture'] == 'arena':
         box = r.getFromDef('OBSTACLE').getField('translation')
@@ -239,7 +251,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     reason = 'timeout'
     counts = {'camera': 0, 'lidar': 0}
     with (out / 'track.csv').open('w') as track:
-        print('t,x,y,z,odom_x,odom_y,odom_z,box_y,clearance', file=track)
+        print('t,x,y,z,nav_x,nav_y,nav_z,box_y,clearance,altimeter_m,height_bias_m', file=track)
         for k in range(cfg['steps']):
             t = k * step / 1000.
             by = 0.
@@ -256,6 +268,12 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                 pass
             force = [0., 0., cfg['hover']]
             if fresh:
+                if altimeter is not None:
+                    if k and k % 5 == 0:
+                        measured_height = altimeter.getValue()
+                        height_bias = altitude_bias(height_bias, xyz[2],
+                                                    measured_height - cfg['start'][2])
+                    xyz[2] += height_bias
                 if len(msg[2]) >= 10:
                     v = msg[2][7:10]
                     if math.sqrt(sum(c * c for c in v)) < 6.:
@@ -410,7 +428,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                 clearance = 0.
             if k % 25 == 24:
                 print(r.getTime(), *pos, *(last[1] if last else [float('nan')] * 3),
-                      by, gap, sep=',', file=track)
+                      by, gap, measured_height, height_bias, sep=',', file=track)
             if k % 125 == 124:
                 cams[0].saveImage(str(out / f'frame-{k:05}.png'), 90)
                 # Stereo pair kept for offline depth checks (see test_stereo_depth).
@@ -423,6 +441,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                 break
     result = dict(mode=mode, scenario=case, reason=reason, events=events,
                   safety_events=safety_events,
+                  altimeter_fusion=altimeter is not None, final_height_bias_m=height_bias,
                   observations=counts, known_obstacles=known,
                   clearance_m=clearance, contact_steps=contacts,
                   goal_error_m=math.dist(body.getPosition(), [*cfg['goal'], cfg['truth_altitude']]))

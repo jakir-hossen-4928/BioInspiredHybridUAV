@@ -25,6 +25,7 @@ def main():
         hover=3.9 * 9.81, mass=3.9,   # real gravity: 3.9 kg airframe hovers on 38.3 N
         mount_x=.72, step=8, steps=31000, speed=.9, gain=2.4,
         resolution=1.0, detect_max=10.0, detect_min=1.1, body_half=[.6075, .3825, .372],
+        altimeter_fusion=True,
         start=[-49.0, -47.0, 4.5], fixture=None, obstacle_at=OBSTACLE,
         obstacles=[dict(x=o['x'], y=o['y'], sx=o['sx'], sy=o['sy'])
                    for o in scene['obstacles'] if o['height'] >= 4.5 - .372 - .85],
@@ -49,6 +50,10 @@ def main():
         raise SystemExit('Farm LiDAR declaration changed')
     target = target.replace('physics Physics { mass 3.9 density -1 }',
                             'physics Physics { mass 3.9 density -1 damping Damping { linear .25 angular .25 } }', 1)
+    target = target.replace('Altimeter { name "altimeter" }',
+                            'Altimeter { name "altimeter" accuracy 0.06 resolution 0.02 }', 1)
+    target = target.replace('Farm survey with simulated sensors and known-map A* navigation; kinematic flight model.',
+                            'Force-driven farm flight with LIO-SAM, stereo, LiDAR and an onboard altimeter.', 1)
     (DRONE / 'worlds/farm_flight.wbt').write_text(target, encoding='utf8')
     print(json.dumps(dict(mission=str(args.output / 'mission.json'),
                           world=str(DRONE / 'worlds/farm_flight.wbt')), indent=2))
