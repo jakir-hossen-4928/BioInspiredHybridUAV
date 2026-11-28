@@ -91,19 +91,22 @@ class ObstacleTracks:
 def scan_clears(ob, origin, rays):
     """Require unobstructed rays across the centre of a missed detection."""
     ox, oy = origin
-    dx = ob['x'] - ox
-    if dx <= ob['sx'] / 2:
+    dx, dy = ob['x'] - ox, ob['y'] - oy
+    distance = math.hypot(dx, dy)
+    radius = math.hypot(ob['sx'], ob['sy']) / 2
+    if distance <= radius:
         return False
     # Test the central ray and a pair on either side. A closer return at any
     # of those bearings vetoes clearing, including partial occlusion.
-    angle = [math.atan2(ob['y'] + offset * ob['sy'] - oy, dx)
-             for offset in (-.2, 0., .2)]
+    bearing = math.atan2(dy, dx)
+    spread = math.atan2(.4 * radius, distance)
+    angle = [bearing - spread, bearing, bearing + spread]
     passed = [False] * len(angle)
     for x, y in rays:
         bearing = math.atan2(y - oy, x - ox)
         for i, want in enumerate(angle):
-            if abs(bearing - want) <= math.radians(1.1):
-                if x < ob['x'] + ob['sx'] / 2 + .25:
+            if abs(math.remainder(bearing - want, math.tau)) <= math.radians(1.1):
+                if math.hypot(x - ox, y - oy) < distance + radius + .25:
                     return False
                 passed[i] = True
     return all(passed)
@@ -149,6 +152,20 @@ def margin_exit(start, grid, body_radius):
         end = (start[0] + margin*dx, start[1] + margin*dy)
         if grid.is_free(grid.xy_to_cell(*end)) and other.clear_segment(start, end):
             return end
+    return None
+
+
+def view_route(grid, start, goal):
+    """Plan to a clear observation point while the destination is occupied."""
+    for radius in (2., 3., 4.):
+        points = [(goal[0] + radius * dx, goal[1] + radius * dy)
+                  for dx, dy in ((0., 1.), (0., -1.), (-1., 0.), (1., 0.))]
+        for point in sorted(points, key=lambda p: math.dist(start, p)):
+            if grid.is_free(grid.xy_to_cell(*point)):
+                try:
+                    return grid.route(start, point)
+                except ValueError:
+                    continue
     return None
 
 
@@ -212,6 +229,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     hold = False
     goal_clear = True
     escape = None
+    viewing = False
     velocity = [0.] * 3
     clearance = math.inf
     contacts = 0
@@ -266,7 +284,7 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                     if mode != 'camera':
                         returns = [(p.x, p.y) for p in sensors['lidar'].getPointCloud()
                                    if math.isfinite(p.x) and math.isfinite(p.y)
-                                   and p.x > 0 and abs(p.z + .555) < .4]
+                                   and abs(p.z + .555) < .4]
                         pts = [(x, y) for x, y in returns if cfg['detect_min'] < x < cfg['detect_max']
                                and abs(y) < 3]
                         # A return beyond the detection window can still
@@ -333,7 +351,8 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                             hold_reason = 'stopping corridor occupied'
                         elif not was_escaping:
                             safety_events.append(dict(t=t, reason='leaving expanded margin', target=escape))
-                    elif not all(grid.clear_segment(a, b) for a, b in zip(active, active[1:])):
+                    elif (viewing and goal_clear) or not all(
+                            grid.clear_segment(a, b) for a, b in zip(active, active[1:])):
                         try:
                             path = grid.route(start, goal)
                         except ValueError as exc:
@@ -341,10 +360,17 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
                             # while the goal remains occupied.
                             if goal_clear or len(route) == 1 or not grid.clear_segment(start, route[0]):
                                 hold_reason = str(exc)
+                            if hold_reason and not goal_clear and mode != 'camera':
+                                path = view_route(grid, start, goal)
+                                if path:
+                                    viewing, hold_reason = True, None
+                                    route = path[1:]
+                                    safety_events.append(dict(t=t, reason='observing blocked goal', target=route[-1]))
                         else:
                             events.append(dict(t=t, source=mode, observations=candidates,
                                                old=active, new=path))
                             route = path[1:]
+                            viewing = False
                     if hold != bool(hold_reason):
                         safety_events.append(dict(t=t, reason=hold_reason, pose_age_s=t-stamp,
                                                   stopping_distance_m=math.dist(start, stop)))

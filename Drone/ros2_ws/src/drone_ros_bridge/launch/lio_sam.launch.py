@@ -1,11 +1,11 @@
 """Run upstream ROS 2 LIO-SAM with the simulated Webots LiDAR and IMU."""
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
-def generate_launch_description():
+def _run_nodes(context):
     parameters = {
         'use_sim_time': True,
         'pointCloudTopic': '/webots/lidar/points',
@@ -22,9 +22,11 @@ def generate_launch_description():
         'extrinsicTrans': [0., 0., -.555],  # IMU origin relative to LiDAR.
         'numberOfCores': 2,
     }
-    return LaunchDescription([
-        DeclareLaunchArgument('host', default_value='127.0.0.1'),
-        DeclareLaunchArgument('gravity_mode', default_value='zero-world'),
+    if LaunchConfiguration('profile').perform(context) == 'farm':
+        parameters.update(Horizon_SCAN=720, N_SCAN=32, lidarMaxRange=85.,
+                          odometrySurfLeafSize=.25, mappingCornerLeafSize=.15,
+                          mappingSurfLeafSize=.3)
+    return [
         Node(package='drone_ros_bridge', executable='webots_receiver', output='screen',
              arguments=['--gravity-mode', LaunchConfiguration('gravity_mode'), '--host', LaunchConfiguration('host')]),
         Node(package='tf2_ros', executable='static_transform_publisher',
@@ -34,4 +36,13 @@ def generate_launch_description():
         *(Node(package='lio_sam', executable='lio_sam_' + stage,
                parameters=[parameters], output='screen')
           for stage in ('imuPreintegration', 'imageProjection', 'featureExtraction', 'mapOptimization')),
+    ]
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument('host', default_value='127.0.0.1'),
+        DeclareLaunchArgument('gravity_mode', default_value='zero-world'),
+        DeclareLaunchArgument('profile', default_value='arena', choices=['arena', 'farm']),
+        OpaqueFunction(function=_run_nodes),
     ])

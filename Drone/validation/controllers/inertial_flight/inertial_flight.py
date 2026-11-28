@@ -23,7 +23,11 @@ for name in ('accelerometer', 'gyro', 'inertial unit', 'lidar', 'gps'):
 cams = [r.getDevice('oak_' + n) for n in ('rgb','left','right')]
 for cam in cams:
     cam.enable(100)
-stream = FastLivoStreamer(r, sensors, {'fast_livo_lidar_interval_ms': 100, 'native_lidar_timing': True}, 4)
+stream = FastLivoStreamer(r, sensors, {
+    'fast_livo_port': int(os.environ.get('UAV_LIO_PORT', 15882)),
+    'fast_livo_lidar_interval_ms': 100,
+    'native_lidar_timing': True,
+}, 4)
 # The fixed scanner first delivers a complete cloud at 100 ms.
 stream.last_lidar = 0.
 if os.environ.get('UAV_SENSOR_MODE'):

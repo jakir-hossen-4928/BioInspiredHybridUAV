@@ -6,7 +6,7 @@ from pathlib import Path
 DRONE = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(DRONE / 'controllers/drone'),
                 str(DRONE / 'validation/controllers/inertial_flight')]
-from navigation_trial import ObstacleTracks, braking_segment, margin_exit
+from navigation_trial import ObstacleTracks, braking_segment, margin_exit, view_route
 from planner import Planner
 
 
@@ -49,3 +49,11 @@ class FlightSafetyTests(unittest.TestCase):
         end = margin_exit((8., 1.3), grid, .5)
         self.assertGreater(end[1], 1.3)
         self.assertTrue(grid.is_free(grid.xy_to_cell(*end)))
+
+    def test_blocked_goal_observation_route_preserves_occupancy(self):
+        goal = (8., 0.)
+        grid = Planner([dict(x=8., y=0., sx=1., sy=2.)], .25, 14., .85)
+        path = view_route(grid, (5., 1.), goal)
+        self.assertNotEqual(path[-1], goal)
+        self.assertFalse(grid.is_free(grid.xy_to_cell(*goal)))
+        self.assertTrue(all(grid.clear_segment(a, b) for a, b in zip(path, path[1:])))
