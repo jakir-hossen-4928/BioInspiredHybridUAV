@@ -1,0 +1,19 @@
+{
+  "source": "/lio_sam/mapping/map_global",
+  "world": "inertial_flight.wbt",
+  "map_stamp_s": 23.900278091,
+  "commit": "71f31999c206fb6c0741bf888557decbd0c128d5",
+  "points": 1293,
+  "finite_points": 1293,
+  "reference_boxes": 20,
+  "origin_world_m": [
+    0.0,
+    0.0,
+    2.555
+  ],
+  "mean_surface_error_m": 0.05244820600125035,
+  "rmse_surface_error_m": 0.11067493354597041,
+  "p95_surface_error_m": 0.11276531219482422,
+  "max_surface_error_m": 1.161867904663086,
+  "fraction_within_025m": 0.9845320959010054
+}

@@ -1,0 +1,15 @@
+{
+  "mode": "camera",
+  "scenario": "static",
+  "reason": "timeout",
+  "events": [],
+  "observations": {
+    "camera": 0,
+    "lidar": 0
+  },
+  "known_obstacles": [],
+  "clearance_m": 6.840301277255548,
+  "contact_steps": 0,
+  "goal_error_m": 10.140302643585025,
+  "passed": false
+}

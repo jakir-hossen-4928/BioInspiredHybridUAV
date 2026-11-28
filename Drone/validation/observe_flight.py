@@ -1,12 +1,13 @@
 """ROS-side observer. Only LIO-SAM odometry is sent back to navigation."""
 import json
+import os
 import struct
 import sys
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data as qos
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import PointCloud2, Imu
+from sensor_msgs.msg import PointCloud2, Imu, Image
 from geometry_msgs.msg import PoseStamped
 
 rclpy.init()
@@ -34,6 +35,20 @@ node.create_subscription(Odometry,'/lio_sam/mapping/odometry',lambda m:log('odom
 node.create_subscription(PoseStamped,'/webots/ground_truth',lambda m:log('truth',m,pose(m.pose)),qos)
 node.create_subscription(PointCloud2,'/lio_sam/mapping/map_global',cloud,qos)
 node.create_subscription(PointCloud2,'/webots/lidar/points',scan,qos)
+if os.environ.get('UAV_CLIENT_DEMO'):
+    def preview(kind, extract):
+        last = -1.
+        def observe(message):
+            nonlocal last
+            t = stamp(message)
+            if t - last >= 1.:
+                log(kind, message, extract(message))
+                last = t
+        return observe
+    node.create_subscription(Imu, '/livox/imu', preview('imu', lambda m: [
+        m.linear_acceleration.x, m.linear_acceleration.y, m.linear_acceleration.z]), qos)
+    node.create_subscription(Image, '/webots/slam/image_raw', preview('camera', lambda m: [
+        m.width, m.height, m.encoding]), qos)
 last_nav = -1.
 def fused(m):
     global last_nav

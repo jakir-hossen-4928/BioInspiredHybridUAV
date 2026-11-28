@@ -1,0 +1,28 @@
+Visualization Manager:
+  Global Options:
+    Fixed Frame: odom
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Live LIO-SAM map
+      Enabled: true
+      Topic:
+        Value: /lio_sam/mapping/map_global
+        Reliability Policy: Best Effort
+      Style: Points
+      Size (Pixels): 4
+    - Class: rviz_default_plugins/Odometry
+      Name: Live LIO-SAM localization
+      Enabled: true
+      Topic:
+        Value: /lio_sam/odometry/imu
+        Reliability Policy: Best Effort
+      Keep: 20
+    - Class: rviz_default_plugins/Image
+      Name: Live Webots RGB
+      Enabled: true
+      Topic:
+        Value: /webots/slam/image_raw
+        Reliability Policy: Best Effort

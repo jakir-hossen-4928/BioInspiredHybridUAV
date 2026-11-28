@@ -58,6 +58,11 @@ class Mission:
         self.dt = self.step_ms / 1000.0
         self.scene = load_json('scene.json')
         self.settings = load_json('settings.json')
+        client_evidence = os.environ.get('UAV_CLIENT_EVIDENCE')
+        if client_evidence:
+            self.settings.update(fast_livo_port=int(os.environ.get('UAV_LIO_PORT', 15882)),
+                                 mission_mode='FULL_FARM_SURVEY', auto_capture=True,
+                                 start_paused=False, console_live_enabled=True)
         self.speed = float(self.settings.get('flight_speed_mps', 3.6))
         self.altitude = float(self.settings.get('target_altitude_m', 10.5))
         self.land_height = float(self.settings.get('landing_altitude_m', .18))
@@ -75,7 +80,7 @@ class Mission:
         self.base_altitude = self.altitude
         self.base_clearance = self.clearance
         self.photo_count = 0
-        self.captures_dir = BASE.parents[1] / 'captures'
+        self.captures_dir = Path(client_evidence) if client_evidence else BASE.parents[1] / 'captures'
         self.session = time.strftime('%Y%m%d_%H%M%S')
         self.last_photo = 'none yet'
         self.obstacles = list(self.scene['obstacles'])
@@ -121,7 +126,7 @@ class Mission:
         self.landing_decision = 'no on-site landing requested'
         self.autonomous_safe_landing = False
         self.lidar_count = 0
-        self.sensor_dashboard = BASE.parents[1] / 'dashboard.html'
+        self.sensor_dashboard = self.captures_dir / 'dashboard.html' if client_evidence else BASE.parents[1] / 'dashboard.html'
         self.terrain_report_written = False
 
 
@@ -634,6 +639,18 @@ class Mission:
                  card('Terrain roughness',fmt(assessment['roughness_m'],' m',3), 'plane-fit RMS residual'),
                  card('Ground median height',fmt(assessment['median_height_m'],' m'), 'height relative to farm Z 0'),
                  card('Measured map cells',str(len(self.terrain_grid.cells)), 'GPS-referenced depth observations — NOT SLAM')]
+        if os.environ.get('UAV_CLIENT_EVIDENCE'):
+            try:
+                ros_live = json.loads((self.captures_dir / 'ros-live.json').read_text(encoding='utf-8'))
+            except (OSError, ValueError):
+                ros_live = {}
+            cards.extend([
+                card('LIO-SAM XYZ (m)', ' / '.join(fmt(a) for a in ros_live.get('lio_xyz') or [])
+                     or 'Waiting for odometry', 'Experimental live estimate. Farm control uses Webots pose.'),
+                card('LIO-SAM global cloud', ros_live.get('map_points', 0), 'Points in last published cloud'),
+                card('ROS camera and IMU samples', ' / '.join(str(ros_live.get('samples', {}).get(k, 0))
+                     for k in ('camera', 'imu')), 'Observer samples at one-second intervals'),
+                card('Captured photos', self.photo_count, self.last_photo)])
         html_doc = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta http-equiv="refresh" content="2"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache"><title>Drone | Sensors</title>

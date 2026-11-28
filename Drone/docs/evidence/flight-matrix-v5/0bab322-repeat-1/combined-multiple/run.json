@@ -1,0 +1,9 @@
+{
+  "commit": "0bab3224644a4287b0e1b2ea88530951aee76382",
+  "mode": "combined",
+  "scenario": "multiple",
+  "world": "inertial_flight.wbt",
+  "gravity": "physical",
+  "profile": "arena",
+  "port": 15883
+}

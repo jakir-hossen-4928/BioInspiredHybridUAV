@@ -23,6 +23,8 @@ for name in ('accelerometer', 'gyro', 'inertial unit', 'lidar', 'gps'):
 cams = [r.getDevice('oak_' + n) for n in ('rgb','left','right')]
 for cam in cams:
     cam.enable(100)
+if os.environ.get('UAV_CLIENT_CAMERA'):
+    sensors['slam_camera'] = cams[0]
 stream = FastLivoStreamer(r, sensors, {
     'fast_livo_port': int(os.environ.get('UAV_LIO_PORT', 15882)),
     'fast_livo_lidar_interval_ms': 100,

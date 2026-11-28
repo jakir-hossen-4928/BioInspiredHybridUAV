@@ -1,0 +1,10 @@
+{
+  "commit": "71f31999c206fb6c0741bf888557decbd0c128d5",
+  "mode": "lidar",
+  "scenario": "moving",
+  "world": "inertial_flight.wbt",
+  "gravity": "physical",
+  "profile": "arena",
+  "port": 15884,
+  "ros_domain_id": 14
+}

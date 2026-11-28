@@ -270,11 +270,32 @@ class WheelMission(HybridMission):
                 print('[WHEEL STATUS] Could not update status file:', exc)
 
     def run(self):
+        client_dir = os.environ.get('UAV_CLIENT_EVIDENCE')
+        stop_file = os.environ.get('UAV_CLIENT_STOP')
+        walk_started = None
+        walked = 0.
+        states = set()
         while self.robot.step(self.step_ms) != -1:
+            if stop_file and Path(stop_file).exists():
+                self.livo_stream.close()
+                self.robot.simulationQuit(0)
+                return
             self.read_keys()
+            now = self.robot.getTime()
+            if client_dir and self.state == 'ROLLING' and self.ground_distance >= 1.5 and walk_started is None:
+                if self.request_walk():
+                    walk_started = now
+            if (client_dir and walk_started is not None and now - walk_started >= 4
+                    and self.state in ('WALKING', 'WALK_HOLD')):
+                self.request_flight()
             self.sense_obstacles()
             self.update_rotors()
+            walking_from = self.planar() if client_dir and self.state == 'WALKING' else None
             self.move_step()
+            if client_dir:
+                states.add(self.state)
+                if walking_from is not None:
+                    walked += math.dist(walking_from, self.planar())
             now = self.robot.getTime()
             self.livo_stream.update(now, self.position, self.yaw)
             self.evaluate_terrain()
@@ -292,6 +313,17 @@ class WheelMission(HybridMission):
                 self.last_print = now
                 print('[WHEEL HYBRID] %.1fs %s position %s' %
                       (now, self.state, [round(v, 2) for v in self.position]))
+            if client_dir and self.state == 'LANDED':
+                self.write_sensor_dashboard(force=True)
+                self.robot.exportImage(str(Path(client_dir) / 'farm-landed.png'), 95)
+                (Path(client_dir) / 'farm-result.json').write_text(json.dumps(dict(
+                    state=self.state, mission=self.settings.get('mission_mode'), duration_s=now,
+                    wheel_distance_m=self.ground_distance, walking_distance_m=walked,
+                    states=sorted(states), returned_home=self.returning,
+                    photos=self.photo_count, final_position_m=self.position), indent=2))
+                self.livo_stream.close()
+                self.robot.simulationQuit(0)
+                return
 
 
 if __name__ == '__main__':

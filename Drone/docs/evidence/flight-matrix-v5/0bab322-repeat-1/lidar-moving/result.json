@@ -1,0 +1,16 @@
+{
+  "mode": "lidar",
+  "scenario": "moving",
+  "reason": "timeout",
+  "events": [],
+  "safety_events": [],
+  "observations": {
+    "camera": 0,
+    "lidar": 0
+  },
+  "known_obstacles": [],
+  "clearance_m": 1.9,
+  "contact_steps": 0,
+  "goal_error_m": 10.5,
+  "passed": false
+}

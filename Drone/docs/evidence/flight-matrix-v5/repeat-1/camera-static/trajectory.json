@@ -1,0 +1,14 @@
+{
+  "label": "camera-static",
+  "matched_samples": 106,
+  "odometry_samples": 106,
+  "ground_truth_samples": 86,
+  "duration_s": 21.0,
+  "reference_path_m": 13.489,
+  "raw_position_rmse_m": 1.9884,
+  "aligned_position_rmse_m": 0.0455,
+  "aligned_position_max_m": 0.0798,
+  "aligned_final_error_m": 0.0541,
+  "rpe_translation_rmse_m": 0.0205,
+  "drift_percent": 0.401
+}

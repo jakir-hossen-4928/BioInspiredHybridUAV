@@ -1,0 +1,14 @@
+{
+  "label": "lidar-static",
+  "matched_samples": 95,
+  "odometry_samples": 95,
+  "ground_truth_samples": 77,
+  "duration_s": 18.8,
+  "reference_path_m": 12.91,
+  "raw_position_rmse_m": 1.989,
+  "aligned_position_rmse_m": 0.0446,
+  "aligned_position_max_m": 0.0856,
+  "aligned_final_error_m": 0.061,
+  "rpe_translation_rmse_m": 0.0203,
+  "drift_percent": 0.473
+}

@@ -6,7 +6,7 @@
 
 ![Webots R2025a](https://img.shields.io/badge/Webots-R2025a-1f6feb)
 ![Python 3+](https://img.shields.io/badge/Python-3%2B-3776AB?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-75%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-90%20passing-brightgreen)
 ![ROS 2](https://img.shields.io/badge/ROS%202-Humble-22314E)
 ![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
 ![Worlds](https://img.shields.io/badge/Worlds-12-9cf)
@@ -29,6 +29,22 @@
 [⚠️ Scope & Limitations](#-scope-and-limitations)
 
 </div>
+
+## One-click client demo
+
+On Windows, double-click [RUN_CLIENT_DEMO.bat](RUN_CLIENT_DEMO.bat). With
+Webots R2025a and the Kiri ROS 2 container available, it opens the farm
+survey and sensor dashboard, then runs a separate physics-driven LIO-SAM
+obstacle-avoidance demonstration. Use [STOP_CLIENT_DEMO.bat](STOP_CLIENT_DEMO.bat)
+to stop the session. Logs, images and measured results are saved under
+`client-demo-sessions/`.
+
+The automatic farm survey uses kinematic locomotion and Webots pose.
+The separate arena flight uses live LIO-SAM navigation. All nine arena
+scenarios passed twice at the same source revision. See the
+[demonstration report](Drone/docs/CLIENT_DEMO_REPORT.md),
+[launcher guide](Drone/docs/CLIENT_DEMO.md) and
+[v5 measurements](Drone/docs/evidence/flight-matrix-v5/README.md).
 
 ---
 

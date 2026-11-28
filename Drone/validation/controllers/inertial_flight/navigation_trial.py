@@ -250,9 +250,13 @@ def fly(r, body, sensors, cams, stream, out, mode, case):
     bad_velocity = 0
     reason = 'timeout'
     counts = {'camera': 0, 'lidar': 0}
+    stop_file = os.environ.get('UAV_CLIENT_STOP')
     with (out / 'track.csv').open('w') as track:
         print('t,x,y,z,nav_x,nav_y,nav_z,box_y,clearance,altimeter_m,height_bias_m', file=track)
         for k in range(cfg['steps']):
+            if stop_file and os.path.isfile(stop_file):
+                reason = 'stopped'
+                break
             t = k * step / 1000.
             by = 0.
             if case == 'moving' and box is not None:

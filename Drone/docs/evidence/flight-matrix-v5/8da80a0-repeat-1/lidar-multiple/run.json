@@ -1,0 +1,7 @@
+{
+  "commit": "8da80a0a43aa4ed2c13610af6fa7779bca3c960f",
+  "mode": "lidar",
+  "scenario": "multiple",
+  "world": "inertial_flight.wbt",
+  "gravity": "physical"
+}

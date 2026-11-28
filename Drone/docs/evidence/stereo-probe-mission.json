@@ -1,0 +1,1 @@
+{"goal": [10.5, 0.0], "boundary": 14.0, "altitude": 0.0, "truth_altitude": 2.0, "hover": 9.81, "mass": 1.0, "mount_x": 0.32, "step": 4, "steps": 400, "speed": 0.75, "gain": 2.4, "resolution": 0.25, "detect_max": 6.8, "detect_min": 0.75, "hazards": [[8, 0, 0.5, 0.6, 3.0]], "start": null, "fixture": "arena", "obstacles": []}

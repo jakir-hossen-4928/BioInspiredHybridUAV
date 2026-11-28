@@ -1,0 +1,7 @@
+{
+  "commit": "d86f8ba3005daca99899b42fa4d4f412b0849e13",
+  "mode": "camera",
+  "scenario": "moving",
+  "world": "inertial_flight.wbt",
+  "gravity": "physical"
+}

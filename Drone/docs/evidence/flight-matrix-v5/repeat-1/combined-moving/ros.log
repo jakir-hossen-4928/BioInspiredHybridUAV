@@ -1,0 +1,39 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-11-28-10-29-00-405961-15d384d63f3b-39
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [webots_receiver-1]: process started with pid [101]
+[INFO] [static_transform_publisher-2]: process started with pid [103]
+[INFO] [static_transform_publisher-3]: process started with pid [105]
+[INFO] [lio_sam_imuPreintegration-4]: process started with pid [115]
+[INFO] [lio_sam_imageProjection-5]: process started with pid [119]
+[INFO] [lio_sam_featureExtraction-6]: process started with pid [124]
+[INFO] [lio_sam_mapOptimization-7]: process started with pid [138]
+[static_transform_publisher-2] [INFO] [1795861740.454427764] [static_transform_publisher_qeAGvG50ok8gUvuz]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'odom'
+[static_transform_publisher-3] [INFO] [1795861740.465099323] [static_transform_publisher_Qa3iN4PS4EqqoYIb]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.555000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'base_link' to 'livox_frame'
+[lio_sam_imuPreintegration-4] [INFO] [1795861740.475935032] [rclcpp]: [1;32m----> IMU Preintegration Started.[0m
+[lio_sam_featureExtraction-6] [INFO] [1795861740.480329534] [rclcpp]: [1;32m----> Feature Extraction Started.[0m
+[lio_sam_imageProjection-5] [INFO] [1795861740.488977709] [rclcpp]: [1;32m----> Image Projection Started.[0m
+[lio_sam_mapOptimization-7] [INFO] [1795861740.506616798] [rclcpp]: [1;32m----> Map Optimization Started.[0m
+[webots_receiver-1] [WARN] [1795861740.568456964] [webots_fast_livo_bridge]: livox_ros_driver2 missing: /livox/lidar NOT published; only PointCloud2
+[webots_receiver-1] [INFO] [1795861740.569364819] [webots_fast_livo_bridge]: Listening for Webots on 0.0.0.0:15882
+[webots_receiver-1] [INFO] [1795861743.980477749] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 53292)
+[lio_sam_imageProjection-5] [INFO] [1795861744.153945647] [lio_sam_imageProjection]: Waiting for IMU data ...
+[webots_receiver-1] [INFO] [1795861745.097010848] [webots_fast_livo_bridge]: frames IMU=500 LiDAR=20 camera=0 GPS=8
+[webots_receiver-1] [INFO] [1795861746.429855730] [webots_fast_livo_bridge]: frames IMU=1000 LiDAR=40 camera=0 GPS=16
+[webots_receiver-1] [INFO] [1795861747.864408138] [webots_fast_livo_bridge]: frames IMU=1500 LiDAR=60 camera=0 GPS=24
+[webots_receiver-1] [INFO] [1795861749.230819389] [webots_fast_livo_bridge]: frames IMU=2000 LiDAR=80 camera=0 GPS=32
+[webots_receiver-1] [INFO] [1795861750.664774207] [webots_fast_livo_bridge]: frames IMU=2500 LiDAR=100 camera=0 GPS=40
+[webots_receiver-1] [INFO] [1795861752.113114790] [webots_fast_livo_bridge]: frames IMU=3000 LiDAR=120 camera=0 GPS=48
+[webots_receiver-1] [INFO] [1795861753.430828367] [webots_fast_livo_bridge]: frames IMU=3500 LiDAR=140 camera=0 GPS=56
+[webots_receiver-1] [INFO] [1795861754.738606578] [webots_fast_livo_bridge]: frames IMU=4000 LiDAR=160 camera=0 GPS=64
+[webots_receiver-1] [INFO] [1795861756.049213646] [webots_fast_livo_bridge]: frames IMU=4500 LiDAR=180 camera=0 GPS=72
+[webots_receiver-1] [INFO] [1795861757.389413186] [webots_fast_livo_bridge]: frames IMU=5000 LiDAR=200 camera=0 GPS=80
+[webots_receiver-1] [INFO] [1795861758.722458009] [webots_fast_livo_bridge]: frames IMU=5500 LiDAR=220 camera=0 GPS=88
+[webots_receiver-1] [INFO] [1795861760.048234768] [webots_fast_livo_bridge]: frames IMU=6000 LiDAR=240 camera=0 GPS=96
+[webots_receiver-1] [INFO] [1795861761.383005819] [webots_fast_livo_bridge]: frames IMU=6500 LiDAR=260 camera=0 GPS=104
+[webots_receiver-1] [INFO] [1795861762.627079608] [webots_fast_livo_bridge]: Waiting for reconnection

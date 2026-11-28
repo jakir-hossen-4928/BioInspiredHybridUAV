@@ -1,0 +1,149 @@
+﻿Commit 71f31999c206fb6c0741bf888557decbd0c128d5
+Command python -m unittest discover -s Drone/tests -v
+Exit code 0
+
+python : test_all_sections_simulated_and_estimator_not_faked 
+(test_console_telemetry.ConsoleTests.test_all_sections_simulated_and_estimator_not_faked) ... ok
+At line:3 char:1
++ python -m unittest discover -s Drone/tests -v > "$env:TEMP/uav-v5-tes ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_all_sectio...t_faked) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+test_disabled_console_writes_nothing (test_console_telemetry.ConsoleTests.test_disabled_console_writes_nothing) ... ok
+test_infinite_sensor_returns_do_not_corrupt_json 
+(test_console_telemetry.ConsoleTests.test_infinite_sensor_returns_do_not_corrupt_json) ... ok
+test_missing_device_renders_na (test_console_telemetry.ConsoleTests.test_missing_device_renders_na) ... ok
+test_blocked_goal_observation_route_preserves_occupancy 
+(test_flight_safety.FlightSafetyTests.test_blocked_goal_observation_route_preserves_occupancy) ... ok
+test_brake_includes_perception_and_odometry_age 
+(test_flight_safety.FlightSafetyTests.test_brake_includes_perception_and_odometry_age) ... ok
+test_destination_obstacle_stays_occupied 
+(test_flight_safety.FlightSafetyTests.test_destination_obstacle_stays_occupied) ... ok
+test_lidar_occlusion_cannot_clear_a_track 
+(test_flight_safety.FlightSafetyTests.test_lidar_occlusion_cannot_clear_a_track) ... ok
+test_margin_exit_only_moves_away_from_physical_occupancy 
+(test_flight_safety.FlightSafetyTests.test_margin_exit_only_moves_away_from_physical_occupancy) ... ok
+test_obstacle_reversal_remains_occupied_after_camera_dropout 
+(test_flight_safety.FlightSafetyTests.test_obstacle_reversal_remains_occupied_after_camera_dropout) ... ok
+test_missing_stationary_foot_load_fails 
+(test_foot_force_validation.FootForceValidationTests.test_missing_stationary_foot_load_fails) ... ok
+test_recorded_force_trace_matches_live_results 
+(test_foot_force_validation.FootForceValidationTests.test_recorded_force_trace_matches_live_results) ... ok
+test_configured_sonar_stop_distance (test_hybrid.HybridControllerTests.test_configured_sonar_stop_distance) ... ok
+test_hybrid_initial_walk_then_autonomous_flight 
+(test_hybrid.HybridControllerTests.test_hybrid_initial_walk_then_autonomous_flight) ... ok
+test_safety_gated_flight_to_walking (test_hybrid.HybridControllerTests.test_safety_gated_flight_to_walking) ... ok
+test_sensor_obstacle_triggers_replanning (test_hybrid.HybridControllerTests.test_sensor_obstacle_triggers_replanning) 
+... ok
+test_walk_force_is_labelled_analytical (test_hybrid.HybridControllerTests.test_walk_force_is_labelled_analytical) ... 
+ok
+test_augmented_search_crosses_modes_at_authorized_site 
+(test_hybrid.PlannerTests.test_augmented_search_crosses_modes_at_authorized_site) ... ok
+test_front_range_projection (test_hybrid.PlannerTests.test_front_range_projection) ... ok
+test_gait_diagonal_pairs_and_force_estimate (test_hybrid.PlannerTests.test_gait_diagonal_pairs_and_force_estimate) ... 
+ok
+test_no_transition_without_allowed_site (test_hybrid.PlannerTests.test_no_transition_without_allowed_site) ... ok
+test_walk_has_heading_and_avoids_obstacles (test_hybrid.PlannerTests.test_walk_has_heading_and_avoids_obstacles) ... ok
+test_world_has_articulated_legs_and_force_devices 
+(test_hybrid.PlannerTests.test_world_has_articulated_legs_and_force_devices) ... ok
+test_arc_geometry_matches_curvature (test_hybrid_astar.HybridAStarTests.test_arc_geometry_matches_curvature) ... ok
+test_blocked_goal_is_rejected (test_hybrid_astar.HybridAStarTests.test_blocked_goal_is_rejected) ... ok
+test_goal_yaw_is_reached (test_hybrid_astar.HybridAStarTests.test_goal_yaw_is_reached) ... ok
+test_route_is_drivable_and_clear (test_hybrid_astar.HybridAStarTests.test_route_is_drivable_and_clear) ... ok
+test_icp_recovers_known_transform (test_livo_sim.EstimatorTests.test_icp_recovers_known_transform) ... ok
+test_imu_prediction_integrates_acceleration (test_livo_sim.EstimatorTests.test_imu_prediction_integrates_acceleration) 
+... ok
+test_imu_prediction_integrates_yaw_rate (test_livo_sim.EstimatorTests.test_imu_prediction_integrates_yaw_rate) ... ok
+test_report_writes_track_and_map (test_livo_sim.EstimatorTests.test_report_writes_track_and_map) ... ok
+test_solve4_solves_linear_system (test_livo_sim.EstimatorTests.test_solve4_solves_linear_system) ... ok
+test_cloud_filters_nonfinite_and_zero_range 
+(test_livo_stream.ProtocolTests.test_cloud_filters_nonfinite_and_zero_range) ... ok
+test_controller_calls_bridge_after_move (test_livo_stream.ProtocolTests.test_controller_calls_bridge_after_move) ... ok
+test_metadata_roundtrip (test_livo_stream.ProtocolTests.test_metadata_roundtrip) ... ok
+test_monitor_outputs_actual_ply_and_bitmap (test_livo_stream.ProtocolTests.test_monitor_outputs_actual_ply_and_bitmap) 
+... ok
+test_reject_oversize (test_livo_stream.ProtocolTests.test_reject_oversize) ... ok
+test_reject_wrong_magic (test_livo_stream.ProtocolTests.test_reject_wrong_magic) ... ok
+test_simulated_ray_timing_is_opt_in (test_livo_stream.ProtocolTests.test_simulated_ray_timing_is_opt_in) ... ok
+test_stream_socket_frame_roundtrip (test_livo_stream.ProtocolTests.test_stream_socket_frame_roundtrip) ... ok
+test_world_contains_dedicated_slam_camera_preserves_4k 
+(test_livo_stream.ProtocolTests.test_world_contains_dedicated_slam_camera_preserves_4k) ... ok
+test_writer_and_mock_webots_devices (test_livo_stream.ProtocolTests.test_writer_and_mock_webots_devices) ... ok
+test_auto_hover_capture_and_return_to_home 
+(test_navigation.FarmSurveyTests.test_auto_hover_capture_and_return_to_home) ... ok
+test_four_missions_route_to_all_stops_and_home 
+(test_navigation.FarmSurveyTests.test_four_missions_route_to_all_stops_and_home) ... ok
+test_lossless_manual_png (test_navigation.FarmSurveyTests.test_lossless_manual_png) ... ok
+test_obstacle_replanning_and_route_change (test_navigation.FarmSurveyTests.test_obstacle_replanning_and_route_change) 
+... ok
+test_rotor_visual_animation_and_stop (test_navigation.FarmSurveyTests.test_rotor_visual_animation_and_stop) ... ok
+test_worlds_geometry_local_assets_survey_camera 
+(test_navigation.FarmSurveyTests.test_worlds_geometry_local_assets_survey_camera) ... ok
+test_all_worlds_include_downward_metric_rangefinder 
+(test_perception.TerrainTests.test_all_worlds_include_downward_metric_rangefinder) ... ok
+test_elevated_flat_roof_rejected (test_perception.TerrainTests.test_elevated_flat_roof_rejected) ... ok
+test_isa_and_observed_map (test_perception.TerrainTests.test_isa_and_observed_map) ... ok
+test_landing_approved_only_for_safe_measured_depth 
+(test_perception.TerrainTests.test_landing_approved_only_for_safe_measured_depth) ... ok
+test_landing_blocked_by_rough_depth (test_perception.TerrainTests.test_landing_blocked_by_rough_depth) ... ok
+test_landing_blocked_without_sensor_data (test_perception.TerrainTests.test_landing_blocked_without_sensor_data) ... ok
+test_level_ground_safe_from_valid_depth (test_perception.TerrainTests.test_level_ground_safe_from_valid_depth) ... ok
+test_live_dashboard_has_sensor_labels_and_log 
+(test_perception.TerrainTests.test_live_dashboard_has_sensor_labels_and_log) ... ok
+test_no_range_values_is_not_safe (test_perception.TerrainTests.test_no_range_values_is_not_safe) ... ok
+test_rough_ground_rejected (test_perception.TerrainTests.test_rough_ground_rejected) ... ok
+test_steep_ground_rejected (test_perception.TerrainTests.test_steep_ground_rejected) ... ok
+test_ament_package_files (test_ros2_package.ROS2StructureTests.test_ament_package_files) ... ok
+test_hybrid_world_uses_8ms_sampling_and_sensor_names 
+(test_ros2_package.ROS2StructureTests.test_hybrid_world_uses_8ms_sampling_and_sensor_names) ... ok
+test_prepare_config_replaces_external_calibration 
+(test_ros2_package.ROS2StructureTests.test_prepare_config_replaces_external_calibration) ... ok
+test_protocol_roundtrip (test_ros2_package.ROS2StructureTests.test_protocol_roundtrip) ... ok
+test_setup_scripts_present (test_ros2_package.ROS2StructureTests.test_setup_scripts_present) ... ok
+test_topics_are_not_fake_estimator_results 
+(test_ros2_package.ROS2StructureTests.test_topics_are_not_fake_estimator_results) ... ok
+test_custom_hover_without_photos (test_routes.ManualRouteTests.test_custom_hover_without_photos) ... ok
+test_hot_reload_changes_mission_without_restart 
+(test_routes.ManualRouteTests.test_hot_reload_changes_mission_without_restart) ... ok
+test_invalid_new_json_does_not_replace_active_path 
+(test_routes.ManualRouteTests.test_invalid_new_json_does_not_replace_active_path) ... ok
+test_manual_two_photo_stops_saves_only_opted_in_stop 
+(test_routes.ManualRouteTests.test_manual_two_photo_stops_saves_only_opted_in_stop) ... ok
+test_obstacle_boundary_and_invalid_data_are_rejected 
+(test_routes.ManualRouteTests.test_obstacle_boundary_and_invalid_data_are_rejected) ... ok
+test_sample_manual_route_valid_and_returns_home 
+(test_routes.ManualRouteTests.test_sample_manual_route_valid_and_returns_home) ... ok
+test_u_keyboard_key_activates_manual_mode (test_routes.ManualRouteTests.test_u_keyboard_key_activates_manual_mode) ... 
+ok
+test_depth_moves_towards_camera_as_disparity_grows 
+(test_stereo_depth.StereoDepthTests.test_depth_moves_towards_camera_as_disparity_grows) ... ok
+test_disparity_becomes_metric_depth (test_stereo_depth.StereoDepthTests.test_disparity_becomes_metric_depth) ... ok
+test_flat_coloured_obstacle_still_gets_exact_disparity 
+(test_stereo_depth.StereoDepthTests.test_flat_coloured_obstacle_still_gets_exact_disparity) ... ok
+test_no_depth_without_a_detection (test_stereo_depth.StereoDepthTests.test_no_depth_without_a_detection) ... ok
+test_auto_roll_hold_takeoff_and_animated_wheels 
+(test_wheels.WheelControllerTests.test_auto_roll_hold_takeoff_and_animated_wheels) ... ok
+test_flight_depth_hit_replans_around_an_unmapped_box 
+(test_wheels.WheelControllerTests.test_flight_depth_hit_replans_around_an_unmapped_box) ... ok
+test_flight_to_roll_rejects_unsafe_terrain 
+(test_wheels.WheelControllerTests.test_flight_to_roll_rejects_unsafe_terrain) ... ok
+test_mode_switch_preserves_screened_descent 
+(test_wheels.WheelControllerTests.test_mode_switch_preserves_screened_descent) ... ok
+test_return_home_from_ground_takes_off_before_moving_and_lands_at_ride_height 
+(test_wheels.WheelControllerTests.test_return_home_from_ground_takes_off_before_moving_and_lands_at_ride_height) ... ok
+test_roll_to_walk_to_fly (test_wheels.WheelControllerTests.test_roll_to_walk_to_fly) ... ok
+test_sensor_replans_while_rolling (test_wheels.WheelControllerTests.test_sensor_replans_while_rolling) ... ok
+test_telemetry_says_roll_and_keeps_force_limits 
+(test_wheels.WheelControllerTests.test_telemetry_says_roll_and_keeps_force_limits) ... ok
+test_wheel_rotation_is_differential_for_turns 
+(test_wheels.WheelControllerTests.test_wheel_rotation_is_differential_for_turns) ... ok
+test_both_worlds_keep_wheel_legs_and_ros_sensors 
+(test_wheels.WheelWorldTests.test_both_worlds_keep_wheel_legs_and_ros_sensors) ... ok
+test_ride_height_geometric_clearance (test_wheels.WheelWorldTests.test_ride_height_geometric_clearance) ... ok
+test_source_generator_reproducible (test_wheels.WheelWorldTests.test_source_generator_reproducible) ... ok
+
+----------------------------------------------------------------------
+Ran 88 tests in 4.887s
+
+OK

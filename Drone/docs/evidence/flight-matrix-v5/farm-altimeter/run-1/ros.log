@@ -1,0 +1,144 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-11-28-10-42-37-539432-15d384d63f3b-39
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [webots_receiver-1]: process started with pid [101]
+[INFO] [static_transform_publisher-2]: process started with pid [103]
+[INFO] [static_transform_publisher-3]: process started with pid [105]
+[INFO] [lio_sam_imuPreintegration-4]: process started with pid [108]
+[INFO] [lio_sam_imageProjection-5]: process started with pid [118]
+[INFO] [lio_sam_featureExtraction-6]: process started with pid [130]
+[INFO] [lio_sam_mapOptimization-7]: process started with pid [134]
+[static_transform_publisher-2] [INFO] [1795862557.578981315] [static_transform_publisher_EitbYwGrw5uGOQ2N]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'odom'
+[static_transform_publisher-3] [INFO] [1795862557.584981476] [static_transform_publisher_nOxF0RVz0Aoi76rS]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.555000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'base_link' to 'livox_frame'
+[lio_sam_imageProjection-5] [INFO] [1795862557.603312118] [rclcpp]: [1;32m----> Image Projection Started.[0m
+[lio_sam_featureExtraction-6] [INFO] [1795862557.608321705] [rclcpp]: [1;32m----> Feature Extraction Started.[0m
+[lio_sam_imuPreintegration-4] [INFO] [1795862557.612828174] [rclcpp]: [1;32m----> IMU Preintegration Started.[0m
+[lio_sam_mapOptimization-7] [INFO] [1795862557.629212812] [rclcpp]: [1;32m----> Map Optimization Started.[0m
+[webots_receiver-1] [WARN] [1795862557.693011812] [webots_fast_livo_bridge]: livox_ros_driver2 missing: /livox/lidar NOT published; only PointCloud2
+[webots_receiver-1] [INFO] [1795862557.693801544] [webots_fast_livo_bridge]: Listening for Webots on 0.0.0.0:15882
+[webots_receiver-1] [INFO] [1795862566.637405091] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 53368)
+[lio_sam_imageProjection-5] [INFO] [1795862566.871059594] [lio_sam_imageProjection]: Waiting for IMU data ...
+[webots_receiver-1] [INFO] [1795862568.461662442] [webots_fast_livo_bridge]: frames IMU=260 LiDAR=20 camera=0 GPS=9
+[webots_receiver-1] [INFO] [1795862570.467821200] [webots_fast_livo_bridge]: frames IMU=520 LiDAR=40 camera=0 GPS=17
+[webots_receiver-1] [INFO] [1795862572.487934496] [webots_fast_livo_bridge]: frames IMU=780 LiDAR=60 camera=0 GPS=25
+[webots_receiver-1] [INFO] [1795862574.508550389] [webots_fast_livo_bridge]: frames IMU=1040 LiDAR=80 camera=0 GPS=33
+[webots_receiver-1] [INFO] [1795862576.557671937] [webots_fast_livo_bridge]: frames IMU=1300 LiDAR=100 camera=0 GPS=41
+[webots_receiver-1] [INFO] [1795862578.520395171] [webots_fast_livo_bridge]: frames IMU=1560 LiDAR=120 camera=0 GPS=49
+[webots_receiver-1] [INFO] [1795862580.616562617] [webots_fast_livo_bridge]: frames IMU=1820 LiDAR=140 camera=0 GPS=57
+[webots_receiver-1] [INFO] [1795862582.593502025] [webots_fast_livo_bridge]: frames IMU=2080 LiDAR=160 camera=0 GPS=65
+[webots_receiver-1] [INFO] [1795862584.834587285] [webots_fast_livo_bridge]: frames IMU=2340 LiDAR=180 camera=0 GPS=74
+[webots_receiver-1] [INFO] [1795862587.215879419] [webots_fast_livo_bridge]: frames IMU=2600 LiDAR=200 camera=0 GPS=82
+[webots_receiver-1] [INFO] [1795862589.610350106] [webots_fast_livo_bridge]: frames IMU=2860 LiDAR=220 camera=0 GPS=90
+[webots_receiver-1] [INFO] [1795862592.055803522] [webots_fast_livo_bridge]: frames IMU=3120 LiDAR=240 camera=0 GPS=98
+[webots_receiver-1] [INFO] [1795862594.706665692] [webots_fast_livo_bridge]: frames IMU=3380 LiDAR=260 camera=0 GPS=106
+[webots_receiver-1] [INFO] [1795862597.212670255] [webots_fast_livo_bridge]: frames IMU=3640 LiDAR=280 camera=0 GPS=114
+[webots_receiver-1] [INFO] [1795862599.727110932] [webots_fast_livo_bridge]: frames IMU=3900 LiDAR=300 camera=0 GPS=122
+[webots_receiver-1] [INFO] [1795862602.185612962] [webots_fast_livo_bridge]: frames IMU=4160 LiDAR=320 camera=0 GPS=130
+[webots_receiver-1] [INFO] [1795862604.407085945] [webots_fast_livo_bridge]: frames IMU=4420 LiDAR=340 camera=0 GPS=139
+[webots_receiver-1] [INFO] [1795862606.473013635] [webots_fast_livo_bridge]: frames IMU=4680 LiDAR=360 camera=0 GPS=147
+[webots_receiver-1] [INFO] [1795862608.578952488] [webots_fast_livo_bridge]: frames IMU=4940 LiDAR=380 camera=0 GPS=155
+[webots_receiver-1] [INFO] [1795862610.847919849] [webots_fast_livo_bridge]: frames IMU=5200 LiDAR=400 camera=0 GPS=163
+[webots_receiver-1] [INFO] [1795862613.194903611] [webots_fast_livo_bridge]: frames IMU=5460 LiDAR=420 camera=0 GPS=171
+[webots_receiver-1] [INFO] [1795862615.668433111] [webots_fast_livo_bridge]: frames IMU=5720 LiDAR=440 camera=0 GPS=179
+[webots_receiver-1] [INFO] [1795862618.122253345] [webots_fast_livo_bridge]: frames IMU=5980 LiDAR=460 camera=0 GPS=187
+[webots_receiver-1] [INFO] [1795862620.626067754] [webots_fast_livo_bridge]: frames IMU=6240 LiDAR=480 camera=0 GPS=195
+[webots_receiver-1] [INFO] [1795862623.191298297] [webots_fast_livo_bridge]: frames IMU=6500 LiDAR=500 camera=0 GPS=204
+[webots_receiver-1] [INFO] [1795862625.834466602] [webots_fast_livo_bridge]: frames IMU=6760 LiDAR=520 camera=0 GPS=212
+[webots_receiver-1] [INFO] [1795862628.250122522] [webots_fast_livo_bridge]: frames IMU=7020 LiDAR=540 camera=0 GPS=220
+[webots_receiver-1] [INFO] [1795862630.736564411] [webots_fast_livo_bridge]: frames IMU=7280 LiDAR=560 camera=0 GPS=228
+[webots_receiver-1] [INFO] [1795862632.951268901] [webots_fast_livo_bridge]: frames IMU=7540 LiDAR=580 camera=0 GPS=236
+[webots_receiver-1] [INFO] [1795862635.267423635] [webots_fast_livo_bridge]: frames IMU=7800 LiDAR=600 camera=0 GPS=244
+[webots_receiver-1] [INFO] [1795862637.502360883] [webots_fast_livo_bridge]: frames IMU=8060 LiDAR=620 camera=0 GPS=252
+[webots_receiver-1] [INFO] [1795862639.945504044] [webots_fast_livo_bridge]: frames IMU=8320 LiDAR=640 camera=0 GPS=260
+[webots_receiver-1] [INFO] [1795862642.446311487] [webots_fast_livo_bridge]: frames IMU=8580 LiDAR=660 camera=0 GPS=269
+[webots_receiver-1] [INFO] [1795862644.888372476] [webots_fast_livo_bridge]: frames IMU=8840 LiDAR=680 camera=0 GPS=277
+[webots_receiver-1] [INFO] [1795862647.129895406] [webots_fast_livo_bridge]: frames IMU=9100 LiDAR=700 camera=0 GPS=285
+[webots_receiver-1] [INFO] [1795862649.421265219] [webots_fast_livo_bridge]: frames IMU=9360 LiDAR=720 camera=0 GPS=293
+[webots_receiver-1] [INFO] [1795862651.840971896] [webots_fast_livo_bridge]: frames IMU=9620 LiDAR=740 camera=0 GPS=301
+[webots_receiver-1] [INFO] [1795862654.569744278] [webots_fast_livo_bridge]: frames IMU=9880 LiDAR=760 camera=0 GPS=309
+[webots_receiver-1] [INFO] [1795862657.080025353] [webots_fast_livo_bridge]: frames IMU=10140 LiDAR=780 camera=0 GPS=317
+[webots_receiver-1] [INFO] [1795862659.717807125] [webots_fast_livo_bridge]: frames IMU=10400 LiDAR=800 camera=0 GPS=325
+[webots_receiver-1] [INFO] [1795862662.314354761] [webots_fast_livo_bridge]: frames IMU=10660 LiDAR=820 camera=0 GPS=334
+[webots_receiver-1] [INFO] [1795862664.944279103] [webots_fast_livo_bridge]: frames IMU=10920 LiDAR=840 camera=0 GPS=342
+[webots_receiver-1] [INFO] [1795862667.492986015] [webots_fast_livo_bridge]: frames IMU=11180 LiDAR=860 camera=0 GPS=350
+[webots_receiver-1] [INFO] [1795862669.505835822] [webots_fast_livo_bridge]: frames IMU=11440 LiDAR=880 camera=0 GPS=358
+[webots_receiver-1] [INFO] [1795862671.717811922] [webots_fast_livo_bridge]: frames IMU=11700 LiDAR=900 camera=0 GPS=366
+[webots_receiver-1] [INFO] [1795862673.677577866] [webots_fast_livo_bridge]: frames IMU=11960 LiDAR=920 camera=0 GPS=374
+[webots_receiver-1] [INFO] [1795862676.034620334] [webots_fast_livo_bridge]: frames IMU=12220 LiDAR=940 camera=0 GPS=382
+[webots_receiver-1] [INFO] [1795862678.487447472] [webots_fast_livo_bridge]: frames IMU=12480 LiDAR=960 camera=0 GPS=390
+[webots_receiver-1] [INFO] [1795862681.035814972] [webots_fast_livo_bridge]: frames IMU=12740 LiDAR=980 camera=0 GPS=399
+[webots_receiver-1] [INFO] [1795862683.542991450] [webots_fast_livo_bridge]: frames IMU=13000 LiDAR=1000 camera=0 GPS=407
+[webots_receiver-1] [INFO] [1795862686.160364121] [webots_fast_livo_bridge]: frames IMU=13260 LiDAR=1020 camera=0 GPS=415
+[webots_receiver-1] [INFO] [1795862688.651516949] [webots_fast_livo_bridge]: frames IMU=13520 LiDAR=1040 camera=0 GPS=423
+[webots_receiver-1] [INFO] [1795862691.245549197] [webots_fast_livo_bridge]: frames IMU=13780 LiDAR=1060 camera=0 GPS=431
+[webots_receiver-1] [INFO] [1795862693.724591383] [webots_fast_livo_bridge]: frames IMU=14040 LiDAR=1080 camera=0 GPS=439
+[webots_receiver-1] [INFO] [1795862696.057192186] [webots_fast_livo_bridge]: frames IMU=14300 LiDAR=1100 camera=0 GPS=447
+[webots_receiver-1] [INFO] [1795862698.357105918] [webots_fast_livo_bridge]: frames IMU=14560 LiDAR=1120 camera=0 GPS=455
+[webots_receiver-1] [INFO] [1795862700.517752291] [webots_fast_livo_bridge]: frames IMU=14820 LiDAR=1140 camera=0 GPS=464
+[webots_receiver-1] [INFO] [1795862702.659701719] [webots_fast_livo_bridge]: frames IMU=15080 LiDAR=1160 camera=0 GPS=472
+[webots_receiver-1] [INFO] [1795862704.879814044] [webots_fast_livo_bridge]: frames IMU=15340 LiDAR=1180 camera=0 GPS=480
+[webots_receiver-1] [INFO] [1795862707.099239717] [webots_fast_livo_bridge]: frames IMU=15600 LiDAR=1200 camera=0 GPS=488
+[webots_receiver-1] [INFO] [1795862709.445301287] [webots_fast_livo_bridge]: frames IMU=15860 LiDAR=1220 camera=0 GPS=496
+[webots_receiver-1] [INFO] [1795862711.937896417] [webots_fast_livo_bridge]: frames IMU=16120 LiDAR=1240 camera=0 GPS=504
+[webots_receiver-1] [INFO] [1795862714.591918594] [webots_fast_livo_bridge]: frames IMU=16380 LiDAR=1260 camera=0 GPS=512
+[webots_receiver-1] [INFO] [1795862717.083676719] [webots_fast_livo_bridge]: frames IMU=16640 LiDAR=1280 camera=0 GPS=520
+[webots_receiver-1] [INFO] [1795862719.595303590] [webots_fast_livo_bridge]: frames IMU=16900 LiDAR=1300 camera=0 GPS=529
+[webots_receiver-1] [INFO] [1795862722.070145527] [webots_fast_livo_bridge]: frames IMU=17160 LiDAR=1320 camera=0 GPS=537
+[webots_receiver-1] [INFO] [1795862724.276516083] [webots_fast_livo_bridge]: frames IMU=17420 LiDAR=1340 camera=0 GPS=545
+[webots_receiver-1] [INFO] [1795862726.561622214] [webots_fast_livo_bridge]: frames IMU=17680 LiDAR=1360 camera=0 GPS=553
+[webots_receiver-1] [INFO] [1795862728.577885411] [webots_fast_livo_bridge]: frames IMU=17940 LiDAR=1380 camera=0 GPS=561
+[webots_receiver-1] [INFO] [1795862730.743572164] [webots_fast_livo_bridge]: frames IMU=18200 LiDAR=1400 camera=0 GPS=569
+[webots_receiver-1] [INFO] [1795862732.951250805] [webots_fast_livo_bridge]: frames IMU=18460 LiDAR=1420 camera=0 GPS=577
+[webots_receiver-1] [INFO] [1795862735.172100899] [webots_fast_livo_bridge]: frames IMU=18720 LiDAR=1440 camera=0 GPS=585
+[webots_receiver-1] [INFO] [1795862737.573662780] [webots_fast_livo_bridge]: frames IMU=18980 LiDAR=1460 camera=0 GPS=594
+[webots_receiver-1] [INFO] [1795862740.069924826] [webots_fast_livo_bridge]: frames IMU=19240 LiDAR=1480 camera=0 GPS=602
+[webots_receiver-1] [INFO] [1795862742.462942613] [webots_fast_livo_bridge]: frames IMU=19500 LiDAR=1500 camera=0 GPS=610
+[webots_receiver-1] [INFO] [1795862745.212752928] [webots_fast_livo_bridge]: frames IMU=19760 LiDAR=1520 camera=0 GPS=618
+[webots_receiver-1] [INFO] [1795862747.686455641] [webots_fast_livo_bridge]: frames IMU=20020 LiDAR=1540 camera=0 GPS=626
+[webots_receiver-1] [INFO] [1795862749.831450408] [webots_fast_livo_bridge]: frames IMU=20280 LiDAR=1560 camera=0 GPS=634
+[webots_receiver-1] [INFO] [1795862752.054725525] [webots_fast_livo_bridge]: frames IMU=20540 LiDAR=1580 camera=0 GPS=642
+[webots_receiver-1] [INFO] [1795862754.253725982] [webots_fast_livo_bridge]: frames IMU=20800 LiDAR=1600 camera=0 GPS=650
+[webots_receiver-1] [INFO] [1795862756.243987451] [webots_fast_livo_bridge]: frames IMU=21060 LiDAR=1620 camera=0 GPS=659
+[webots_receiver-1] [INFO] [1795862758.406005078] [webots_fast_livo_bridge]: frames IMU=21320 LiDAR=1640 camera=0 GPS=667
+[webots_receiver-1] [INFO] [1795862760.512230823] [webots_fast_livo_bridge]: frames IMU=21580 LiDAR=1660 camera=0 GPS=675
+[webots_receiver-1] [INFO] [1795862762.831052688] [webots_fast_livo_bridge]: frames IMU=21840 LiDAR=1680 camera=0 GPS=683
+[webots_receiver-1] [INFO] [1795862765.225233409] [webots_fast_livo_bridge]: frames IMU=22100 LiDAR=1700 camera=0 GPS=691
+[webots_receiver-1] [INFO] [1795862767.687863911] [webots_fast_livo_bridge]: frames IMU=22360 LiDAR=1720 camera=0 GPS=699
+[webots_receiver-1] [INFO] [1795862770.179993287] [webots_fast_livo_bridge]: frames IMU=22620 LiDAR=1740 camera=0 GPS=707
+[webots_receiver-1] [INFO] [1795862772.747890206] [webots_fast_livo_bridge]: frames IMU=22880 LiDAR=1760 camera=0 GPS=715
+[webots_receiver-1] [INFO] [1795862775.231656906] [webots_fast_livo_bridge]: frames IMU=23140 LiDAR=1780 camera=0 GPS=724
+[webots_receiver-1] [INFO] [1795862777.704413255] [webots_fast_livo_bridge]: frames IMU=23400 LiDAR=1800 camera=0 GPS=732
+[webots_receiver-1] [INFO] [1795862780.137405607] [webots_fast_livo_bridge]: frames IMU=23660 LiDAR=1820 camera=0 GPS=740
+[webots_receiver-1] [INFO] [1795862782.558351644] [webots_fast_livo_bridge]: frames IMU=23920 LiDAR=1840 camera=0 GPS=748
+[webots_receiver-1] [INFO] [1795862785.002698062] [webots_fast_livo_bridge]: frames IMU=24180 LiDAR=1860 camera=0 GPS=756
+[webots_receiver-1] [INFO] [1795862787.137640896] [webots_fast_livo_bridge]: frames IMU=24440 LiDAR=1880 camera=0 GPS=764
+[webots_receiver-1] [INFO] [1795862789.362965519] [webots_fast_livo_bridge]: frames IMU=24700 LiDAR=1900 camera=0 GPS=772
+[webots_receiver-1] [INFO] [1795862791.532565166] [webots_fast_livo_bridge]: frames IMU=24960 LiDAR=1920 camera=0 GPS=780
+[webots_receiver-1] [INFO] [1795862793.914902762] [webots_fast_livo_bridge]: frames IMU=25220 LiDAR=1940 camera=0 GPS=789
+[webots_receiver-1] [INFO] [1795862796.375499990] [webots_fast_livo_bridge]: frames IMU=25480 LiDAR=1960 camera=0 GPS=797
+[webots_receiver-1] [INFO] [1795862798.749193668] [webots_fast_livo_bridge]: frames IMU=25740 LiDAR=1980 camera=0 GPS=805
+[webots_receiver-1] [INFO] [1795862800.913985917] [webots_fast_livo_bridge]: frames IMU=26000 LiDAR=2000 camera=0 GPS=813
+[webots_receiver-1] [INFO] [1795862803.301325445] [webots_fast_livo_bridge]: frames IMU=26260 LiDAR=2020 camera=0 GPS=821
+[webots_receiver-1] [INFO] [1795862805.526589988] [webots_fast_livo_bridge]: frames IMU=26520 LiDAR=2040 camera=0 GPS=829
+[webots_receiver-1] [INFO] [1795862807.985154884] [webots_fast_livo_bridge]: frames IMU=26780 LiDAR=2060 camera=0 GPS=837
+[webots_receiver-1] [INFO] [1795862810.404671441] [webots_fast_livo_bridge]: frames IMU=27040 LiDAR=2080 camera=0 GPS=845
+[webots_receiver-1] [INFO] [1795862812.934817556] [webots_fast_livo_bridge]: frames IMU=27300 LiDAR=2100 camera=0 GPS=854
+[webots_receiver-1] [INFO] [1795862815.274108564] [webots_fast_livo_bridge]: frames IMU=27560 LiDAR=2120 camera=0 GPS=862
+[webots_receiver-1] [INFO] [1795862817.500890635] [webots_fast_livo_bridge]: frames IMU=27820 LiDAR=2140 camera=0 GPS=870
+[webots_receiver-1] [INFO] [1795862819.704753916] [webots_fast_livo_bridge]: frames IMU=28080 LiDAR=2160 camera=0 GPS=878
+[webots_receiver-1] [INFO] [1795862821.718195296] [webots_fast_livo_bridge]: frames IMU=28340 LiDAR=2180 camera=0 GPS=886
+[webots_receiver-1] [INFO] [1795862823.638892277] [webots_fast_livo_bridge]: frames IMU=28600 LiDAR=2200 camera=0 GPS=894
+[webots_receiver-1] [INFO] [1795862825.635760892] [webots_fast_livo_bridge]: frames IMU=28860 LiDAR=2220 camera=0 GPS=902
+[webots_receiver-1] [INFO] [1795862827.629093272] [webots_fast_livo_bridge]: frames IMU=29120 LiDAR=2240 camera=0 GPS=910
+[webots_receiver-1] [INFO] [1795862829.891944281] [webots_fast_livo_bridge]: frames IMU=29380 LiDAR=2260 camera=0 GPS=919
+[webots_receiver-1] [INFO] [1795862832.007402772] [webots_fast_livo_bridge]: frames IMU=29640 LiDAR=2280 camera=0 GPS=927
+[webots_receiver-1] [INFO] [1795862833.264430469] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795862833.264740741] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 52156)
+[webots_receiver-1] [INFO] [1795862833.264976828] [webots_fast_livo_bridge]: Waiting for reconnection
+[webots_receiver-1] [INFO] [1795862833.265123974] [webots_fast_livo_bridge]: Webots connected from ('172.17.0.1', 52170)
+[webots_receiver-1] [INFO] [1795862833.265279497] [webots_fast_livo_bridge]: Waiting for reconnection
