@@ -20,6 +20,7 @@ from hybrid_planner import choose_safe_walk_goal
 from hybrid_support import LEG_NAMES
 from flight_obstacles import camera_hit, lidar_hit
 from oak_stereo import objects as stereo_objects
+from scene_obstacles import flight_boxes
 
 
 class WheelMission(HybridMission):
@@ -35,6 +36,8 @@ class WheelMission(HybridMission):
         self.wheel_fields = {}
         self.wheel_angles = {leg: 0.0 for leg in LEG_NAMES}
         self.ground_distance = 0.0
+        self.post_landing_drive = False
+        self.ground_route_def = None
         self.roll_progress = 0.0
         for leg in LEG_NAMES:
             node = self.robot.getFromDef('WHEEL_' + leg.upper())
@@ -173,13 +176,20 @@ class WheelMission(HybridMission):
     def _replan_roll(self):
         grid = self.make_planner()
         start = self.planar()
+        if self.post_landing_drive:
+            self.remove_shape(self.ground_route_def)
+            self.ground_route_def = None
 
         def route_for_goal(goal):
             return plan(grid, start, goal, start_yaw=self.yaw)
 
         try:
             if self.walk_goal is None:
-                self.walk_goal, self.walk_path = choose_safe_walk_goal(grid, start, route_for_goal=route_for_goal)
+                if self.post_landing_drive:
+                    self.walk_goal, self.walk_path = choose_safe_walk_goal(
+                        grid, start, offsets=((18, 0), (10, 4), (0, 12)), route_for_goal=route_for_goal)
+                else:
+                    self.walk_goal, self.walk_path = choose_safe_walk_goal(grid, start, route_for_goal=route_for_goal)
             else:
                 self.walk_path = route_for_goal(self.walk_goal)
         except ValueError as exc:
@@ -191,6 +201,9 @@ class WheelMission(HybridMission):
         self.walk_index = 1
         self.roll_progress = 0.0
         self.warning_message = ''
+        if self.post_landing_drive and self.show_routes:
+            path = [(pose.x, pose.y) for pose in self.walk_path]
+            self.ground_route_def = self.line_shape(path, 'DRIVE_ROUTE', '.15 1 .35', .18)
         print('[HYBRID A*] rolling poses:', len(self.walk_path), 'to', self.walk_goal)
         return True
 
@@ -273,10 +286,16 @@ class WheelMission(HybridMission):
         client_dir = os.environ.get('UAV_CLIENT_EVIDENCE')
         stop_file = os.environ.get('UAV_CLIENT_STOP')
         if client_dir:
-            # The fixed farm survey uses the surveyed map. Live avoidance runs in the physics arena.
+            # Farm flight uses collision geometry, avoiding LiDAR returns from its own rotors.
             self.sensor_obstacle_enabled = False
+            children = self.robot.getRoot().getField('children')
+            self.client_scene_boxes = []
+            next_scan = 0.
+            route_held = False
         walk_started = None
         walked = 0.
+        landing_position = None
+        wheels_at_landing = 0.
         states = set()
         while self.robot.step(self.step_ms) != -1:
             if stop_file and Path(stop_file).exists():
@@ -285,7 +304,32 @@ class WheelMission(HybridMission):
                 return
             self.read_keys()
             now = self.robot.getTime()
-            if client_dir and self.state == 'ROLLING' and self.ground_distance >= 1.5 and walk_started is None:
+            drive = self.post_landing_drive and self.state in ('TO_ROLL', 'ROLLING', 'ROLL_HOLD')
+            if client_dir and (self.state == 'FLYING' or drive) and now >= next_scan:
+                next_scan = now + .16
+                current_boxes = flight_boxes(children, self.position)
+                if current_boxes != self.client_scene_boxes:
+                    self.obstacles = [ob for ob in self.obstacles if ob not in self.client_scene_boxes] + current_boxes
+                    self.client_scene_boxes = current_boxes
+                    if drive and self.state in ('ROLLING', 'ROLL_HOLD'):
+                        manually_paused = self.paused and bool(self.walk_path)
+                        if self._replan_roll():
+                            self.paused = manually_paused
+                            self.state = 'ROLLING'
+                            print('[GROUND REPLAN] Route changed', flush=True)
+                        else:
+                            print('[GROUND REPLAN] Holding for a clear route', flush=True)
+                    elif not drive:
+                        proposed = self.make_planner()
+                        active = [self.planar(), *self.waypoints[self.waypoint_idx:]]
+                        if route_held or any(not proposed.clear_segment(a, b) for a, b in zip(active, active[1:])):
+                            manually_paused = self.paused and not route_held
+                            route_held = not self.replan(draw_overview=True)
+                            self.paused = manually_paused or route_held
+                            print('[FARM OBSTACLE]', 'Holding for a clear route' if route_held else 'Route changed',
+                                  flush=True)
+            if (client_dir and landing_position is None and self.state == 'ROLLING'
+                    and self.ground_distance >= 1.5 and walk_started is None):
                 if self.request_walk():
                     walk_started = now
             if (client_dir and walk_started is not None and now - walk_started >= 4
@@ -316,12 +360,21 @@ class WheelMission(HybridMission):
                 self.last_print = now
                 print('[WHEEL HYBRID] %.1fs %s position %s' %
                       (now, self.state, [round(v, 2) for v in self.position]))
-            if client_dir and self.state == 'LANDED':
-                self.write_sensor_dashboard(force=True)
+            if client_dir and self.state == 'LANDED' and landing_position is None:
+                landing_position = list(self.position)
+                wheels_at_landing = self.ground_distance
                 self.robot.exportImage(str(Path(client_dir) / 'farm-landed.png'), 95)
+                print('[WHEEL HYBRID] Touchdown confirmed. Starting the ground route.', flush=True)
+                self.post_landing_drive = True
+                self.request_roll()
+            if client_dir and landing_position is not None and self.state == 'ROLL_HOLD' and not self.paused:
+                self.state = 'LANDED'
+                self.write_sensor_dashboard(force=True)
                 (Path(client_dir) / 'farm-result.json').write_text(json.dumps(dict(
                     state=self.state, mission=self.settings.get('mission_mode'), duration_s=now,
                     wheel_distance_m=self.ground_distance, walking_distance_m=walked,
+                    post_landing_roll_m=self.ground_distance - wheels_at_landing,
+                    landing_position_m=landing_position,
                     states=sorted(states), returned_home=self.returning,
                     photos=self.photo_count, final_position_m=self.position), indent=2))
                 self.livo_stream.close()

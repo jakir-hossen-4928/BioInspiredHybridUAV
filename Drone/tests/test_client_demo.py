@@ -14,6 +14,22 @@ from client_demo import relay
 
 
 class ClientDemoTests(unittest.TestCase):
+    def test_camera_windows_reopen_after_webots_saves_closed_layout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            world = Path(directory) / 'farm.wbt'
+            project = world.with_name('.farm.wbproj')
+            project.write_bytes(b'Webots Project File version R2025a\r\n'
+                                b'centralWidgetVisible: 1\r\n'
+                                b'renderingDevicePerspectives: Drone:front;0;1;0;0\r\n')
+            cameras = ('Drone:front', 'Drone:bottom')
+            client_demo.configure_camera_windows(world, cameras)
+            updated = project.read_bytes()
+            self.assertIn(b'Drone:front;1;1;0;0;20;60;480;360;0\r\n', updated)
+            self.assertIn(b'Drone:bottom;1;1;0;0;525;60;480;360;0\r\n', updated)
+            self.assertIn(b'centralWidgetVisible: 1\r\n', updated)
+            client_demo.configure_camera_windows(world, cameras)
+            self.assertEqual(project.read_bytes(), updated)
+
     @unittest.skipUnless(os.name == 'nt', 'Windows launcher')
     def test_stale_session_marker_does_not_block_next_launch(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -3,11 +3,13 @@ import csv
 import importlib.util
 import json
 import math
+import os
 from pathlib import Path
 import sys
 import tempfile
 import types
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTROLLERS = ROOT / 'controllers'
@@ -127,6 +129,44 @@ class WheelControllerTests(unittest.TestCase):
         obj.move_step()
         self.assertEqual(obj.state, 'LANDED')
         self.assertAlmostEqual(obj.position[2], 0.60)
+
+    def test_client_rolls_and_parks_after_touchdown(self):
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, UAV_CLIENT_EVIDENCE=temp):
+            obj = self.wheelmod.WheelMission()
+            obj.position[2] = obj.rolling_height + .01
+            obj.state = 'LANDING'
+            obj.returning = True
+            obj.last_print = math.inf
+            trajectory = []
+            obj.livo_stream = types.SimpleNamespace(
+                update=lambda t, xyz, yaw: trajectory.append(tuple(xyz)), close=lambda: None)
+            obj.evaluate_terrain = lambda: None
+            obj.write_sensor_dashboard = lambda **kwargs: None
+            obj.robot.exportImage = lambda *args: None
+            obj.robot.simulationQuit = lambda code: None
+            geometry = types.SimpleNamespace(
+                getBaseTypeName=lambda: 'Box',
+                getField=lambda name: types.SimpleNamespace(getSFVec3f=lambda: (2., 2., 2.)),
+            )
+            obstacle = types.SimpleNamespace(
+                getBaseTypeName=lambda: 'Solid',
+                getPosition=lambda: (-41., -47., 1.),
+                getOrientation=lambda: (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                getField=lambda name: types.SimpleNamespace(getSFNode=lambda: geometry),
+            )
+            children = obj.robot.getRoot().getField('children')
+            children.getCount = lambda: int(obj.ground_distance >= 2.)
+            children.getMFNode = lambda index: obstacle
+            obj.run()
+            result = json.loads((Path(temp) / 'farm-result.json').read_text())
+        self.assertEqual(result['state'], 'LANDED')
+        self.assertGreater(result['post_landing_roll_m'], 1.)
+        self.assertNotEqual(result['landing_position_m'], result['final_position_m'])
+        self.assertNotIn('TO_FLIGHT', result['states'])
+        self.assertGreater(result['final_position_m'][0], -32.)
+        gap = min(math.hypot(max(0., abs(x + 41.) - 1.), max(0., abs(y + 47.) - 1.))
+                  for x, y, _ in trajectory)
+        self.assertGreater(gap, .72)
 
     def test_mode_switch_preserves_screened_descent(self):
         obj = self.wheelmod.WheelMission()

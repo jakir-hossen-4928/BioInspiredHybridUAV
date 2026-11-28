@@ -20,6 +20,29 @@ READY = ('Listening for Webots', 'IMU Preintegration Started',
          'Image Projection Started', 'Feature Extraction Started', 'Map Optimization Started')
 
 
+def configure_camera_windows(world, cameras):
+    project = world.with_name(f'.{world.stem}.wbproj')
+    if not project.exists():
+        project.write_bytes(b'Webots Project File version R2025a\n')
+    # Webots marks this file hidden on Windows. Open it in place to keep that attribute.
+    with project.open('r+b') as stream:
+        original = stream.read()
+        newline = b'\r\n' if b'\r\n' in original else b'\n'
+        windows = {
+            f'renderingDevicePerspectives: {camera};'.encode():
+            f'1;1;0;0;{x};60;480;360;0'.encode()
+            for camera, x in zip(cameras, (20, 525))
+        }
+        lines = [line for line in original.splitlines()
+                 if line.partition(b';')[0] + b';' not in windows]
+        lines.extend(prefix + geometry for prefix, geometry in windows.items())
+        updated = newline.join(lines) + newline
+        if updated != original:
+            stream.seek(0)
+            stream.write(updated)
+            stream.truncate()
+
+
 def atomic_json(path, value):
     temporary = path.with_suffix('.tmp')
     temporary.write_text(json.dumps(value, indent=2), encoding='utf-8')
@@ -164,6 +187,9 @@ def demo(args, session):
                            UAV_CLIENT_CAMERA='1')
             # Keep simulated sensor time paced for the external ROS estimator in the arena.
             mode = args.mode if name == 'farm' else 'realtime'
+            cameras = (('Drone:slam_camera', 'Drone:survey_camera') if name == 'farm'
+                       else ('robot:oak_rgb', 'robot:bottom_camera'))
+            configure_camera_windows(world, cameras)
             with (folder / 'webots.log').open('w', encoding='utf-8') as log:
                 webots_process = subprocess.Popen([webots, '--batch', '--stdout', '--stderr',
                                                    '--mode=' + mode, str(world)],
@@ -193,6 +219,7 @@ def demo(args, session):
             data = json.loads(result.read_text(encoding='utf-8'))
             status[name] = ({'state': data['state'], 'photos': data['photos'],
                              'wheel_distance_m': data['wheel_distance_m'],
+                             'post_landing_roll_m': data['post_landing_roll_m'],
                              'walking_distance_m': data['walking_distance_m'],
                              'returned_home': data['returned_home']}
                             if name == 'farm' else {key: data[key] for key in
@@ -218,7 +245,8 @@ def demo(args, session):
             atomic_json(session / 'session-result.json', status)
     farm = status.get('farm', {})
     return 0 if (farm.get('state') == 'LANDED' and farm['returned_home']
-                 and min(farm['photos'], farm['wheel_distance_m'], farm['walking_distance_m']) > 0
+                 and min(farm['photos'], farm['wheel_distance_m'], farm['walking_distance_m'],
+                         farm['post_landing_roll_m']) > 0
                  and status.get('lio-sam', {}).get('passed')) else 1
 
 

@@ -17,6 +17,7 @@ DEF AIRFRAME Robot {
  Camera { name "oak_rgb" translation .32 0 0 width 1280 height 800 fieldOfView 1.3962634 }
  Camera { name "oak_left" translation .32 .0375 0 width 640 height 400 fieldOfView 1.3962634 }
  Camera { name "oak_right" translation .32 -.0375 0 width 640 height 400 fieldOfView 1.3962634 }
+ Camera { name "bottom_camera" translation 0 0 -.12 rotation 0 1 0 1.57079632679 width 320 height 240 fieldOfView 1.12 }
  ]
  boundingObject Box { size 0.6 0.5 0.2 }
  physics Physics { density -1 mass 1 }

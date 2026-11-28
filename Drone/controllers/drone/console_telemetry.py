@@ -104,6 +104,8 @@ def get_snapshot(mission, now=None):
         'lidar_device_present': _device(mission, 'lidar') is not None,
         'imu_device_present': _device(mission, 'inertial unit') is not None,
         'sensor_obstacle_detection': bool(getattr(mission, 'sensor_obstacle_enabled', False)),
+        'scene_obstacle_count': (len(mission.client_scene_boxes)
+                                 if hasattr(mission, 'client_scene_boxes') else None),
         'sensor_obstacle': getattr(mission, 'sensor_obstacle', None),
         'planner_route_nodes': len(getattr(mission, 'walk_path', []) or []),
         'flight_astar_route_nodes': len(getattr(mission, 'waypoints', []) or []),
@@ -168,9 +170,11 @@ def render(snapshot):
         'ASTAR / HYBRID PATH PLANNING  | ' + s['planner_type'],
         'PLANNED NODES flight/ground  | %d / %d' % (
             s['flight_astar_route_nodes'], s['planner_route_nodes']),
-        'OBSTACLE AVOIDANCE           | %s | new object: %s' % (
+        ('OBSTACLE AVOIDANCE           | WEBOTS SCENE | nearby flight-height boxes: %d'
+         % s['scene_obstacle_count'] if s['scene_obstacle_count'] is not None else
+         'OBSTACLE AVOIDANCE           | %s | new object: %s' % (
             'ENABLED' if s['sensor_obstacle_detection'] else 'NOT ENABLED',
-            'DETECTED' if s['sensor_obstacle'] else 'NONE'),
+            'DETECTED' if s['sensor_obstacle'] else 'NONE')),
         'TERRAIN LANDING ASSESSMENT   | %s | slope %s deg | roughness %s m' % (
             s['terrain'].get('status', 'N/A'),
             _number(s['terrain'].get('slope_deg'), 1),

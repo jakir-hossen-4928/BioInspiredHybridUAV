@@ -430,7 +430,8 @@ class Mission:
         if self.dynamic_on:
             start=self.planar()
             chosen=None
-            for a,b in zip(self.waypoints[:-1],self.waypoints[1:]):
+            remaining = [start, *self.waypoints[self.waypoint_idx:]]
+            for a,b in zip(remaining, remaining[1:]):
                 for i in range(1,max(1,math.ceil(math.dist(a,b)/.75))+1):
                     t=i/max(1,math.ceil(math.dist(a,b)/.75))
                     pt=(a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1]))
@@ -443,7 +444,8 @@ class Mission:
                 print('[OBSTACLE] No suitable location, try during a longer leg')
                 return
             self.dynamic_obstacle={'x':chosen[0],'y':chosen[1],'sx':1.55,'sy':1.55}
-            self.dynamic_translation.setSFVec3f([chosen[0],chosen[1],1.35])
+            height = self.position[2] if self.state == 'FLYING' else 1.35
+            self.dynamic_translation.setSFVec3f([chosen[0],chosen[1],height])
             print('[DECISION] New obstacle => A* route replanning')
         else:
             self.dynamic_translation.setSFVec3f([0,0,-10])
