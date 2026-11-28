@@ -272,6 +272,9 @@ class WheelMission(HybridMission):
     def run(self):
         client_dir = os.environ.get('UAV_CLIENT_EVIDENCE')
         stop_file = os.environ.get('UAV_CLIENT_STOP')
+        if client_dir:
+            # The fixed farm survey uses the surveyed map. Live avoidance runs in the physics arena.
+            self.sensor_obstacle_enabled = False
         walk_started = None
         walked = 0.
         states = set()

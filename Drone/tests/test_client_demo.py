@@ -1,16 +1,32 @@
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
+import client_demo
 from client_demo import relay
 
 
 class ClientDemoTests(unittest.TestCase):
+    @unittest.skipUnless(os.name == 'nt', 'Windows launcher')
+    def test_stale_session_marker_does_not_block_next_launch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            active = folder / 'active.json'
+            active.write_text('{"session":"stale"}', encoding='utf-8')
+            with patch.multiple(client_demo, SESSIONS=folder, ACTIVE=active), \
+                    patch.object(sys, 'argv', ['client_demo.py']), \
+                    patch.object(client_demo, 'run_session', return_value=0) as run:
+                self.assertEqual(client_demo.main(), 0)
+                run.assert_called_once()
+                self.assertFalse(active.exists())
+
     def test_relay_keeps_reference_pose_out_of_navigation(self):
         records = [
             ['truth', 0., [99., 99., 99.]],

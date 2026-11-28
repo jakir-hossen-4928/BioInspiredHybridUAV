@@ -6,4 +6,6 @@ if not errorlevel 1 (
 ) else (
     python "%~dp0Drone\tools\client_demo.py" --stop
 )
-exit /b %ERRORLEVEL%
+set "DEMO_EXIT=%ERRORLEVEL%"
+pause
+exit /b %DEMO_EXIT%

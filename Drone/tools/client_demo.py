@@ -84,6 +84,7 @@ def demo(args, session):
         raise RuntimeError('The client demonstration requires Webots R2025a.')
     if not shutil.which('docker'):
         raise RuntimeError('Docker CLI was not found.')
+    print(f'Checking Docker context {context} and container {container}...', flush=True)
     docker_run('info', '--format', '{{.ServerVersion}}')
     running = docker_run('inspect', '--format', '{{.State.Running}}', container,
                          capture_output=True).stdout.strip()
@@ -161,9 +162,11 @@ def demo(args, session):
             else:
                 env.update(UAV_EVIDENCE=str(folder), UAV_SENSOR_MODE='combined', UAV_SCENARIO='moving',
                            UAV_CLIENT_CAMERA='1')
+            # Keep simulated sensor time paced for the external ROS estimator in the arena.
+            mode = args.mode if name == 'farm' else 'realtime'
             with (folder / 'webots.log').open('w', encoding='utf-8') as log:
                 webots_process = subprocess.Popen([webots, '--batch', '--stdout', '--stderr',
-                                                   '--mode=' + args.mode, str(world)],
+                                                   '--mode=' + mode, str(world)],
                                                   env=env, stdout=log, stderr=subprocess.STDOUT)
                 deadline = time.monotonic() + (900 if name == 'farm' else 150)
                 dashboard_opened = False
@@ -179,7 +182,7 @@ def demo(args, session):
                     dashboard = folder / 'dashboard.html'
                     if name == 'farm' and dashboard.is_file() and not dashboard_opened:
                         dashboard_opened = True
-                        print(f'Opening live dashboard {dashboard}', flush=True)
+                        print(f'Live dashboard saved to {dashboard}', flush=True)
                         if not args.no_dashboard:
                             webbrowser.open(dashboard.as_uri())
                     time.sleep(.25)
@@ -219,32 +222,11 @@ def demo(args, session):
                  and status.get('lio-sam', {}).get('passed')) else 1
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--stop', action='store_true')
-    parser.add_argument('--mode', choices=('realtime', 'fast'), default='realtime')
-    parser.add_argument('--no-dashboard', action='store_true', help='Save the dashboard without opening a browser')
-    args = parser.parse_args()
-    if args.stop:
-        try:
-            owner = json.loads(ACTIVE.read_text(encoding='utf-8'))
-        except FileNotFoundError:
-            print('No client demonstration is active.')
-            return 0
-        (SESSIONS / owner['session'] / 'stop.request').touch()
-        print('Stop requested. The launcher will close its Webots and ROS processes.')
-        return 0
-    if sys.version_info < (3, 9):
-        raise SystemExit('Python 3.9 or later is required.')
-    SESSIONS.mkdir(exist_ok=True)
+def run_session(args):
     session = SESSIONS / datetime.now().strftime('%Y%m%d-%H%M%S-%f')
+    session.mkdir()
+    atomic_json(ACTIVE, dict(session=session.name, pid=os.getpid()))
     try:
-        with ACTIVE.open('x', encoding='utf-8') as lock:
-            json.dump(dict(session=session.name, pid=os.getpid()), lock)
-    except FileExistsError:
-        raise SystemExit(f'Another demo owns {ACTIVE}. Use STOP_CLIENT_DEMO.bat.')
-    try:
-        session.mkdir()
         print(f'Client demo evidence: {session}', flush=True)
         return demo(args, session)
     except (InterruptedError, KeyboardInterrupt):
@@ -256,6 +238,42 @@ def main():
         return 1
     finally:
         ACTIVE.unlink(missing_ok=True)
+
+
+def main():
+    import errno
+    import msvcrt
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--stop', action='store_true')
+    parser.add_argument('--mode', choices=('realtime', 'fast'), default='realtime')
+    parser.add_argument('--no-dashboard', action='store_true', help='Save the dashboard without opening a browser')
+    args = parser.parse_args()
+    if sys.version_info < (3, 9):
+        raise SystemExit('Python 3.9 or later is required.')
+    SESSIONS.mkdir(exist_ok=True)
+    # Windows releases the byte lock even if the console is closed abruptly.
+    with (SESSIONS / 'launcher.lock').open('a+b') as lock:
+        try:
+            msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError as exc:
+            if exc.errno != errno.EACCES:
+                raise
+            if not args.stop:
+                raise SystemExit('A client demonstration is already running. Use STOP_CLIENT_DEMO.bat.')
+            try:
+                owner = json.loads(ACTIVE.read_text(encoding='utf-8'))
+                (SESSIONS / owner['session'] / 'stop.request').touch()
+            except FileNotFoundError:
+                print('The launcher is starting or closing. If Webots stays open, run STOP_CLIENT_DEMO.bat again.')
+            else:
+                print('Stop requested. The launcher will close its Webots and ROS processes.')
+            return 0
+        ACTIVE.unlink(missing_ok=True)
+        if args.stop:
+            print('No client demonstration is active.')
+            return 0
+        return run_session(args)
 
 
 if __name__ == '__main__':
