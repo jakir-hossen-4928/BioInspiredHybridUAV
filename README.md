@@ -6,7 +6,6 @@
 
 ![Webots R2025a](https://img.shields.io/badge/Webots-R2025a-1f6feb)
 ![Python 3+](https://img.shields.io/badge/Python-3%2B-3776AB?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-90%20passing-brightgreen)
 ![ROS 2](https://img.shields.io/badge/ROS%202-Humble-22314E)
 ![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
 ![Worlds](https://img.shields.io/badge/Worlds-12-9cf)
@@ -20,6 +19,7 @@
 
 <br><br>
 
+[Client demo](#one-click-client-demo) |
 [🚀 Quick Start](#-quick-start) ·
 [🌍 Worlds](#-worlds) ·
 [🎮 Controls](#-controls) ·
@@ -32,19 +32,178 @@
 
 ## One-click client demo
 
-On Windows, double-click [RUN_CLIENT_DEMO.bat](RUN_CLIENT_DEMO.bat). With
-Webots R2025a and the Kiri ROS 2 container available, it opens the farm
-survey and sensor dashboard, then runs a separate physics-driven LIO-SAM
-obstacle-avoidance demonstration. Use [STOP_CLIENT_DEMO.bat](STOP_CLIENT_DEMO.bat)
-to stop the session. Logs, images and measured results are saved under
-`client-demo-sessions/`.
+Follow the steps in order on Windows. The launcher runs the farm survey first
+and then opens a separate LIO-SAM obstacle-avoidance arena.
 
-The automatic farm survey uses kinematic locomotion and Webots pose.
-The separate arena flight uses live LIO-SAM navigation. All nine arena
-scenarios passed twice at the same source revision. See the
-[demonstration report](Drone/docs/CLIENT_DEMO_REPORT.md),
-[launcher guide](Drone/docs/CLIENT_DEMO.md) and
-[v5 measurements](Drone/docs/evidence/flight-matrix-v5/README.md).
+### 1. Open the project and check the tools
+
+Open PowerShell in the repository root, where `RUN_CLIENT_DEMO.bat` and the
+`Drone` folder are visible. Install Webots R2025a and Python 3.9 or newer.
+Start the Linux Docker engine used by the `kiri` context, then check it from
+the same PowerShell window.
+
+```powershell
+python --version
+docker context ls
+docker --context kiri info --format '{{.ServerVersion}}'
+```
+
+If Webots cannot find Python, set the Python command in **Tools > Preferences >
+General** and reopen the world. If the launcher cannot find Webots in its
+default location, set `$env:WEBOTS_EXE` to the full path to `webots.exe` before
+running it. For a local simulation without the two-stage ROS workflow, use
+[Drone/RUN_DEMO.bat](Drone/RUN_DEMO.bat).
+
+### 2. Prepare the ROS 2 container once
+
+Check whether the client container already exists.
+
+```powershell
+docker --context kiri inspect --format '{{.State.Status}} {{json .HostConfig.PortBindings}}' uav-liosam-nov27
+```
+
+The expected status before launch is `created` or `exited`, with container
+port `15882/tcp` mapped to host port `15882`. The supplied setup binds the
+host port to `127.0.0.1`. Close any other sensor receiver using that port.
+If the container belongs to a previous active demo, stop that demo first.
+
+On a fresh workstation, run the following build and create commands once.
+If the required images are already available, reuse them and run only
+`docker create`. The launcher starts the container itself.
+
+```powershell
+docker --context kiri build -t uav-fast-livo2-check 'https://github.com/U-AMC/FAST-LIVO2-ROS2.git#a09599a288c56b832114d7ad9e898248a4111d9e'
+docker --context kiri build -f Drone/integration/ros2/Dockerfile.lio-sam -t uav-lio-sam:humble Drone/integration/ros2
+docker --context kiri create --name uav-liosam-nov27 -p 127.0.0.1:15882:15882 uav-lio-sam:humble sleep infinity
+```
+
+See the [LIO-SAM setup notes](Drone/docs/lio-sam-camera-validation.md) for the
+image dependencies and the [client launcher guide](Drone/docs/CLIENT_DEMO.md)
+for the local launch workflow.
+
+### 3. Start the demo and open the camera views
+
+Double-click [RUN_CLIENT_DEMO.bat](RUN_CLIENT_DEMO.bat), or run this command
+from the repository root.
+
+```powershell
+.\RUN_CLIENT_DEMO.bat
+```
+
+The launcher starts the ROS 2 container, builds the bridge and waits for
+LIO-SAM before opening the farm. Leave the launcher console open. The default
+run uses real-time mode, which gives you time to watch and interact with the
+drone. For quicker verification, use `.\RUN_CLIENT_DEMO.bat --mode fast`.
+The arena still runs in real time. Add `--no-dashboard` if you want only the
+Webots windows. The HTML dashboard is still saved on disk.
+
+The launcher restores two separate **native Webots camera windows** every
+time it opens either stage. The main Webots window shows the world and path.
+The two camera windows show what the drone sees.
+
+| Stage | Front view | Bottom view |
+| --- | --- | --- |
+| Farm survey | `slam_camera` | `survey_camera` |
+| Physics arena | `oak_rgb` | `bottom_camera` |
+
+If you close a camera window during a run, double-click its camera overlay
+in the Webots 3D viewport to open it again. The browser sensor dashboard
+updates separately and shows telemetry and terrain data.
+
+### 4. Follow the farm mission from departure to parking
+
+1. **Roll and walk.** The drone starts on the home pad, drives a short distance
+   on its wheels and transitions to walking. Watch for `ROLLING` and `WALKING`
+   in the console.
+2. **Take off.** The drone transitions through `TO_FLIGHT` and climbs to the
+   survey altitude. The default is 13 m. The front window shows the upcoming
+   path and the bottom window shows the ground beneath the drone.
+3. **Survey the farm.** The drone follows the planned route, hovers at the
+   17 survey stops and captures front and downward images. The dashboard shows
+   telemetry while the console reports flight state and path changes.
+4. **Return home and land.** After the survey, the drone flies back to the
+   home pad and descends. The launcher records the touchdown position.
+5. **Drive after touchdown.** The drone switches back to wheel mode and
+   follows the **green ground route** to a nearby waypoint. It parks there
+   without another takeoff. The result records the post-landing wheel distance
+   and the final parked position.
+
+The farm uses Supervisor-kinematic movement and Webots pose. Its flight
+planner uses a known map and live scene collision footprints. The wheel
+planner uses bounded-curvature Hybrid A* to generate a drivable path.
+
+### 5. Test an obstacle in flight or on the ground
+
+1. Wait until the drone is flying or following the green wheel route after
+   touchdown. Use the Webots **Pause** button so you can edit the scene.
+2. Insert or move a top-level Webots `Solid` with a supported collision
+   `boundingObject`, such as a `Box`. Place it ahead on the active path
+   with enough room for the drone to turn. At the default flight altitude,
+   a 2 m box centered at Z = 13 m crosses the flight corridor. For a ground
+   test, center a 2 m box at about Z = 1 m on the green route.
+3. Resume Webots. In flight, look for `[FARM OBSTACLE] Route changed`. On the
+   ground, look for `[GROUND REPLAN] Route changed` and watch the green route
+   redraw around the box.
+4. Check that the drone keeps its ground destination. If the route is
+   blocked, it holds position. Move the obstacle away to let the planner
+   look for a clear route again.
+
+The obstacle needs collision geometry. Visual-only shapes, unsupported
+meshes and nested objects are outside this scene-geometry check. Avoid
+placing a new object directly on an occupied drone position.
+
+### 6. Watch the physics arena
+
+When the farm drone parks, the launcher closes the farm world, restarts the
+ROS stack and opens the physics arena automatically. Both camera windows
+reopen for the arena. The red obstacle moves across the route without user
+input.
+
+The arena uses LIO-SAM LiDAR and IMU odometry for navigation and uses
+simulated stereo camera and LiDAR inputs for obstacle avoidance. Watch the
+drone adjust its path around the moving obstacle and approach its goal. The
+arena scores arrival, replans, contact count, minimum clearance and final
+3D goal error.
+
+### 7. Finish or stop and review the evidence
+
+The launcher writes a summary when both stages finish. To end the demo early,
+double-click [STOP_CLIENT_DEMO.bat](STOP_CLIENT_DEMO.bat). It signals the active
+launcher to shut down its Webots and ROS processes.
+
+Open the newest folder under `client-demo-sessions/`. The launcher prints that
+folder at startup.
+
+| File | What to look for |
+| --- | --- |
+| `session-result.json` | Overall outcomes for the farm and arena. |
+| `farm/farm-result.json` | Photos, wheel and walking distances, touchdown position, distance driven after landing and final parked position. |
+| `farm/dashboard.html` | The last farm dashboard view. |
+| `lio-sam/result.json` | Arrival status, contact count, replans, clearance and final goal error. |
+| `farm/webots.log`, `lio-sam/webots.log`, `ros.log` and `ros.jsonl` in each stage | Controller and ROS evidence for troubleshooting or review. |
+
+If the launcher stops before opening Webots, check the launcher console and
+the session summary for the startup error. Confirm Webots R2025a, the Docker
+context, the container state and the port mapping from Steps 1 and 2.
+
+### Measured results
+
+| Verification | Result |
+| --- | --- |
+| Two-stage client run | The farm captured 34 photos, returned home and drove **4.80 m after touchdown**. The arena arrived with **zero contacts** and **0.067 m** final goal error. This run predates the longer ground detour below. |
+| Live farm flight detour | A 2 m box inserted after takeoff changed the flight route from 2 to 4 waypoints. The drone reached the survey stop with at least **0.52 m** clearance from the box. |
+| Live farm ground detour | A 2 m box inserted during post-landing driving triggered a new green route. The drone drove **19.75 m** after touchdown and parked, with at least **1.26 m** clearance from the box. |
+| Arena acceptance matrix | **18/18** recorded runs passed across camera-only, LiDAR-only and combined avoidance, with static, moving and multiple obstacles. Minimum clearance was **0.973 m** and maximum final goal error was **0.094 m**. |
+
+The insertion trials used temporary copies of the farm world. Local results are
+in `client-demo-sessions/20261128-164352-929727/session-result.json`,
+`client-demo-sessions/inserted-obstacle-final/verification.json` and
+`client-demo-sessions/muqadder-ground-detour/verification.json`. The archived
+[client demonstration report](Drone/docs/CLIENT_DEMO_REPORT.md) and
+[v5 flight matrix](Drone/docs/evidence/flight-matrix-v5/README.md) give the earlier
+acceptance results and source revisions. The separate Muqadder reference copy,
+when present locally under `Drone-muqadder/`, has its own full perimeter
+patrol. The main client demo uses a shorter post-landing route.
 
 ---
 
@@ -55,11 +214,11 @@ scenarios passed twice at the same source revision. See the
 | 🦿 **Three locomotion modes** | Roll on wheels, walk on four legs, or fly — switch mid-mission with a single key. |
 | 🗺️ **Autonomous navigation** | Known-map 2D A* planning, waypoint editing, obstacle placement and live route replanning. |
 | 📸 **4K survey capture** | Dual survey cameras shoot **3840 × 2160** frames at every stop; a full mission writes ~35 images. |
-| 🌾 **17-stop farm mission** | Rolls to an inspection point, grabs a ground image, takes off, surveys 17 stops, returns and lands. |
+| 🌾 **17-stop farm mission** | Rolls to an inspection point, grabs a ground image, takes off, surveys 17 stops, returns, lands and drives to a ground waypoint in the client demo. |
 | 🛬 **Terrain-aware landing** | Depth-based ground assessment returns `SAFE` / `UNSAFE` / `NO_DATA` before allowing descent. |
-| 📡 **Live sensor bridge** | TCP stream of IMU, LiDAR, RGB and GPS to a browser dashboard at `127.0.0.1:15882`. |
+| 📡 **Live sensor bridge** | TCP stream of simulated IMU, LiDAR, RGB and GPS to a local receiver on port `15882`. Webots saves the HTML dashboard separately. |
 | 🔁 **ROS 2 ready** | Optional `drone_ros_bridge` package for Ubuntu / WSL2 Humble publishing. |
-| ✅ **75 offline tests** | Planning, routes, perception, telemetry and wheel/leg logic run without launching Webots. |
+| ✅ **Offline regression suite** | Planning, routes, perception, telemetry and wheel/leg logic run without launching Webots. |
 
 ---
 
@@ -112,7 +271,7 @@ Restart the estimator after resetting the Webots clock. To finish, press Ctrl+C 
 
 **Kiri on Windows.** Start Kiri and check `docker context show`. The validation run used the `kiri` context. If a different context is active, use `docker context use kiri` before running the Docker commands above.
 
-**Webots and ROS 2 results, 24 November 2026.** The wheel mission reached `LANDED` at 196.024 simulated seconds, with 27,107 bridge packets sent and zero reported drops. The controller used the Supervisor pose. FAST-LIVO2 produced odometry and registered clouds, but its airborne position diverged. Six near-synchronous odometry/reference pairs from 5.208 to 123.288 s had a rigidly aligned position RMSE of **1,036.5 m** (no scale adjustment, maximum timestamp difference 0.208 s). The [six checkpoint pairs](Drone/docs/fast_livo2_webots_checkpoints.jsonl) include the original timestamps and positions in metres. A full-trajectory benchmark and a surveyed map comparison remain open.
+**Webots and ROS 2 results, 24 November 2026.** The wheel mission reached `LANDED` at 196.024 simulated seconds, with 27,107 bridge packets sent and zero reported drops. The controller used the Supervisor pose. FAST-LIVO2 produced odometry and registered clouds, but its airborne position diverged. Six near-synchronous odometry/reference pairs from 5.208 to 123.288 s had a rigidly aligned position RMSE of **1,036.5 m** (no scale adjustment, maximum timestamp difference 0.208 s). The [six checkpoint pairs](Drone/docs/fast_livo2_webots_checkpoints.jsonl) include the original timestamps and positions in metres. The [later full-trajectory benchmark](Drone/docs/FAST_LIVO2_VALIDATION.md) used 624 samples. Surveyed FAST-LIVO2 map accuracy remains open.
 
 The [LIO-SAM and forward obstacle tests](Drone/docs/lio-sam-camera-validation.md) cover the alternate ROS 2 estimator and the OAK depth and LiDAR inputs to airborne replanning.
 
@@ -123,6 +282,8 @@ The [LIO-SAM and forward obstacle tests](Drone/docs/lio-sam-camera-validation.md
 
 | Script | Does what |
 | --- | --- |
+| [RUN_CLIENT_DEMO.bat](RUN_CLIENT_DEMO.bat) | Two-stage client simulation with native front and bottom Webots camera windows |
+| [STOP_CLIENT_DEMO.bat](STOP_CLIENT_DEMO.bat) | Stops the active client session |
 | [RUN_DEMO.bat](Drone/RUN_DEMO.bat) | Main wheel-drive → flight demonstration |
 | [RUN_OFFLINE_TESTS.bat](Drone/RUN_OFFLINE_TESTS.bat) | Runs the full offline test suite from `Drone/` |
 | [RUN_ROS2_DEMO.bat](Drone/RUN_ROS2_DEMO.bat) | Opens `hybrid_wheels_ros2.wbt` with the ROS 2 bridge |
@@ -237,6 +398,11 @@ Each run writes to [Drone/captures/](Drone/captures/):
 
 ## 🧪 Testing
 
+The latest workspace run collected 94 tests. It passed 91, including the
+camera-window restore and ground obstacle detour regressions. Three checks
+flag existing local edits to the farm world involving its sensor declarations,
+formatting and generator reproducibility.
+
 ```powershell
 python -m unittest discover -s Drone/tests -v
 ```
@@ -244,7 +410,7 @@ python -m unittest discover -s Drone/tests -v
 | Metric | Value |
 | --- | --- |
 | Coverage | Navigation, perception, routes, hybrid modes, wheel arcs, telemetry, sensor transport, ROS 2 packaging and local estimator math |
-| Tests | **75 passed** with PyYAML installed. The calibration configuration test skips when PyYAML is unavailable. |
+| Tests | Run the suite above. The calibration configuration test skips when PyYAML is unavailable. |
 | Runtime | ~5 s |
 | Webots required | No — uses mocked Webots objects and synthetic depth arrays |
 
@@ -403,8 +569,8 @@ This repository is honest about what it does and does not demonstrate. Read [Dro
 | --- | --- |
 | Locomotion | Farm wheels, walking and flying are Supervisor-kinematic demonstrations. The separate foot-force rig uses physics-driven walking. |
 | Foot force | Four three-axis readings in Newtons passed controlled landing, walking and static load checks on the validation rig. |
-| Localization | Known simulated GPS pose only — **no visual-inertial localization**. |
-| Mapping | Small observed ground-height grid from depth — **not SLAM**. |
+| Localization | The farm client uses Webots pose. The arena navigates using LIO-SAM LiDAR and IMU odometry. The estimator-driven farm traverse remains above its goal-error target. |
+| Mapping | The farm dashboard shows a depth-based ground-height grid. Two static arena LIO-SAM clouds were scored separately against surveyed surfaces. |
 | LiDAR | Generic Webots range scan; the exact Livox Mid-360 scan pattern is not modelled. |
 | Barometer | ISA pressure derived from the altimeter, not a pressure sensor model. |
 | FAST-LIVO2 | The external estimator ran on simulated data. Substantial airborne drift limits trajectory and map accuracy. |
